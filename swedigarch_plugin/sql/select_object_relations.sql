@@ -1,0 +1,1 @@
+SELECT obr."ParentId" as base_id, obr."ChildId" as related_id, rd."ParentText" as base_text, rd."ChildText" as related_text FROM "ObjectRel" obr JOIN "RelationDef" rd ON obr."MetaId" = rd."MetaId" ORDER BY 1, 2

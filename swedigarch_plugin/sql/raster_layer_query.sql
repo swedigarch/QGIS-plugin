@@ -1,0 +1,1 @@
+SELECT (row_number() OVER())::INTEGER AS "fid", "ObjectId", "MetaId", "SymbolId", the_raster FROM "GeoObject" WHERE the_raster is not NULL

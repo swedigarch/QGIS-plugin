@@ -1,0 +1,1 @@
+SELECT DISTINCT ad."MetaId"::text FROM "AttributeDef" ad JOIN "AttributeMember" am ON ad."MetaId" = am."AttributeDefId" AND am."IsVisible" = 'true' AND am."ObjectDefId"__

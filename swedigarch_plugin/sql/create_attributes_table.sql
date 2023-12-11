@@ -1,0 +1,1 @@
+CREATE TABLE "attributes" ( "attribute_id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "object_id" INTEGER, "attribute_label" TEXT, "attribute_value" TEXT, "attribute_unit" TEXT, "class" INTEGER, "data_type" TEXT)

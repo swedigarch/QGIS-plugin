@@ -1,0 +1,1 @@
+'{site_name}' as site_name, '' as site_landskap, '' as lan_name, '' as parish_name, '' as slutdatum, '{examination_type}' as undersokningstyp, '' as exploateringstyp, '{proj_name}' as projektnamn, '{proj_code}' as projektkod, '{raa_dnr}' as raa_dnr, '{lst_dnr}' as lst_dnr, '' as plats, '{site_id}' as undersöknings_id

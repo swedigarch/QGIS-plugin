@@ -1,0 +1,1 @@
+select count(*) from sqlite_schema where name in('attributes', 'attribute_relations', 'objects', 'object_relations', 'features', 'project_information', 'gpkg_contents', 'gpkg_extensions', 'gpkg_metadata', 'gpkg_spatial_ref_sys')

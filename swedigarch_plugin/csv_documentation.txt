@@ -1,0 +1,97 @@
+
+
+
+
+									  ┌─────────────────────┐
+									  │ project_information │
+									  └─────────────────────┘
+
+
+
+
+  ┌────────────┐   1:1   ┌─────────────────────┐   M:1   ┌────────────┐   M:M   ┌─────────────────────┐
+  │ attributes ├─────────┤ attribute_relations ├─────────┤ objects    ├─────────┤ object_relations    │
+  └────────────┘         └─────────────────────┘         └─────┬──────┘         └─────────────────────┘
+                                                               │
+                                                               │
+                                                               │  1:M       ┌────────────┐
+                                                               └────────────┤ features   │
+                                                                            └────────────┘
+																			
+																			
+																			
+																			
+CREATE TABLE "attributes" ( 
+	"attribute_id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, 
+	"object_id" INTEGER, 
+	"attribute_label" TEXT, 
+	"attribute_value" TEXT, 
+	"attribute_unit" TEXT, 
+	"class" INTEGER, 
+	"data_type" TEXT)
+/*
+base_id ->objects.object_id
+related_id -> attributes.attribute_id
+*/
+
+CREATE TABLE "attributes" ( 
+	"attribute_id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, 
+	"object_id" INTEGER, 
+	"attribute_label" TEXT, 
+	"attribute_value" TEXT, 
+	"attribute_unit" TEXT
+)
+
+CREATE TABLE "features" ( 
+	"fid" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, 
+	"geom" MULTILINESTRING, 
+	"object_id" MEDIUMINT, 
+	"SymbolId" MEDIUMINT, 
+	"GeoObjectId" MEDIUMINT, 
+	"spatial_type" TEXT
+)
+/*
+object_id ->objects.object_id
+*/
+CREATE TABLE object_relations (
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+    "base_id" MEDIUMINT,
+    "related_id" MEDIUMINT,
+    "base_text" TEXT(30),
+    "related_text" TEXT(30)
+)
+/*
+base_id ->objects.object_id
+related_id ->objects.object_id
+*/
+
+CREATE TABLE "objects" (
+  "object_id" INTEGER PRIMARY KEY AUTOINCREMENT,
+  "IntrasisId" INTEGER,
+  "Name" TEXT,
+  "Class" TEXT,
+  "SubClass" TEXT,
+  "Color" INTEGER,
+  "attributes" TEXT
+)
+
+/* Attributes in project_information can vary, check the file project_information.csv
+for the correct list of attributes. */
+CREATE TABLE "project_information" ( 
+	"fid" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, 
+	"geom" MULTILINESTRING, 
+	"pk" MEDIUMINT, 
+	"SiteId" TEXT, 
+	"Plats" TEXT, 
+	"Lst Dnr" TEXT, 
+	"Raä Dnr" TEXT, 
+	"Inventarienummer" TEXT, 
+	"Projektkod" TEXT, 
+	"Projektnamn" TEXT, 
+	"Projektledare" TEXT, 
+	"Uppdragsgivare" TEXT, 
+	"Exploateringstyp" TEXT, 
+	"Undersökningstyp" TEXT, 
+	"Slutdatum" TEXT, 
+	"Beskrivning" TEXT
+)

@@ -1,0 +1,44 @@
+# This file contains metadata for your plugin.
+
+# This file should be included when you package your plugin.# Mandatory items:
+
+[general]
+name=Swedigarch Plugin
+qgisMinimumVersion=3.28
+description=Swedigarch Plugin
+version=1.0
+author=Uppsala University, Sweco AB
+email=swedigarch@uu.se
+
+about=Export Intrasis databases to GeoPackages and work with the exported GeoPackages
+
+tracker=https://github.com/swedigarch/QGIS-plugin/issues
+repository=https://github.com/swedigarch/QGIS-plugin
+# End of mandatory metadata
+
+# Recommended items:
+
+hasProcessingProvider=no
+# Uncomment the following line and add your changelog:
+# changelog=
+
+# Tags are comma separated with spaces allowed
+tags=Intrasis, PostgreSQL/PostGIS
+
+homepage=https://github.com/swedigarch/QGIS-plugin/wiki/Swedigarch-QGIS-plugin
+category=Database
+icon=assets/svedigark_big_logo.png
+# experimental flag
+experimental=False
+
+# deprecated flag (applies to the whole plugin, not just a single version)
+deprecated=False
+
+# Since QGIS 3.8, a comma separated list of plugins to be installed
+# (or upgraded) can be specified.
+# Check the documentation for more information.
+# plugin_dependencies=
+
+# If the plugin can run on QGIS Server.
+server=False
+

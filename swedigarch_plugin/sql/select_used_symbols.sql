@@ -1,0 +1,1 @@
+SELECT DISTINCT o."ClassId", o."SubClassId", go."SymbolId" FROM "Object" o JOIN "GeoRel" gr ON o."ObjectId" = gr."ObjectId" JOIN "GeoObject" go ON gr."GeoObjectId" = go."ObjectId" AND go."SymbolId" is NOT NULL ORDER BY 3, 1, 2

@@ -1,0 +1,26 @@
+{
+  "ExportDialog": {
+    "url": "https://github.com/swedigarch/QGIS-plugin/wiki/Intrasis-DB-Manager",
+    "title": "Intrasis DB Manager"
+  },
+  "SelectConnectionDialog": {
+    "url": "https://qgis.org/en/site/",
+    "title": "Select Connection Dialog Documentation"
+  },
+  "ConnectToDbDialog": {
+    "url": "https://qgis.org/en/site/",
+    "title": "Connect to Database Dialog Documentation"
+  },
+  "LocalRelations": {
+    "url": "relations_help_page.html",
+    "title": "Relations help"
+  },
+  "RelationsDialog": {
+    "url": "https://github.com/swedigarch/QGIS-plugin/wiki/Intrasis-relationship-browser",
+    "title": "Intrasis Relationship Browser Documentation"
+  },
+  "ClassSubclassDialog": {
+    "url": "https://github.com/swedigarch/QGIS-plugin/wiki/Intrasis-Class-Subclass-Browser",
+    "title": "Intrasis Class/Subclass Browser Documentation"
+  }
+}

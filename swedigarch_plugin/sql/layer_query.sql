@@ -1,0 +1,3 @@
+SELECT DISTINCT (row_number() OVER() -1)::INTEGER AS "fid", __GEOM_COLUMN__ as "geom", o."ObjectId" as object_id, go."SymbolId", goo."PublicId" as "GeoObjectId", 'SPATIAL_TYPE' as spatial_type
+FROM "Object" o join "GeoRel" gr on o."ObjectId" = gr."ObjectId" join "GeoObject" go on gr."GeoObjectId" = go."ObjectId" join "Object" goo on go."ObjectId" = goo."ObjectId" join "Definition" d1 on o."ClassId" = d1."MetaId" left outer join "Definition" d2 on o."SubClassId" = d2."MetaId"
+WHERE go.the_geom is not NULL  AND upper(geometrytype("the_geom")) IN (GEOM_FILTER_STRING) ORDER BY 1 asc, o."ObjectId" ASC, goo."PublicId"
