@@ -119,7 +119,6 @@ def export_features(features:[str], tmpdirname:str, output_file:str) -> None:
     with open(output_file, 'w', encoding='UTF-8', newline='') as file:
         writer = csv.writer(file, delimiter=';', quotechar='"', quoting=csv.QUOTE_NONNUMERIC)
         headers_writen = False
-        exclude_column_indices = [0] # Remove fid
         for feature in features:
             if feature == 'project_information':
                 continue
@@ -131,10 +130,26 @@ def export_features(features:[str], tmpdirname:str, output_file:str) -> None:
                     next(csv_reader)
                 else:
                     headers_writen = True
-                writer.writerows(
-                    [col for idx, col in enumerate(row)
-                    if idx not in exclude_column_indices]
-                    for row in csv_reader)
+
+                first_row = True
+                for row in csv_reader:
+                    if not first_row:
+                        new_row = []
+                        # Remove fid by starting att idx 1
+                        new_row.append(int(row[1]))
+                        new_row.append(int(row[2]))
+                        new_row.append(row[3])
+                        new_row.append(row[4])
+                        new_row.append(row[5])
+                        new_row.append(int(row[6]))
+                        new_row.append(int(row[7]))
+                        new_row.append(row[8])
+                        new_row.append(row[9])
+                    else:
+                        new_row = row[1:]
+                    first_row = False
+                    writer.writerow(new_row)
+
 
 def export_layer_view(gpkg_file:str, layer_name:str, output_file:str, include_fid:bool = True) -> None:
     """Export given layer view to CSV"""
