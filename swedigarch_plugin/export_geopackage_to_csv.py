@@ -117,7 +117,7 @@ def export_features(features:[str], tmpdirname:str, output_file:str) -> None:
     """Export all features to combined features CSV"""
     print('Exporting table features')
     with open(output_file, 'w', encoding='UTF-8', newline='') as file:
-        writer = csv.writer(file, delimiter=';', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+        writer = csv.writer(file, delimiter=';', quotechar='"', quoting=csv.QUOTE_NONNUMERIC)
         headers_writen = False
         exclude_column_indices = [0] # Remove fid
         for feature in features:
@@ -141,7 +141,7 @@ def export_layer_view(gpkg_file:str, layer_name:str, output_file:str, include_fi
     gpkg_ds = ogr.Open(gpkg_file, 0)
     layer = gpkg_ds.GetLayerByName(layer_name)
     with open(output_file, 'w', encoding='UTF-8', newline='') as file:
-        writer = csv.writer(file, delimiter=';', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+        writer = csv.writer(file, delimiter=';', quotechar='"', quoting=csv.QUOTE_NONNUMERIC)
         columns = []
         #print(f'export_layer_view() layer_name: {layer_name} include_fid: {include_fid}')
         if include_fid:
@@ -184,4 +184,4 @@ def export_table(conn:sqlite3.Connection, table_name:str, output_dir:str) -> Non
     print(f'Exporting table {table_name}')
     output_file = os.path.join(output_dir, f"{table_name.lower()}.csv")
     db_df = pd.read_sql_query(f'SELECT * FROM {table_name}', conn)
-    db_df.to_csv(output_file, index=False)
+    db_df.to_csv(output_file, index=False, sep=';', quotechar='"', quoting=csv.QUOTE_NONNUMERIC)
