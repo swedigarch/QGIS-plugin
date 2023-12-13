@@ -125,7 +125,7 @@ class IntrasisAnalysisBrowseTablesDialog(QtWidgets.QDialog, FORM_CLASS):
         """The close dialog event (QCloseEvent)"""
         point = self.pos()
         settings = QgsSettings()
-        settings.setValue("SwedigarchPlugin/dialog_position", point)
+        settings.setValue("SwedigarchGeotools/dialog_position", point)
         self.comboBox_class.clear()
         self.comboBox_subclass.clear()
         self.selected_gpkg_name = None

@@ -52,10 +52,10 @@ from .geo_package_bulk_export_task import GeoPackageBulkExportMainTask
 # This loads your .ui file so that PyQt can populate your plugin with the elements from Qt Designer
 FORM_CLASS, _ = uic.loadUiType(os.path.join(os.path.dirname(__file__), 'swedigarch_export_dialog_base.ui'))
 
-class SwedigarchPluginDialog(QtWidgets.QDialog, FORM_CLASS):
+class SwedigarchExportDialog(QtWidgets.QDialog, FORM_CLASS):
     def __init__(self, parent=None):
         """Constructor for (Intrasis DB Manager Dialog)"""
-        super(SwedigarchPluginDialog, self).__init__(parent)
+        super(SwedigarchExportDialog, self).__init__(parent)
         # Set up the user interface from Designer through FORM_CLASS.
         # After self.setupUi() you can access any designer object by doing
         # self.<objectname>, and you can use autoconnect slots - see
@@ -217,7 +217,7 @@ class SwedigarchPluginDialog(QtWidgets.QDialog, FORM_CLASS):
     # pylint: disable=invalid-name
     def showEvent(self, event):
         """DialogShow event, returns selected databases to top list."""
-        super(SwedigarchPluginDialog, self).showEvent(event)
+        super(SwedigarchExportDialog, self).showEvent(event)
         while self.lwSelectedDatabases.count() > 0:
             item = self.lwSelectedDatabases.item(0)
             db_name = item.text()
@@ -225,7 +225,7 @@ class SwedigarchPluginDialog(QtWidgets.QDialog, FORM_CLASS):
             self.lwDatabases.addItem(db_name)
         self.export_ready_check()
         settings = QgsSettings()
-        point = settings.value("SwedigarchPlugin/dialog_position", None)
+        point = settings.value("SwedigarchGeotools/dialog_position", None)
         if point is not None:
             self.move(point)
 
@@ -234,21 +234,21 @@ class SwedigarchPluginDialog(QtWidgets.QDialog, FORM_CLASS):
         """The close dialog event (QCloseEvent)"""
         point = self.pos()
         settings = QgsSettings()
-        settings.setValue("SwedigarchPlugin/dialog_position", point)
+        settings.setValue("SwedigarchGeotools/dialog_position", point)
 
     def read_settings(self):
         """Read settings"""
         s = QgsSettings()
-        self.host = s.value("SwedigarchPlugin/host", "localhost")
-        self.port = s.value("SwedigarchPlugin/port", 5432)
-        self.user_name = s.value("SwedigarchPlugin/userName", "intrasis")
-        pwd_crypt = s.value("SwedigarchPlugin/password", "")
+        self.host = s.value("SwedigarchGeotools/host", "localhost")
+        self.port = s.value("SwedigarchGeotools/port", 5432)
+        self.user_name = s.value("SwedigarchGeotools/userName", "intrasis")
+        pwd_crypt = s.value("SwedigarchGeotools/password", "")
         self.password = self.decode_text(pwd_crypt)
-        sslmode = s.value("SwedigarchPlugin/sslmode", "prefer")
+        sslmode = s.value("SwedigarchGeotools/sslmode", "prefer")
         if sslmode is None:
             sslmode = "prefer"
         self.sslmode, self.sslmode_text = Utils.parse_sslmode(sslmode)
-        self.export_folder = s.value("SwedigarchPlugin/exportFolder", "")
+        self.export_folder = s.value("SwedigarchGeotools/exportFolder", "")
         self.lineEditExportDirectory.setText(self.export_folder)
 
     def on_select_connection(self):
@@ -291,12 +291,12 @@ class SwedigarchPluginDialog(QtWidgets.QDialog, FORM_CLASS):
             self.sslmode = con_dlg.sslmode
             self.sslmode_text = con_dlg.sslmode_text
             s = QgsSettings()
-            s.setValue("SwedigarchPlugin/host", self.host)
-            s.setValue("SwedigarchPlugin/port", self.port)
-            s.setValue("SwedigarchPlugin/userName", self.user_name)
+            s.setValue("SwedigarchGeotools/host", self.host)
+            s.setValue("SwedigarchGeotools/port", self.port)
+            s.setValue("SwedigarchGeotools/userName", self.user_name)
             pwd_crypt = self.encode_text(self.password)
-            s.setValue("SwedigarchPlugin/password", pwd_crypt)
-            s.setValue("SwedigarchPlugin/sslmode", self.sslmode)
+            s.setValue("SwedigarchGeotools/password", pwd_crypt)
+            s.setValue("SwedigarchGeotools/sslmode", self.sslmode)
 
             #Use values from dialog to connect and get db names
             conn_string = f"dbname='postgres' host={self.host} user={self.user_name} password={self.password} port={self.port}"
@@ -383,7 +383,7 @@ class SwedigarchPluginDialog(QtWidgets.QDialog, FORM_CLASS):
         if QDir(export_folder).exists():
             self.lineEditExportDirectory.setText(export_folder)
             settings = QgsSettings()
-            settings.setValue("SwedigarchPlugin/exportFolder", export_folder)
+            settings.setValue("SwedigarchGeotools/exportFolder", export_folder)
             self.export_folder = export_folder
             print(f"exportFolder: {export_folder}")
         self.export_ready_check()

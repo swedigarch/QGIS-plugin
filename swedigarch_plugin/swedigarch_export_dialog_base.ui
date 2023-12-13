@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>SwedigarchPluginDialogBase</class>
- <widget class="QDialog" name="SwedigarchPluginDialogBase">
+ <class>SwedigarchExportDialogBase</class>
+ <widget class="QDialog" name="SwedigarchExportDialogBase">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -425,7 +425,7 @@ Otherwice the GeoPackage will not be exported.</string>
   <connection>
    <sender>button_box</sender>
    <signal>accepted()</signal>
-   <receiver>SwedigarchPluginDialogBase</receiver>
+   <receiver>SwedigarchExportDialogBase</receiver>
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -441,7 +441,7 @@ Otherwice the GeoPackage will not be exported.</string>
   <connection>
    <sender>button_box</sender>
    <signal>rejected()</signal>
-   <receiver>SwedigarchPluginDialogBase</receiver>
+   <receiver>SwedigarchExportDialogBase</receiver>
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">

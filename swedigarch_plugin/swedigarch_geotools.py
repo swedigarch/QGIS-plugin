@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 /***************************************************************************
- Swedigarch plugin is a tool for field archaeologist to transform their
+ Swedigarch Geotools is a tool for field archaeologist to transform their
  data from proprietary to open format.
 
  Copyright (C) 2023 Swedigarch
@@ -41,7 +41,7 @@ from PyQt5.QtWidgets import QFileDialog
 from qgis.utils import iface
 from qgis.core import QgsSettings
 from osgeo import ogr
-from .swedigarch_export_dialog import SwedigarchPluginDialog
+from .swedigarch_export_dialog import SwedigarchExportDialog
 from .intrasis_analysis_browse_relations import IntrasisAnalysisBrowseRelationsDialog
 from .intrasis_analysis_browse_tables import IntrasisAnalysisBrowseTablesDialog
 from .select_geo_package_dalog import SelectGeoPackageDialog
@@ -50,7 +50,7 @@ from .resources import * # This row is needed for the ToolBar button to get its 
 from . import utils as Utils
 from .constant import RetCode
 
-class SwedigarchPlugin:
+class SwedigarchGeotools:
     """QGIS Plugin Implementation."""
 
     def __init__(self, iface):
@@ -89,13 +89,13 @@ class SwedigarchPlugin:
         # Declare instance attributes
         self.actions = []
         self.menu = iface.pluginMenu().addMenu(
-            QIcon(":/plugins/swedigarch_plugin/assets/svedigark.svg"), self.tr("&Swedigarch Plugin")
+            QIcon(":/plugins/swedigarch_plugin/assets/svedigark.svg"), self.tr("&Swedigarch Geotools")
         )
         self.menu.setObjectName("swedigarch_plugin_menu")
 
-        #self.menu = self.tr('&Swedigarch Plugin')
-        self.toolbar = self.iface.addToolBar('Swedigarch Plugin')
-        self.toolbar.setObjectName('Swedigarch Plugin')
+        #self.menu = self.tr('&Swedigarch Geotools')
+        self.toolbar = self.iface.addToolBar('Swedigarch Geotools')
+        self.toolbar.setObjectName('Swedigarch Geotools')
 
         # Check if plugin was started the first time in current QGIS session
         # Must be set in initGui() to survive plugin reloads
@@ -110,7 +110,7 @@ class SwedigarchPlugin:
     def tr(self, message:str) -> str:
         """Get the translation for a string using Qt translation API."""
         # noinspection PyTypeChecker,PyArgumentList,PyCallByClass
-        return QCoreApplication.translate('SwedigarchPlugin', message)
+        return QCoreApplication.translate('SwedigarchGeotools', message)
 
     def add_action(
         self,
@@ -219,7 +219,7 @@ class SwedigarchPlugin:
         """Removes the plugin menu item and icon from QGIS GUI."""
         for action in self.actions:
             self.iface.removePluginMenu(
-                self.tr('&Swedigarch Plugin'),
+                self.tr('&Swedigarch Geotools'),
                 action)
             self.iface.removeToolBarIcon(action)
 
@@ -231,7 +231,7 @@ class SwedigarchPlugin:
         if self.first_start == True:
             self.first_start_browse_relations = True
             self.first_start = False
-            self.dlg = SwedigarchPluginDialog()
+            self.dlg = SwedigarchExportDialog()
         else:
             self.dlg.activateWindow()
 
@@ -336,9 +336,9 @@ class SwedigarchPlugin:
         QMessageBox.about(
             bogus,
             self.tr("About {0}").format(name),
-            f'Swedigarch plugin version {version}, Copyright (C) 2023 Swedigarch<br>'
-            'Swedigarch plugin comes with ABSOLUTELY NO WARRANTY<br>'
-            'Swedigarch plugin is free software, and you are welcome to redistribute it<br>'
+            f'Swedigarch Geotools version {version}, Copyright (C) 2023 Swedigarch<br>'
+            'Swedigarch Geotools comes with ABSOLUTELY NO WARRANTY<br>'
+            'Swedigarch Geotools is free software, and you are welcome to redistribute it<br>'
             ' under certain conditions.<br><br>'
             f'<b>Version</b> {version}<br>'
             f'<b>{self.tr("Source code")}</b> : <a href={repository}>{repository}</a><br>'

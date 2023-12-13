@@ -214,7 +214,7 @@ class IntrasisAnalysisBrowseRelationsDialog(QtWidgets.QDialog, FORM_CLASS):
         super(IntrasisAnalysisBrowseRelationsDialog, self).showEvent(event)
         
         settings = QgsSettings()
-        point = settings.value("SwedigarchPlugin/dialog_position", None)
+        point = settings.value("SwedigarchGeotools/dialog_position", None)
         if point is not None:
             self.move(point)
 
@@ -226,7 +226,7 @@ class IntrasisAnalysisBrowseRelationsDialog(QtWidgets.QDialog, FORM_CLASS):
         """The close dialog event (QCloseEvent)"""
         point = self.pos()
         settings = QgsSettings()
-        settings.setValue("SwedigarchPlugin/dialog_position", point)
+        settings.setValue("SwedigarchGeotools/dialog_position", point)
 
     def init_data_and_gui(self):
         """Intialize the gui with loaded 'self.selected_features'"""

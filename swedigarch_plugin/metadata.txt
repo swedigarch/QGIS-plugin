@@ -3,9 +3,9 @@
 # This file should be included when you package your plugin.# Mandatory items:
 
 [general]
-name=Swedigarch Plugin
+name=Swedigarch Geotools
 qgisMinimumVersion=3.28
-description=Swedigarch Plugin
+description=Swedigarch Geotools
 version=1.0
 author=Uppsala University, Sweco AB
 email=swedigarch@uu.se

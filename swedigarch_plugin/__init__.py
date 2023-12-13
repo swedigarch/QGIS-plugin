@@ -26,14 +26,14 @@
 ***************************************************************************/
 """
 
-from .swedigarch_export import SwedigarchPlugin
+from .swedigarch_geotools import SwedigarchGeotools
 
 # noinspection PyPep8Naming
 def classFactory(iface):  # pylint: disable=invalid-name
-    """Load SwedigarchPlugin class from file swedigarch_export.py.
+    """Load SwedigarchGeotools class from file swedigarch_geotools.py.
 
     :param iface: A QGIS interface instance.
     :type iface: QgsInterface
     """
     #
-    return SwedigarchPlugin(iface)
+    return SwedigarchGeotools(iface)

@@ -33,8 +33,8 @@
     <name>ConnectToDbDialogBase</name>
     <message>
         <location filename="../connect_to_db_dialog_base.ui" line="14"/>
-        <source>Swedigarch Plugin</source>
-        <translation type="obsolete">Swedigarch Plugin</translation>
+        <source>Swedigarch Geotools</source>
+        <translation type="obsolete">Swedigarch Geotools</translation>
     </message>
     <message>
         <location filename="../connect_to_db_dialog_base.ui" line="54"/>
@@ -639,90 +639,90 @@ select which to analyze.</translation>
     </message>
 </context>
 <context>
-    <name>SwedigarchPlugin</name>
+    <name>SwedigarchGeotools</name>
     <message>
-        <location filename="../swedigarch_export.py" line="218"/>
-        <source>&amp;Swedigarch Plugin</source>
-        <translation>&amp;Swedigarch Plugin</translation>
+        <location filename="../swedigarch_geotools.py" line="218"/>
+        <source>&amp;Swedigarch Geotools</source>
+        <translation>&amp;Swedigarch Geotools</translation>
     </message>
     <message>
-        <location filename="../swedigarch_export.py" line="181"/>
-        <source>Swedigarch Plugin</source>
-        <translation type="obsolete">Swedigarch Plugin</translation>
+        <location filename="../swedigarch_geotools.py" line="181"/>
+        <source>Swedigarch Geotools</source>
+        <translation type="obsolete">Swedigarch Geotools</translation>
     </message>
     <message>
-        <location filename="../swedigarch_export.py" line="197"/>
+        <location filename="../swedigarch_geotools.py" line="197"/>
         <source>Intrasis Relationship Browser</source>
         <translation>Intrasis Relationship Browser</translation>
     </message>
     <message>
-        <location filename="../swedigarch_export.py" line="190"/>
+        <location filename="../swedigarch_geotools.py" line="190"/>
         <source>Intrasis Class/Subclass Browser</source>
         <translation>Intrasis Class/Subclass Browser</translation>
     </message>
     <message>
-        <location filename="../swedigarch_export.py" line="202"/>
+        <location filename="../swedigarch_geotools.py" line="202"/>
         <source>Intrasis GeoPackage CSV-Export</source>
         <translation type="obsolete">Intrasis GeoPackage CSV-Export</translation>
     </message>
     <message>
-        <location filename="../swedigarch_export.py" line="381"/>
+        <location filename="../swedigarch_geotools.py" line="381"/>
         <source>Select GeoPackage to export as zipped CSV files</source>
         <translation>Select GeoPackage to export as zipped CSV files</translation>
     </message>
     <message>
-        <location filename="../swedigarch_export.py" line="358"/>
+        <location filename="../swedigarch_geotools.py" line="358"/>
         <source>GeoPackge (*.gpkg);;All files (*.*)</source>
         <translation>GeoPackge (*.gpkg);;All files (*.*)</translation>
     </message>
     <message>
-        <location filename="../swedigarch_export.py" line="404"/>
+        <location filename="../swedigarch_geotools.py" line="404"/>
         <source>exported to CSV files in file {output_filename}</source>
         <translation>exported to CSV files in file {output_filename}</translation>
     </message>
     <message>
-        <location filename="../swedigarch_export.py" line="405"/>
+        <location filename="../swedigarch_geotools.py" line="405"/>
         <source>CSV Export done!</source>
         <translation>CSV Export done!</translation>
     </message>
     <message>
-        <location filename="../swedigarch_export.py" line="407"/>
+        <location filename="../swedigarch_geotools.py" line="407"/>
         <source>CSV Export Error</source>
         <translation>CSV Export Error</translation>
     </message>
     <message>
-        <location filename="../swedigarch_export.py" line="408"/>
+        <location filename="../swedigarch_geotools.py" line="408"/>
         <source>Error in CSV export: </source>
         <translation>Error in CSV export: </translation>
     </message>
     <message>
-        <location filename="../swedigarch_export.py" line="387"/>
+        <location filename="../swedigarch_geotools.py" line="387"/>
         <source>No Intrasis GeoPackage</source>
         <translation>No Intrasis GeoPackage</translation>
     </message>
     <message>
-        <location filename="../swedigarch_export.py" line="388"/>
+        <location filename="../swedigarch_geotools.py" line="388"/>
         <source>No intrasis geopackage(s) loaded</source>
         <translation>No intrasis geopackage(s) loaded</translation>
     </message>
     <message>
-        <location filename="../swedigarch_export.py" line="183"/>
+        <location filename="../swedigarch_geotools.py" line="183"/>
         <source>Intrasis DB Manager</source>
         <translation>Intrasis DB Manager</translation>
     </message>
     <message>
-        <location filename="../swedigarch_export.py" line="203"/>
+        <location filename="../swedigarch_geotools.py" line="203"/>
         <source>About</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../swedigarch_export.py" line="333"/>
+        <location filename="../swedigarch_geotools.py" line="333"/>
         <source>About {0}</source>
         <translation></translation>
     </message>
 </context>
 <context>
-    <name>SwedigarchPluginDialog</name>
+    <name>SwedigarchExportDialog</name>
     <message>
         <location filename="../swedigarch_export_dialog.py" line="78"/>
         <source>Run export</source>
@@ -852,11 +852,11 @@ Otherwice the GeoPackage will not be exported.</translation>
     </message>
 </context>
 <context>
-    <name>SwedigarchPluginDialogBase</name>
+    <name>SwedigarchExportDialogBase</name>
     <message>
         <location filename="../swedigarch_export_dialog_base.ui" line="14"/>
-        <source>Swedigarch Plugin</source>
-        <translation type="obsolete">Swedigarch Plugin</translation>
+        <source>Swedigarch Geotools</source>
+        <translation type="obsolete">Swedigarch PluGeotoolsgin</translation>
     </message>
     <message>
         <location filename="../swedigarch_export_dialog_base.ui" line="31"/>
