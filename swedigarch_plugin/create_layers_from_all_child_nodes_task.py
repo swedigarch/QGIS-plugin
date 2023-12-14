@@ -1,6 +1,6 @@
 """
 /***************************************************************************
- Swedigarch plugin is a tool for field archaeologist to transform their
+ Swedigarch Geotools is a tool for field archaeologist to transform their
  data from proprietary to open format.
 
  Copyright (C) 2023 Swedigarch
