@@ -19,68 +19,81 @@
                                                                             └────────────┘
 																			
 																			
+This file describes the data structure to be able to recreate the database that the csv files represent. 
+The diagram above describes the tables and the SQL code can be used to set up the database. 
+Depending on the database manager you are using, the code may need to be adjusted. 
+This SQL code is tested in PostgreSQL as well as SQLite. The constraints at the end of the code do not 
+work in SQLite and are not needed to recreate the database, but can give an overview of 
+how the relationships between the tables look.																	
 																			
-																			
+
+
+CREATE TABLE "objects" (
+  "IntrasisId" INTEGER,
+  "object_id" INTEGER PRIMARY KEY NOT NULL,
+  "Name" TEXT,
+  "Class" TEXT,
+  "SubClass" TEXT,
+  "Color" INTEGER,
+  "geometry_count" INTEGER,
+  "attributes" TEXT
+  );
+  
+
+CREATE TABLE "features" ( 
+	"IntrasisId" INTEGER,
+	"object_id" INTEGER,
+	"Name" TEXT,
+	"Class" TEXT,
+	"SubClass" TEXT,
+	"SymbolId" INTEGER, 
+	"GeoObjectId" INTEGER PRIMARY KEY NOT NULL, 
+	"spatial_type" TEXT,
+	"geom" TEXT
+	);
+
+Relationships from the table features
+/*
+features.object_id - M:1 - objects.object_id
+*/
+
 CREATE TABLE "attributes" ( 
-	"attribute_id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, 
+	"attribute_id" INTEGER PRIMARY KEY  NOT NULL, 
 	"object_id" INTEGER, 
 	"attribute_label" TEXT, 
 	"attribute_value" TEXT, 
 	"attribute_unit" TEXT, 
 	"class" INTEGER, 
-	"data_type" TEXT)
+	"data_type" TEXT
+	);
+	
+
+CREATE TABLE "attribute_relations" ( 
+    "id" INTEGER PRIMARY KEY  NOT NULL,
+	"related_id" INTEGER,
+    "base_id" INTEGER
+	);
 /*
-base_id ->objects.object_id
-related_id -> attributes.attribute_id
+Relationships from the table attribute_relations
+attribute_relations.base_id - M:1 - objects.object_id
+attribute_relations.related_id - 1:1 - attributes.attribute_id
 */
 
-CREATE TABLE "attributes" ( 
-	"attribute_id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, 
-	"object_id" INTEGER, 
-	"attribute_label" TEXT, 
-	"attribute_value" TEXT, 
-	"attribute_unit" TEXT
-)
-
-CREATE TABLE "features" ( 
-	"fid" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, 
-	"geom" MULTILINESTRING, 
-	"object_id" MEDIUMINT, 
-	"SymbolId" MEDIUMINT, 
-	"GeoObjectId" MEDIUMINT, 
-	"spatial_type" TEXT
-)
-/*
-object_id ->objects.object_id
-*/
 CREATE TABLE object_relations (
-    "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-    "base_id" MEDIUMINT,
-    "related_id" MEDIUMINT,
-    "base_text" TEXT(30),
-    "related_text" TEXT(30)
-)
+    "id" INTEGER PRIMARY KEY  NOT NULL,
+    "base_id" INTEGER,
+    "related_id" INTEGER,
+    "base_text" TEXT,
+    "related_text" TEXT
+);
 /*
-base_id ->objects.object_id
-related_id ->objects.object_id
+Relationships from the table object_relations
+object_relations.base_id - M:1 - objects.object_id
+object_relations.related_id - M:1 - objects.object_id
 */
 
-CREATE TABLE "objects" (
-  "object_id" INTEGER PRIMARY KEY AUTOINCREMENT,
-  "IntrasisId" INTEGER,
-  "Name" TEXT,
-  "Class" TEXT,
-  "SubClass" TEXT,
-  "Color" INTEGER,
-  "attributes" TEXT
-)
 
-/* Attributes in project_information can vary, check the file project_information.csv
-for the correct list of attributes. */
 CREATE TABLE "project_information" ( 
-	"fid" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, 
-	"geom" MULTILINESTRING, 
-	"pk" MEDIUMINT, 
 	"SiteId" TEXT, 
 	"Plats" TEXT, 
 	"Lst Dnr" TEXT, 
@@ -93,5 +106,37 @@ CREATE TABLE "project_information" (
 	"Exploateringstyp" TEXT, 
 	"Undersökningstyp" TEXT, 
 	"Slutdatum" TEXT, 
-	"Beskrivning" TEXT
-)
+	"Beskrivning" TEXT,
+	"geom" TEXT
+);
+
+/*Optional CONSTRAINT */
+ALTER TABLE IF EXISTS "features"
+    ADD CONSTRAINT fk_object_features FOREIGN KEY ("object_id")
+    REFERENCES "objects" ("object_id") MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE NO ACTION;
+	
+ALTER TABLE IF EXISTS "attribute_relations"
+    ADD CONSTRAINT fk_object_attributes FOREIGN KEY ("related_id")
+    REFERENCES "objects" ("object_id") MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE NO ACTION;
+	
+ALTER TABLE IF EXISTS "attribute_relations"
+    ADD CONSTRAINT fk_attributes_attribute_relations FOREIGN KEY ("related_id")
+    REFERENCES "attributes" ("attribute_id") MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE NO ACTION;
+	
+ALTER TABLE IF EXISTS "object_relations"
+    ADD CONSTRAINT fk_object_base FOREIGN KEY ("base_id")
+    REFERENCES "objects" ("object_id") MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE NO ACTION;
+	
+ALTER TABLE IF EXISTS "object_relations"
+    ADD CONSTRAINT fk_object_related FOREIGN KEY ("related_id")
+    REFERENCES "objects" ("object_id") MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE NO ACTION;
