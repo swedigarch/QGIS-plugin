@@ -6,7 +6,7 @@
 name=Swedigarch Geotools
 qgisMinimumVersion=3.28
 description=Swedigarch Geotools
-version=1.0
+version=1.01
 author=Uppsala University, Sweco AB
 email=swedigarch@uu.se
 
