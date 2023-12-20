@@ -18,14 +18,14 @@
                                                                └────────────┤ features   │
                                                                             └────────────┘
 																			
-																			
-This file describes the data structure to be able to recreate the database that the csv files represent. 
-The diagram above describes the tables and the SQL code can be used to set up the database. 
+																																																					
+
+This file describes the data structure needed to be able to recreate the database that the CSV files represent. 
+The diagram above describes graphically how the tables are related (use font Lucida Console) and the SQL code below can be used to set up the database. 
 Depending on the database manager you are using, the code may need to be adjusted. 
-This SQL code is tested in PostgreSQL as well as SQLite. The constraints at the end of the code do not 
+This SQL code is tested in PostgreSQL and in SQLite. The constraints at the end of the code do not 
 work in SQLite and are not needed to recreate the database, but can give an overview of 
-how the relationships between the tables look.																	
-																			
+how the relationships between the tables look.
 
 
 CREATE TABLE "objects" (

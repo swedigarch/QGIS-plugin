@@ -6,6 +6,9 @@ __pycache__/
 # C extensions
 *.so
 
+#zip-build
+zip_build
+
 # Distribution / packaging
 .Python
 build/
@@ -147,3 +150,6 @@ swedigarch_plugin/intrasis_analysis_browse_relations_dialog_ui.py
 swedigarch_plugin/intrasis_analysis_browse_class_subclass_ui.py
 swedigarch_plugin/rc_resources.py
 swedigarch_plugin/resources_rc.py
+
+#zip-build
+zip_build
