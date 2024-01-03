@@ -69,7 +69,7 @@ def export_geopackage_to_csv(gpkg_file:str) -> tuple[RetCode, str, str]:
         to_delete_files = []
 
         # Create a temporary folder to create the files in before compressing them all to a .zip file
-        with tempfile.TemporaryDirectory() as tmpdirname:
+        with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as tmpdirname:
             # Export feature tables
             for feature in features:
                 output_file = os.path.join(tmpdirname, f"{feature.lower()}.csv")
@@ -103,6 +103,8 @@ def export_geopackage_to_csv(gpkg_file:str) -> tuple[RetCode, str, str]:
                 if QFile(file_name).exists():
                     QFile.remove(file_name)
             shutil.make_archive(output_filename, 'zip', tmpdirname)
+            sleep(0.5)
+
 
         print(f'GeoPackage {gpkg_file} (CSV) exported to {output_filename}.zip')
         return RetCode.EXPORT_OK, None, f'{output_filename}.zip'
