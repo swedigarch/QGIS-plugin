@@ -49,7 +49,7 @@ class WorkerSignals(QObject):
 class ConnectToDbWorker(QRunnable):
     """Connect to DB Worker thread, used to test the connection in the background"""
 
-    def __init__(self, connection_string):
+    def __init__(self, connection_string:str):
         """Constructor"""
         super(ConnectToDbWorker, self).__init__()
         self.connection_string = connection_string

@@ -25,13 +25,13 @@
 ***************************************************************************/
 """
 """export_geopackage_to_csv"""
+from .tempfile import TemporaryDirectory
 import sqlite3
 from contextlib import closing
 import psycopg2
 import pandas as pd
 import os
 import csv
-import tempfile
 import zipfile
 import shutil
 from pathlib import Path
@@ -69,50 +69,51 @@ def export_geopackage_to_csv(gpkg_file:str) -> tuple[RetCode, str, str]:
         to_delete_files = []
 
         # Create a temporary folder to create the files in before compressing them all to a .zip file
-        tmpfolder = tempfile.TemporaryDirectory()
+        tmpfolder = TemporaryDirectory()
         tmpdirname = tmpfolder.name
 
-        # Export feature tables
-        for feature in features:
-            output_file = os.path.join(tmpdirname, f"{feature.lower()}.csv")
-            print(f'exporting layer {feature}')
-            include_fid = feature != 'project_information'
-            print(f'feature: {feature} include_fid: {include_fid}')
-            export_layer_view(gpkg_file, feature, output_file, include_fid)
-            if feature != 'project_information':
-                to_delete_files.append(f"{feature.lower()}.csv")
+        with TemporaryDirectory(ignore_cleanup_errors=True) as tmpdirname:
+            #print(f'tmpdirname: {tmpdirname}')
+            # Export feature tables
+            for feature in features:
+                output_file = os.path.join(tmpdirname, f"{feature.lower()}.csv")
+                print(f'exporting layer {feature}')
+                include_fid = feature != 'project_information'
+                print(f'feature: {feature} include_fid: {include_fid}')
+                export_layer_view(gpkg_file, feature, output_file, include_fid)
+                if feature != 'project_information':
+                    to_delete_files.append(f"{feature.lower()}.csv")
 
-        output_file = os.path.join(tmpdirname, "features.csv")
-        export_features(features, tmpdirname, output_file)
+            output_file = os.path.join(tmpdirname, "features.csv")
+            export_features(features, tmpdirname, output_file)
 
-        with closing(sqlite3.connect(gpkg_file)) as conn:
-            # Export plain tables
-            export_table(conn, 'attributes', tmpdirname)
-            export_table(conn, 'attribute_relations', tmpdirname)
-            export_table(conn, 'objects', tmpdirname)
-            export_table(conn, 'object_relations', tmpdirname)
-            conn.commit()
+            with closing(sqlite3.connect(gpkg_file)) as conn:
+                # Export plain tables
+                export_table(conn, 'attributes', tmpdirname)
+                export_table(conn, 'attribute_relations', tmpdirname)
+                export_table(conn, 'objects', tmpdirname)
+                export_table(conn, 'object_relations', tmpdirname)
+                conn.commit()
 
-        # write documentation.txt
-        csv_doc = Utils.load_resource('csv_documentation.txt')
-        csv_doc_fileame = os.path.join(tmpdirname, "documentation.txt")
-        f = open(csv_doc_fileame, "w", encoding='UTF-8')
-        f.write(csv_doc)
-        f.close()
+            # write documentation.txt
+            csv_doc = Utils.load_resource('csv_documentation.txt')
+            csv_doc_fileame = os.path.join(tmpdirname, "documentation.txt")
+            f = open(csv_doc_fileame, "w", encoding='UTF-8')
+            f.write(csv_doc)
+            f.close()
 
-        for file in to_delete_files:
-            file_name = os.path.join(tmpdirname, file)
-            if QFile(file_name).exists():
-                QFile.remove(file_name)
-        shutil.make_archive(output_filename, 'zip', tmpdirname)
-        sleep(0.5)
+            for file in to_delete_files:
+                file_name = os.path.join(tmpdirname, file)
+                if QFile(file_name).exists():
+                    QFile.remove(file_name)
+            shutil.make_archive(output_filename, 'zip', tmpdirname)
 
-        try:
+        """ try:
             tmpdirname = None
             tmpfolder.cleanup()
             tmpfolder = None
         except Exception:
-            pass
+            pass """
 
         print(f'GeoPackage {gpkg_file} (CSV) exported to {output_filename}.zip')
         return RetCode.EXPORT_OK, None, f'{output_filename}.zip'
@@ -126,6 +127,8 @@ def export_geopackage_to_csv(gpkg_file:str) -> tuple[RetCode, str, str]:
 def export_features(features:[str], tmpdirname:str, output_file:str) -> None:
     """Export all features to combined features CSV"""
     print('Exporting table features')
+
+    csv.field_size_limit(2500000)
     with open(output_file, 'w', encoding='UTF-8', newline='') as file:
         writer = csv.writer(file, delimiter=';', quotechar='"', quoting=csv.QUOTE_NONNUMERIC)
         headers_writen = False
@@ -133,6 +136,7 @@ def export_features(features:[str], tmpdirname:str, output_file:str) -> None:
             if feature == 'project_information':
                 continue
 
+            print(f'export_features() feature: {feature}')
             view_csv_file = os.path.join(tmpdirname, f"{feature.lower()}.csv")
             with open(view_csv_file, 'r', encoding='UTF-8', newline='') as in_csv:
                 csv_reader = csv.reader(in_csv, delimiter=';')
@@ -151,7 +155,11 @@ def export_features(features:[str], tmpdirname:str, output_file:str) -> None:
                         new_row.append(row[3])
                         new_row.append(row[4])
                         new_row.append(row[5])
-                        new_row.append(int(row[6]))
+                        if row[6] is None or row[6] == 'None': # SymbolId is NULL in Intrasis DB
+                            #print(f'row[1]: {row[1]} row[2]: {row[2]}')
+                            new_row.append(-1)
+                        else:
+                            new_row.append(int(row[6]))
                         new_row.append(int(row[7]))
                         new_row.append(row[8])
                         new_row.append(row[9])

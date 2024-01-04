@@ -72,7 +72,7 @@ class ConnectToDbWorker(QRunnable):
         except psycopg2.OperationalError:
             traceback.print_exc()
             exctype, value = sys.exc_info()[:2]
-            print(f"run() {exctype}  {value}")
+            #print(f"run() {exctype}  {value}")
             self.signals.error.emit(value)
         except Exception:
             traceback.print_exc()
