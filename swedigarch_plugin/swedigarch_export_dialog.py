@@ -299,7 +299,7 @@ class SwedigarchExportDialog(QtWidgets.QDialog, FORM_CLASS):
             s.setValue("SwedigarchGeotools/sslmode", self.sslmode)
 
             #Use values from dialog to connect and get db names
-            conn_string = f"dbname='postgres' host={self.host} user={self.user_name} password={self.password} port={self.port}"
+            conn_string = f"dbname='postgres' host={self.host} user={self.user_name} password={self.password} port={self.port} application_name=swedigarch_main"
             conn = psycopg2.connect(conn_string)
             db_result = pd.read_sql("SELECT datname FROM pg_database WHERE datistemplate = false AND datname <> 'postgres' ORDER BY 1", conn)
             lst_items = db_result["datname"]
@@ -354,8 +354,6 @@ class SwedigarchExportDialog(QtWidgets.QDialog, FORM_CLASS):
 
     def on_db_item_double_clicked(self, item:QListWidgetItem):
         """DoubleClicked on a database in the list (top list)"""
-        print(f'item: {item}')
-        print(f'item.type: {type(item)}')
         db_name = item.text()
         self.lwDatabases.takeItem(self.lwDatabases.row(item))
         self.lwSelectedDatabases.addItem(db_name)

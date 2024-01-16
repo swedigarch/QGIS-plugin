@@ -281,18 +281,17 @@ def is_not_blank(input_string):
     #input_string is None OR is empty or blank
     return False
 
-def get_database_srid(connection_string:str, falback_value:int, detailed_print_outs:bool=True) -> tuple[int,str,bool]:
+def get_database_srid(conn:psycopg2.extensions.connection, falback_value:int, detailed_print_outs:bool=True) -> tuple[int,str,bool]:
     """Fetch Coordinate System srid from System object in Intrasis database"""
     try:
         sql = load_resource('sql/select_system_srid.sql')
-        with psycopg2.connect(connection_string) as conn:
-            with conn.cursor() as cursor:
-                cursor.execute(sql)
-                db_value = cursor.fetchone()[0]
-                if db_value is not None:
-                    srid = int(db_value)
-                    if detailed_print_outs:
-                        print(f"srid: {srid}")
+        with conn.cursor() as cursor:
+            cursor.execute(sql)
+            db_value = cursor.fetchone()[0]
+            if db_value is not None:
+                srid = int(db_value)
+                if detailed_print_outs:
+                    print(f"srid: {srid}")
         return srid, None, False
     except psycopg2.errors.InsufficientPrivilege as ipex:
         if detailed_print_outs:
@@ -303,15 +302,14 @@ def get_database_srid(connection_string:str, falback_value:int, detailed_print_o
         print(f"Error in get_database_srid() {ex}")
         return falback_value, None, False
 
-def get_database_site(connection_string:str, detailed_print_outs:bool) -> tuple[Site, str, bool]:
+def get_database_site(conn:psycopg2.extensions.connection, detailed_print_outs:bool) -> tuple[Site, str, bool]:
     """Fetch the site object from the database"""
     sql = load_resource('sql/select_site_object.sql')
     try:
-        with psycopg2.connect(connection_string) as conn:
-            meta_id = get_meta_id(conn, Intrasis.CLASS_SITE_META_ID)
-            sql = sql.replace("__META_ID__", f"{meta_id}")
-            data_frame = pd.read_sql(sql, conn)
-            return Site(conn, data_frame), None, False
+        meta_id = get_meta_id(conn, Intrasis.CLASS_SITE_META_ID)
+        sql = sql.replace("__META_ID__", f"{meta_id}")
+        data_frame = pd.read_sql(sql, conn)
+        return Site(conn, data_frame), None, False
     except psycopg2.errors.InsufficientPrivilege as ipex:
         if detailed_print_outs:
             print(f'InsufficientPrivilege: when trying to fetch site: {str(ipex).rstrip()}')
@@ -349,7 +347,6 @@ def load_attribute_def_for_class(conn:psycopg2.extensions.connection, class_id:i
         else:
             sql =  sql.replace("__", f" IN({class_id}, {sub_class_id})")
         #print(f"sql: {sql}")
-        #conn = psycopg2.connect(connection_string)
         data_frame = pd.read_sql(sql, conn)
         return data_frame['MetaId'].str.cat(sep=', ')
     except Exception as ex:
