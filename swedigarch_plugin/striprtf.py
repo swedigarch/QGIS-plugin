@@ -24,6 +24,7 @@
 		  Uppsala University, Box 626, 751 26 Uppsala, Sweden
 
 ***************************************************************************/
+Taken from: https://github.com/joshy/striprtf/blob/master/striprtf/striprtf.py
 """
 
 import re
@@ -102,6 +103,15 @@ specialchars = {
     "row": "\n",
     "cell": "|",
     "nestcell": "|",
+    "~": "\xa0",
+    "\n":"\n",
+    "\r": "\r",
+    "{": "{",
+    "}": "}",
+    "\\": "\\",
+    "-": "\xad",
+    "_": "\u2011"
+
 }
 
 PATTERN = re.compile(
@@ -110,37 +120,21 @@ PATTERN = re.compile(
 )
 
 HYPERLINKS = re.compile(
-    r"(\{\\field\{\n?\\\*\\fldinst\{.*HYPERLINK\s(\".*\")\}{2}\s?\{.*\s+(.*)\}{2})",
+    r"(\{\\field\{\s*\\\*\\fldinst\{.*HYPERLINK\s(\".*\")\}{2}\s*\{.*?\s+(.*?)\}{2,3})",
     re.IGNORECASE
 )
 
-def _is_hyperlink(match:Match[str]) -> str:
-    """The hyperlink match function"""
-    groups = match.groups()
-    link_text = groups[-1]
-    link_destination = groups[-2]
-    # why this ugly hack? the hyperlink regex can't cope with the regex ending with
-    # either }}} or }}. So we are capturing two and if there is another
-    # one we remove it here
-    if link_text[-1] == "}":
-        g1 = link_text[:-1]
-    else:
-        g1 = link_text
-    return f"{g1}({link_destination})"
 
-
-def _replace_hyperlinks(text:str) -> str:
-    """Regex replacment of hyperlinks"""
-    return re.sub(HYPERLINKS, _is_hyperlink, text)
-
-
-def rtf_to_text(text:str, errors="strict") -> str:
+def rtf_to_text(text, encoding="cp1252", errors="strict"):
     """ Converts the rtf text to plain text.
 
     Parameters
     ----------
     text : str
         The rtf text
+    encoding : str
+        Input encoding which is ignored if the rtf file contains an explicit codepage directive, 
+        as it is typically the case. Defaults to `cp1252` encoding as it the most commonly used.
     errors : str
         How to handle encoding errors. Default is "strict", which throws an error. Another
         option is "ignore" which, as the name says, ignores encoding errors.
@@ -148,18 +142,21 @@ def rtf_to_text(text:str, errors="strict") -> str:
     Returns
     -------
     str
-        the converted rtf text as plain text
+        the converted rtf text as a python unicode string
     """
-    text = _replace_hyperlinks(text)
+    text = re.sub(HYPERLINKS, "\\1(\\2)", text) # captures links like link_text(http://link_dest)
     stack = []
     ignorable = False  # Whether this group (and all inside it) are "ignorable".
     ucskip = 1  # Number of ASCII characters to skip after a unicode character.
     curskip = 0  # Number of ASCII characters left to skip
-    out = b''  # Output buffer.
-    encoding = 'utf8'
+    hexes = None
+    out = ''
 
     for match in PATTERN.finditer(text):
         word, arg, _hex, char, brace, tchar = match.groups()
+        if hexes and not _hex:
+            out += bytes.fromhex(hexes).decode(encoding=encoding, errors=errors)
+            hexes = None
         if brace:
             curskip = 0
             if brace == "{":
@@ -177,23 +174,11 @@ def rtf_to_text(text:str, errors="strict") -> str:
                     ignorable = True
         elif char:  # \x (not a letter)
             curskip = 0
-            if char == "~":
+            if char in specialchars:
                 if not ignorable:
-                    out = out + b"\xA0"  # NBSP
-            elif char in "{}\\":
-                if not ignorable:
-                    if isinstance(out, bytes):
-                        out = out + char.encode(encoding, errors)
-                    else:
-                        out.append(char)
+                   out += specialchars[char]
             elif char == "*":
                 ignorable = True
-            elif char == "\n":
-                if not ignorable:
-                    out = out + b"\x0A"  # LF
-            elif char == "\r":
-                if not ignorable:
-                    out = out + b"\x0D"  # CR
         elif word:  # \foo
             curskip = 0
             if word in destinations:
@@ -204,12 +189,11 @@ def rtf_to_text(text:str, errors="strict") -> str:
                 try:
                     codecs.lookup(encoding)
                 except LookupError:
-                    #print(f"Warning: Encoding {encoding} not found, using utf-8")
                     encoding = "utf8"
             if ignorable:
                 pass
             elif word in specialchars:
-                out = out + specialchars[word].encode(encoding, errors)
+                out += specialchars[word]
             elif word == "uc":
                 ucskip = int(arg)
             elif word == "u":
@@ -220,17 +204,20 @@ def rtf_to_text(text:str, errors="strict") -> str:
                     c = int(arg)
                     if c < 0:
                         c += 0x10000
-                    out = out + chr(c).encode(encoding, errors)
+                    out += chr(c)
                     curskip = ucskip
         elif _hex:  # \'xx
             if curskip > 0:
                 curskip -= 1
             elif not ignorable:
                 c = int(_hex, 16)
-                out = out + bytes.fromhex(_hex)
+                if not hexes:
+                    hexes = _hex
+                else:
+                    hexes += _hex
         elif tchar:
             if curskip > 0:
                 curskip -= 1
             elif not ignorable:
-                out = out + tchar.encode(encoding, errors)
-    return out.decode(encoding, errors).rstrip()
+                out += tchar
+    return out

@@ -69,60 +69,68 @@ def export_geopackage_to_csv(gpkg_file:str) -> tuple[RetCode, str, str]:
         to_delete_files = []
 
         # Create a temporary folder to create the files in before compressing them all to a .zip file
-        tmpfolder = TemporaryDirectory()
+        db_name = os.path.splitext(os.path.basename(gpkg_file))[0]
+        tmpfolder = TemporaryDirectory(prefix=f'{db_name}_', ignore_cleanup_errors=True)
         tmpdirname = tmpfolder.name
+        # Export feature tables
+        for feature in features:
+            output_file = os.path.join(tmpdirname, f"{feature.lower()}.csv")
+            print(f'exporting layer {feature}')
+            include_fid = feature != 'project_information'
+            print(f'feature: {feature} include_fid: {include_fid}')
+            export_layer_view(gpkg_file, feature, output_file, include_fid)
+            if feature != 'project_information':
+                to_delete_files.append(f"{feature.lower()}.csv")
 
-        with TemporaryDirectory(ignore_cleanup_errors=True) as tmpdirname:
-            #print(f'tmpdirname: {tmpdirname}')
-            # Export feature tables
-            for feature in features:
-                output_file = os.path.join(tmpdirname, f"{feature.lower()}.csv")
-                print(f'exporting layer {feature}')
-                include_fid = feature != 'project_information'
-                print(f'feature: {feature} include_fid: {include_fid}')
-                export_layer_view(gpkg_file, feature, output_file, include_fid)
-                if feature != 'project_information':
-                    to_delete_files.append(f"{feature.lower()}.csv")
+        output_file = os.path.join(tmpdirname, "features.csv")
+        export_features(features, tmpdirname, output_file)
 
-            output_file = os.path.join(tmpdirname, "features.csv")
-            export_features(features, tmpdirname, output_file)
+        with closing(sqlite3.connect(gpkg_file)) as conn:
+            # Export plain tables
+            export_table(conn, 'attributes', tmpdirname)
+            export_table(conn, 'attribute_relations', tmpdirname)
+            export_table(conn, 'objects', tmpdirname)
+            export_table(conn, 'object_relations', tmpdirname)
+            conn.commit()
 
-            with closing(sqlite3.connect(gpkg_file)) as conn:
-                # Export plain tables
-                export_table(conn, 'attributes', tmpdirname)
-                export_table(conn, 'attribute_relations', tmpdirname)
-                export_table(conn, 'objects', tmpdirname)
-                export_table(conn, 'object_relations', tmpdirname)
-                conn.commit()
+        # write documentation.txt
+        csv_doc = Utils.load_resource('csv_documentation.txt')
+        csv_doc_fileame = os.path.join(tmpdirname, "documentation.txt")
+        f = open(csv_doc_fileame, "w", encoding='UTF-8')
+        f.write(csv_doc)
+        f.close()
 
-            # write documentation.txt
-            csv_doc = Utils.load_resource('csv_documentation.txt')
-            csv_doc_fileame = os.path.join(tmpdirname, "documentation.txt")
-            f = open(csv_doc_fileame, "w", encoding='UTF-8')
-            f.write(csv_doc)
-            f.close()
+        for file in to_delete_files:
+            file_name = os.path.join(tmpdirname, file)
+            if QFile(file_name).exists():
+                QFile.remove(file_name)
 
-            for file in to_delete_files:
-                file_name = os.path.join(tmpdirname, file)
-                if QFile(file_name).exists():
-                    QFile.remove(file_name)
-            shutil.make_archive(output_filename, 'zip', tmpdirname)
+        archive_file = f'{output_filename}.zip'
+        threadsafe_make_archive(archive_file, tmpdirname)
 
-        """ try:
+        try:
+            #print(f'Cleanup tmpfolder, archive_file: {archive_file} tmpdirname: {tmpdirname}')
             tmpdirname = None
             tmpfolder.cleanup()
             tmpfolder = None
         except Exception:
-            pass """
+            pass
 
-        print(f'GeoPackage {gpkg_file} (CSV) exported to {output_filename}.zip')
+        print(f'GeoPackage {gpkg_file} (CSV) exported to {archive_file}')
         return RetCode.EXPORT_OK, None, f'{output_filename}.zip'
 
     except Exception as err:
         traceback.print_exc()
-        error_msg = f'Exception in export_geopackage_to_csv(): {err}'
+        error_msg = f'Exception in export_geopackage_to_csv({gpkg_file}): {err}'
         print(error_msg)
         return RetCode.UNKNOWN_ERROR, error_msg, None
+
+def threadsafe_make_archive(zip_name: str, path: str):
+    """Thread safe alternative to shutil.make_archive"""
+    with zipfile.ZipFile(zip_name, 'w', zipfile.ZIP_DEFLATED) as zip_file:
+        for root, dirs, files in os.walk(path):
+            for file in files:
+                zip_file.write(os.path.join(root, file), os.path.relpath(os.path.join(root, file), path))
 
 def export_features(features:[str], tmpdirname:str, output_file:str) -> None:
     """Export all features to combined features CSV"""

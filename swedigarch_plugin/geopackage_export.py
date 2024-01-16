@@ -29,6 +29,7 @@ from time import sleep
 from .utils_classes import Site
 import os
 import io
+import gc
 import sqlite3
 from contextlib import closing
 from datetime import datetime
@@ -77,7 +78,7 @@ def export_to_geopackage(host:int, port:int, user_name:str, password:str, databa
                 conn.close() # Clean up and exit
                 return RetCode.TERMINATED_BY_QGIS, export_ok_count
 
-            connection_string = f"dbname={database} host={host} user={user_name} password={password} port={port}"
+            connection_string = f"dbname={database} host={host} user={user_name} password={password} port={port} application_name=swedigarch_export"
             conn = psycopg2.connect(connection_string)
 
             padded_db_name = database.ljust(max_length + 2)
@@ -179,10 +180,9 @@ def export_database(conn:psycopg2.extensions.connection, host:str, port:int, use
 
         gp_conn = None
         #region "Export features, symbology and create layer views"
-        connection_string = f"dbname={database} host={host} user={user_name} password={password} port={port}"
 
         # -1 är default falback_value för srid (-1: undefined Cartesian coordinate reference systems)
-        srid, db_error, rights_error = Utils.get_database_srid(connection_string, -1, detailed_print_outs)
+        srid, db_error, rights_error = Utils.get_database_srid(conn, -1, detailed_print_outs)
         if db_error is not None:
             if detailed_print_outs:
                 print(f'Error exporting database: {database}  Database error: {db_error} in database: {database}')
@@ -192,7 +192,7 @@ def export_database(conn:psycopg2.extensions.connection, host:str, port:int, use
             print(f'export_database() get_database_srid() error: {db_error}')
             return False, db_error, rights_error
 
-        site, db_error, rights_error = Utils.get_database_site(connection_string, detailed_print_outs)
+        site, db_error, rights_error = Utils.get_database_site(conn, detailed_print_outs)
         if db_error is not None:
             callback(None, f'Error exporting database: {database}', f"Database error: {db_error} in database: {database}")
             print(f'export_database() get_database_site() error: {db_error}')
@@ -218,6 +218,7 @@ def export_database(conn:psycopg2.extensions.connection, host:str, port:int, use
         if detailed_print_outs:
             print(f"wkb_types: {wkb_types} Count {len(wkb_types)}")
         layers_done = 0
+
         for wkb_type in wkb_types:
             #print(f"Exporting layer with wkb_type: {wkb_type} Count {len(wkb_types)}")
             layer_name, filter_string, ext = export_postgis_layer_to_gpkg(host, port, user_name, password, database, output_file, wkb_type, srid, combine_layers, callback, detailed_print_outs)
@@ -239,8 +240,10 @@ def export_database(conn:psycopg2.extensions.connection, host:str, port:int, use
 
         export_project_information(host, port, user_name, password, database, site, output_file, srid, callback)
 
+        gc.collect() # To free up QgsVectorLayer and close its connection.
+
         #region "export all objects to objects table"
-        export_objects(connection_string, output_file, callback)
+        export_objects(conn, output_file, callback)
 
         export_utils.if_missing_create_gpkg_extensions(output_file)
 
@@ -248,7 +251,6 @@ def export_database(conn:psycopg2.extensions.connection, host:str, port:int, use
         Utils.execute_sql_in_gpkg(output_file, sql)
         #endregion
 
-        conn = psycopg2.connect(connection_string)
         sb = SymbolBuilder(conn, detailed_print_outs)
         if combine_layers:
             # update geometry type after layer export, to allow QGIS to se the separate layer types in features.
@@ -289,6 +291,8 @@ def export_database(conn:psycopg2.extensions.connection, host:str, port:int, use
         geo_obj_meta_id = Utils.get_meta_id(conn, Intrasis.CLASS_GEOOBJECT_META_ID)
         export_raster_layer_to_gpkg(conn, f"{staf_meta_id}, {geo_obj_meta_id}", output_file, srid, callback)
 
+        gc.collect() # To free up QgsVectorLayer and close its connection.
+
         #region "Export attributes"
         sql = Utils.load_resource('sql/create_attributes_table.sql')
         Utils.execute_sql_in_gpkg(output_file, sql)
@@ -297,7 +301,6 @@ def export_database(conn:psycopg2.extensions.connection, host:str, port:int, use
         attr_steps = layer_export_steps / 2
         sql = Utils.load_resource('sql/select_classes_to_export.sql')
         sql = sql.replace("__EXCLUDE_META_IDS__", f"{staf_meta_id}, {geo_obj_meta_id}")
-        #conn = psycopg2.connect(connection_string)
         data_frame = pd.read_sql(sql, conn)
         cls_count = len(data_frame)
         attr_inc = attr_steps / cls_count
@@ -373,9 +376,8 @@ def export_postgis_layer_to_gpkg(host:str, port:int, user_name:str, password:str
     layer = QgsVectorLayer(uri.uri(), layer_name, 'postgres')
     crs = QgsCoordinateReferenceSystem(f"EPSG:{srid}")
     layer.setCrs(crs)
-    if layer.isValid() is False:
-        if detailed_print_outs:
-            print(f"Layer {layer_name} created isValid: {layer.isValid()}")
+    if layer.isValid() is False and detailed_print_outs:
+        print(f"Layer {layer_name} created isValid: {layer.isValid()}")
 
     metadata = QgsLayerMetadata()
     metadata.setTitle('Intrasis GeoPackage export')
@@ -404,8 +406,15 @@ def export_postgis_layer_to_gpkg(host:str, port:int, user_name:str, password:str
                 options.actionOnExistingFile = QgsVectorFileWriter.CreateOrOverwriteLayer
         #write_result, error_message, new_file, new_layer =
         QgsVectorFileWriter.writeAsVectorFormatV3(layer, output_file, QgsProject.instance().transformContext(), options)
+        extent = QgsRectangle(layer.extent())
+        #print(f'layer.source(): {layer.source()}')
+        layer.disconnect()
+        del layer
+        layer = None
+        del uri
+        uri = None
         #print(f"QgsVectorFileWriter.writeAsVectorFormatV3({output_file}) done  combine_layers: {combine_layers}")
-        return layer_name, filter_string, layer.extent()
+        return layer_name, filter_string, extent
     except Exception as err:
         traceback.print_exc()
         callback(None, "Error in export_postgis_layer_to_gpkg()", err)
@@ -454,7 +463,6 @@ def export_raster_layer_to_gpkg(conn:psycopg2.extensions.connection, meta_ids:st
             fw = None
             pipe = None
             raster_layer = None
-
         for raster in rasters:
             os.remove(raster.temp_file)
             extra_file = f"{raster.temp_file}.aux.xml"
@@ -464,14 +472,13 @@ def export_raster_layer_to_gpkg(conn:psycopg2.extensions.connection, meta_ids:st
         traceback.print_exc()
         callback(None, "Error in export_raster_layer_to_gpkg()", err)
 
-def export_objects(connection_string:str, output_file:str, callback:Callable) -> None:
+def export_objects(conn:psycopg2.extensions.connection, output_file:str, callback:Callable) -> None:
     """Export all objects to objects table, with Staf and GeoObject filtered out"""
     try:
         sql = Utils.load_resource('sql/create_objects_table.sql')
         Utils.execute_sql_in_gpkg(output_file, sql)
         with closing(sqlite3.connect(output_file)) as gp_conn:
             sql = Utils.load_resource('sql/select_objects.sql')
-            conn = psycopg2.connect(connection_string)
             staf_meta_id = Utils.get_meta_id(conn, Intrasis.CLASS_STAFF_META_ID)
             geo_obj_meta_id = Utils.get_meta_id(conn, Intrasis.CLASS_GEOOBJECT_META_ID)
             sql = sql.replace("__EXCLUDE_META_IDS__", f"{staf_meta_id}, {geo_obj_meta_id}")
@@ -482,7 +489,7 @@ def export_objects(connection_string:str, output_file:str, callback:Callable) ->
         traceback.print_exc()
         callback(None, "Error in export_objects()", err)
 
-def export_none_geometry_objects(host:str, port:int, user_name:str, password:str, connection_string:str, database:str, output_file:str, srid:int, callback:Callable) -> tuple[int, int]:
+def export_none_geometry_objects(host:str, port:int, user_name:str, password:str, conn:psycopg2.extensions.connection, database:str, output_file:str, srid:int, callback:Callable) -> tuple[int, int]:
     """export none geometry objects"""
     try:
         uri = QgsDataSourceUri()
@@ -493,7 +500,6 @@ def export_none_geometry_objects(host:str, port:int, user_name:str, password:str
         message = None
         callback(None, message)
         sql = Utils.load_resource('sql/no_geom_layer_query.sql')
-        conn = psycopg2.connect(connection_string)
         staf_meta_id = Utils.get_meta_id(conn, Intrasis.CLASS_STAFF_META_ID)
         geo_obj_meta_id = Utils.get_meta_id(conn, Intrasis.CLASS_GEOOBJECT_META_ID)
         sql = sql.replace("__EXCLUDE_META_IDS__", f"{staf_meta_id}, {geo_obj_meta_id}")
@@ -515,8 +521,12 @@ def export_none_geometry_objects(host:str, port:int, user_name:str, password:str
         options.actionOnExistingFile = QgsVectorFileWriter.AppendToLayerNoNewFields
         write_result, error_message, new_file, new_layer = QgsVectorFileWriter.writeAsVectorFormatV3(layer, output_file, QgsProject.instance().transformContext(), options)
         #print(f"QgsVectorFileWriter.writeAsVectorFormatV3() done  write_result: {write_result}, error_message: {error_message}, new_layer: {new_layer}")
+        layer.disconnect()
+        del layer
+        layer = None
+        del uri
+        uri = None        
         return staf_meta_id, geo_obj_meta_id
-
     except Exception as err:
         traceback.print_exc()
         callback(None, "Error in export_none_geometry_objects()", err)
@@ -563,6 +573,11 @@ def export_project_information(host:str, port:int, user_name:str, password:str, 
         options.layerName = "project_information"
         options.actionOnExistingFile = QgsVectorFileWriter.CreateOrOverwriteLayer
         QgsVectorFileWriter.writeAsVectorFormatV3(layer, output_file, QgsProject.instance().transformContext(), options)
+        layer.disconnect()
+        del layer
+        layer = None
+        del uri
+        uri = None
     except Exception as err:
         traceback.print_exc()
         callback(None, "Error in export_project_information()", err)
