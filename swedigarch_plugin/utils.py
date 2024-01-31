@@ -40,7 +40,7 @@ from contextlib import closing
 from qgis.core import QgsProject, QgsWkbTypes, QgsCoordinateReferenceSystem, QgsDataSourceUri, QgsFeature, QgsMapLayer, QgsVectorLayer, QgsRasterLayer, QgsMapLayerType, QgsGeometry, QgsMessageLog, Qgis, QgsLayerTreeGroup
 from PIL import Image, ImageDraw
 from PyQt5.QtCore import QVariant
-from PyQt5.QtGui import QIcon
+from PyQt5.QtGui import QIcon, QImage, QPixmap
 from .constant import Intrasis
 from .utils_classes import IconType, SymbolException
 from .striprtf import rtf_to_text
@@ -239,10 +239,25 @@ def execute_sql_in_gpkg(gpkg_file:str, sql:str):
         traceback.print_exc()
         print(f"Error in execute_sql_in_gpkg() {ex}  sql: {sql}")
 
+def convert_pil_to_pixmap(image):
+    """Convert PIL Image to QPixmap. Work around to avoid using PIL since since the toqpixmap() has been the source of deprecation warnings and errors in some QGIS versions."""
+    if image.mode == "RGB":
+        r, g, b = image.split()
+        image = Image.merge("RGB", (b, g, r))
+    elif image.mode == "RGBA":
+        r, g, b, a = image.split()
+        image = Image.merge("RGBA", (b, g, r, a))
+    # Convert to raw data
+    data = image.tobytes("raw", image.mode)
+    q_image = QImage(data, image.size[0], image.size[1], QImage.Format_ARGB32 if image.mode == "RGBA" else QImage.Format_RGB888)
+    pixmap = QPixmap.fromImage(q_image)
+    return pixmap
+
 def create_qicon_object(db_color:int, icon_type:'IconType') -> QIcon:
     """Create QIcon from image"""
     img = create_object_color_icon(db_color, icon_type)
-    img_qicon = QIcon(img.toqpixmap())
+    pixmap = convert_pil_to_pixmap(img)
+    img_qicon = QIcon(pixmap)
     return img_qicon
 
 def create_object_color_icon(db_color:int, icon_type:IconType) -> Image:
