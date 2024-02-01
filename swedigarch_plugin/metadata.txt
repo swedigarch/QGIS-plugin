@@ -5,6 +5,7 @@
 [general]
 name=Swedigarch Geotools
 qgisMinimumVersion=3.28
+qgisMaximumVersion=3.34
 description=Swedigarch Geotools
 version=1.2
 author=Uppsala University, Sweco AB
