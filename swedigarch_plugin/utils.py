@@ -39,7 +39,7 @@ from .utils_classes import Site
 from contextlib import closing
 from qgis.core import QgsProject, QgsWkbTypes, QgsCoordinateReferenceSystem, QgsDataSourceUri, QgsFeature, QgsMapLayer, QgsVectorLayer, QgsRasterLayer, QgsMapLayerType, QgsGeometry, QgsMessageLog, Qgis, QgsLayerTreeGroup
 from PIL import Image, ImageDraw
-from PyQt5.QtCore import QVariant
+from PyQt5.QtCore import Qt, QVariant, QRect
 from PyQt5.QtGui import QIcon, QImage, QPixmap
 from .constant import Intrasis
 from .utils_classes import IconType, SymbolException
