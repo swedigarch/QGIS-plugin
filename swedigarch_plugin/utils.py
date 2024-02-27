@@ -39,8 +39,8 @@ from .utils_classes import Site
 from contextlib import closing
 from qgis.core import QgsProject, QgsWkbTypes, QgsCoordinateReferenceSystem, QgsDataSourceUri, QgsFeature, QgsMapLayer, QgsVectorLayer, QgsRasterLayer, QgsMapLayerType, QgsGeometry, QgsMessageLog, Qgis, QgsLayerTreeGroup
 from PIL import Image, ImageDraw
-from PyQt5.QtCore import QVariant
-from PyQt5.QtGui import QIcon, QImage, QPixmap
+from PyQt5.QtCore import Qt, QVariant, QRect
+from PyQt5.QtGui import QIcon, QPainter, QPixmap, QPen, QColor, QBrush
 from .constant import Intrasis
 from .utils_classes import IconType, SymbolException
 from .striprtf import rtf_to_text
@@ -239,28 +239,13 @@ def execute_sql_in_gpkg(gpkg_file:str, sql:str):
         traceback.print_exc()
         print(f"Error in execute_sql_in_gpkg() {ex}  sql: {sql}")
 
-def convert_pil_to_pixmap(image):
-    """Convert PIL Image to QPixmap. Work around to avoid using PIL since since the toqpixmap() has been the source of deprecation warnings and errors in some QGIS versions."""
-    if image.mode == "RGB":
-        r, g, b = image.split()
-        image = Image.merge("RGB", (b, g, r))
-    elif image.mode == "RGBA":
-        r, g, b, a = image.split()
-        image = Image.merge("RGBA", (b, g, r, a))
-    # Convert to raw data
-    data = image.tobytes("raw", image.mode)
-    q_image = QImage(data, image.size[0], image.size[1], QImage.Format_ARGB32 if image.mode == "RGBA" else QImage.Format_RGB888)
-    pixmap = QPixmap.fromImage(q_image)
-    return pixmap
-
 def create_qicon_object(db_color:int, icon_type:'IconType') -> QIcon:
     """Create QIcon from image"""
     img = create_object_color_icon(db_color, icon_type)
-    pixmap = convert_pil_to_pixmap(img)
-    img_qicon = QIcon(pixmap)
+    img_qicon = QIcon(img)
     return img_qicon
 
-def create_object_color_icon(db_color:int, icon_type:IconType) -> Image:
+def create_object_color_icon_old(db_color:int, icon_type:IconType) -> QPixmap:
     """Creates an image with the given object color and image type."""
     try:
         icon = Image.new("RGBA", (16, 16), (255, 255, 255, 0))
@@ -276,10 +261,46 @@ def create_object_color_icon(db_color:int, icon_type:IconType) -> Image:
             draw.rectangle([2, 3, 12, 13], fill=(rgb[0], rgb[1], rgb[2]))
             draw.rectangle([1, 2, 12, 13], fill=None, outline="Black")
 
-        return icon
+        return icon.toqpixmap()
     except Exception as ex:
         traceback.print_exc()
         print(f"Error in create_object_color_image() {ex}")
+        return None
+
+def create_object_color_icon(db_color: int, icon_type: IconType) -> QPixmap:
+    """Creates a QPixmap with the given object color and image type."""
+    try:
+        pixmap = QPixmap(16, 16)
+        pixmap.fill(Qt.transparent)
+        painter = QPainter(pixmap)
+
+        rgb = struct.pack("i", db_color)
+        color = QColor(rgb[0], rgb[1], rgb[2])
+        brush = QBrush(color)
+        pen = QPen(Qt.black)
+        painter.setPen(pen)
+
+        if icon_type == IconType.CIRCLE:
+            painter.setBrush(brush)
+            painter.drawEllipse(3, 3, 9, 9)  # Draw colored circle
+            painter.setBrush(Qt.NoBrush)
+            painter.drawEllipse(3, 3, 9, 9)  # Draw outline
+
+        elif icon_type == IconType.SQUARE:
+            painter.setBrush(Qt.NoBrush)
+            painter.drawRect(2, 3, 11, 11)  # Draw shadow
+            painter.setPen(Qt.NoPen)
+            painter.setBrush(brush)
+            painter.drawRect(2, 3, 11, 11)  # Draw colored square
+            painter.setBrush(Qt.NoBrush)
+            painter.setPen(pen)
+            painter.drawRect(1, 2, 11, 11)  # Draw outline
+
+        painter.end()
+
+        return pixmap
+    except Exception as ex:
+        print(f"Error in create_object_color_icon(): {ex}")
         return None
 
 def is_empty_string_or_none(value:str) -> bool:
