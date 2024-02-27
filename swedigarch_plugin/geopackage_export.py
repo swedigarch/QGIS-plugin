@@ -561,9 +561,18 @@ def export_project_information(host:str, port:int, user_name:str, password:str, 
     crs = QgsCoordinateReferenceSystem(f"EPSG:{srid}")
     layer.setCrs(crs)
     if layer.isValid() is False:
-        print(f"Layer ProjInfo created isValid: {layer.isValid()}")
-        print(f"SQL: {sql}")
-        return
+        sql1 = sql # Save old SQL to log both tested if none worked
+        # Test with older name of fuction ST_Force2D (ST_Force_2D)
+        sql = sql.replace('ST_Force2D', 'ST_Force_2D')
+        uri.setDataSource('','(' + sql + ')','geom','','fid')
+        layer = QgsVectorLayer(uri.uri(), "ProjInfo", 'postgres')
+        layer.setCrs(crs)
+        if layer.isValid() is False:
+            # Still failed, log both tested SQL codes.
+            print(f"Layer ProjInfo created isValid: {layer.isValid()}")
+            print(f"SQL1: {sql1}")
+            print(f"SQL2: {sql}")
+            return
 
     try:
         options = QgsVectorFileWriter.SaveVectorOptions()
