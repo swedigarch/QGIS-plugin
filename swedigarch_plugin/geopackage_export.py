@@ -563,7 +563,7 @@ def export_project_information(host:str, port:int, user_name:str, password:str, 
     if layer.isValid() is False:
         sql1 = sql # Save old SQL to log both tested if none worked
         # Test with older name of fuction ST_Force2D (ST_Force_2D)
-        sql = sql.replace('ST_Force2D', 'ST_Force_2D').replace('ST_GeometricMedian', 'ST_Centroid')
+        sql = sql.replace('ST_Force2D', 'ST_Force_2D').replace('ST_GeometricMedian', 'ST_Centroid').replace('ST_Centroid', 'ST_PointOnSurface')
         uri.setDataSource('','(' + sql + ')','geom','','fid')
         layer = QgsVectorLayer(uri.uri(), "ProjInfo", 'postgres')
         layer.setCrs(crs)
