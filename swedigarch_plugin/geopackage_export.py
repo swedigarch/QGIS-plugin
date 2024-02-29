@@ -561,17 +561,21 @@ def export_project_information(host:str, port:int, user_name:str, password:str, 
     crs = QgsCoordinateReferenceSystem(f"EPSG:{srid}")
     layer.setCrs(crs)
     if layer.isValid() is False:
-        sql1 = sql # Save old SQL to log both tested if none worked
         # Test with older name of fuction ST_Force2D (ST_Force_2D)
         sql = sql.replace('ST_Force2D', 'ST_Force_2D').replace('ST_GeometricMedian', 'ST_Centroid').replace('ST_Centroid', 'ST_PointOnSurface')
         uri.setDataSource('','(' + sql + ')','geom','','fid')
         layer = QgsVectorLayer(uri.uri(), "ProjInfo", 'postgres')
         layer.setCrs(crs)
         if layer.isValid() is False:
-            # Still failed, log both tested SQL codes.
-            print(f"Layer ProjInfo created isValid: {layer.isValid()}")
-            print(f"SQL1: {sql1}")
-            print(f"SQL2: {sql}")
+            # Still failed, then create a table instead of layer
+            sql = Utils.load_resource('sql/create_project_info_table.sql')
+            table_fields = '\"SiteId\" TEXT'
+            for field in fields:
+                table_fields += f', "{field}" TEXT'
+            sql = sql.replace("_FIELDS_", table_fields)
+            Utils.execute_sql_in_gpkg(output_file, sql)
+            sql = f'INSERT INTO project_information SELECT 1, {proj_info};'
+            Utils.execute_sql_in_gpkg(output_file, sql)
             return
 
     try:
