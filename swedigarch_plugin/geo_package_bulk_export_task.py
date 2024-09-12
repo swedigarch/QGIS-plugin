@@ -30,7 +30,6 @@ import os
 import traceback
 import time
 from datetime import datetime
-from msilib.schema import Error
 from .geopackage_export import export_to_geopackage
 from .export_geopackage_to_csv import export_geopackage_to_csv
 from qgis.gui import QgsMessageBar

@@ -32,7 +32,6 @@ from typing import Union
 from enum import Enum
 import psycopg2
 import pandas as pd
-from msilib.schema import Error
 from time import sleep
 from xml.dom import minidom
 from qgis.core import QgsWkbTypes
