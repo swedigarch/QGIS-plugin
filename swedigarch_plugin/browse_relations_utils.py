@@ -23,6 +23,7 @@
 		  Uppsala University, Box 626, 751 26 Uppsala, Sweden
 
 ***************************************************************************/
+
 """
 """Utils functions for BrowseRelations"""
 from typing import Union
