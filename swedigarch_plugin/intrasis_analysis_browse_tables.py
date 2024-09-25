@@ -26,7 +26,6 @@
 ***************************************************************************/
 """
 
-
 import os
 import sqlite3
 import string
@@ -792,14 +791,14 @@ class IntrasisAnalysisBrowseTablesDialog(QtWidgets.QDialog, FORM_CLASS):
         '''Create object that hold attributes of 
         class and subclass as a QGS Task'''
 
-        self.class_subclass_attributes = populateTableFromGpkg(
-            self.tableView_class_browser
-            ,self.comboBox_class.currentText()
-            ,self.comboBox_subclass.currentText()
-            ,self.current_gpkg
-            ,subclass_items_dict = self.subclass_items_dict)
+        #self.class_subclass_attributes = populateTableFromGpkg(
+        #    self.tableView_class_browser
+        #    ,self.comboBox_class.currentText()
+        #    ,self.comboBox_subclass.currentText()
+        #    ,self.current_gpkg
+        #    ,subclass_items_dict = self.subclass_items_dict)
         #Alternative shows statistics of loaded data
-        #self.class_subclass_attributes = populateTableFromGpkg(self.tableView_class_browser_load_stats,self.tableView_class_browser, self.comboBox_class.currentText(), self.comboBox_subclass.currentText(),self.current_gpkg, subclass_items_dict = self.subclass_items_dict)
+        self.class_subclass_attributes = populateTableFromGpkg(self.tableView_class_browser_load_stats,self.tableView_class_browser, self.comboBox_class.currentText(), self.comboBox_subclass.currentText(),self.current_gpkg, subclass_items_dict = self.subclass_items_dict)
 
         self.class_subclass_attributes.populate_table(task)
         self.class_subclass_attributes.update_qtablewidget(task)
@@ -904,13 +903,14 @@ class IntrasisAnalysisBrowseTablesDialog(QtWidgets.QDialog, FORM_CLASS):
 class populateTableFromGpkg:
     """Class representing class subclass attribute table"""
 
-    def __init__(self, tableView, class_item, subclass_item
-                 , selected_gpkg, subclass_items_dict):
-        '''Holds functions and creates Class Subclass object'''
+    #def __init__(self, tableView, class_item, subclass_item
+    #             , selected_gpkg, subclass_items_dict):
+    '''Holds functions and creates Class Subclass object'''
         #Alternative shows statistics of loaded data
-        #def __init__(self, tableViewStat, tableView, class_item, subclass_item, selected_gpkg, subclass_items_dict):
+    def __init__(self, tableViewStat, tableView, class_item, subclass_item, selected_gpkg, subclass_items_dict):
 
         self.tableV = tableView
+        self.tableViewStats = tableViewStat
         self.class_item = class_item
         self.subclass_item = subclass_item
         self.selected_gpkg = selected_gpkg
@@ -1210,7 +1210,7 @@ class populateTableFromGpkg:
         table_data = pd.DataFrame(data={'': []})
         self.tableV.setModel(TableModel(table_data=table_data))
         #Alternative shows statistics of loaded data
-        #self.tableViewStats.setModel(TableModel(table_data=table_data))
+        self.tableViewStats.setModel(TableModel(table_data=table_data))
 
     def update_qtablewidget(self, task:QgsTask) -> pd.DataFrame:
         '''Update class subclass browser with data'''
@@ -1223,21 +1223,22 @@ class populateTableFromGpkg:
         table_data.set_index('object_id')
         self.tableV.setModel(TableModel(table_data=table_data))
 
-        '''
-            #Alternative shows statistics of loaded data
-            object_id_filter = list(table_data['object_id'])
-            object_id_filter = str(object_id_filter).replace('[', '(').replace(']', ')')
 
-            sql_query_string_statistics = 'select count(*) AS \'Total loaded objects\', sum(hasgeometry) AS \'Objects with Geometry\', sum(hasnogeometry) AS \'Objects without Geometry\' from (SELECT o.object_id, f.GeoObjectId, f.spatial_type, CASE WHEN f.object_id IS NOT NULL THEN 1 ELSE 0 END AS hasgeometry, CASE WHEN f.object_id IS NULL THEN 1 ELSE 0 END AS hasnogeometry FROM objects o LEFT JOIN features f ON o.object_id = f.object_id where o.object_id IN '+object_id_filter+')'
-            #print(sql_query_string_statistics)
-            conn = sqlite3.connect(self.selected_gpkg)
-            table_loaded_data_stats = pd.read_sql_query(sql_query_string_statistics, conn)
-            conn.close()
-            #num_loaded_objects = len(table_data.index)
-            #table_loaded_data_stats = pd.DataFrame(data={'Loaded objects': [num_loaded_objects], 'Objects with geometry': [1]})
-            self.tableViewStats.setModel(TableModel(table_data=table_loaded_data_stats))
-            #self.tableV.setModel(TableModel(table_data=self.objects_dataframe))
-        '''
+            #Alternative shows statistics of loaded data
+        object_id_filter = list(table_data['object_id'])
+        object_id_filter = str(object_id_filter).replace('[', '(').replace(']', ')')
+
+        sql_query_string_statistics = 'select count(*) AS \'Total loaded objects\', sum(hasgeometry) AS \'Objects with Geometry\', sum(hasnogeometry) AS \'Objects without Geometry\' from (SELECT o.object_id, f.GeoObjectId, f.spatial_type, CASE WHEN f.object_id IS NOT NULL THEN 1 ELSE 0 END AS hasgeometry, CASE WHEN f.object_id IS NULL THEN 1 ELSE 0 END AS hasnogeometry FROM objects o LEFT JOIN features f ON o.object_id = f.object_id where o.object_id IN '+object_id_filter+')'
+        print(sql_query_string_statistics)
+        conn = sqlite3.connect(self.selected_gpkg)
+        table_loaded_data_stats = pd.read_sql_query(sql_query_string_statistics, conn)
+        conn.close()
+        print(table_loaded_data_stats)
+        #num_loaded_objects = len(table_data.index)
+        #table_loaded_data_stats = pd.DataFrame(data={'Loaded objects': [num_loaded_objects], 'Objects with geometry': [1]})
+        self.tableViewStats.setModel(TableModel(table_data=table_loaded_data_stats))
+        self.tableV.setModel(TableModel(table_data=self.objects_dataframe))
+
         task.setProgress(int(100))
         QgsMessageLog.logMessage(f'Finished: {task.description()} {task.progress()}'.format(),MESSAGE_CATEGORY, Qgis.Info)
         return self.objects_dataframe

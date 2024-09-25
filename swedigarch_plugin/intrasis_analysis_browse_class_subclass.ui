@@ -13,10 +13,6 @@
   <property name="windowTitle">
    <string>Intrasis Analysis Class/Subclass Browser</string>
   </property>
-   <property name="windowIcon">
-   <iconset>
-    <normaloff>assets/svedigark.svg</normaloff>assets/svedigark.svg</iconset>
-  </property>
   <property name="sizeGripEnabled">
    <bool>true</bool>
   </property>
@@ -112,6 +108,16 @@
            </size>
           </property>
          </spacer>
+        </item>
+        <item>
+         <widget class="QTableView" name="tableView_class_browser_load_stats">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+         </widget>
         </item>
         <item>
          <widget class="QDialogButtonBox" name="buttonBox_close_help">
