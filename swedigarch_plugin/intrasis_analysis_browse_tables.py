@@ -26,7 +26,6 @@
 ***************************************************************************/
 """
 
-
 import os
 import sqlite3
 import string
@@ -46,9 +45,12 @@ from PyQt5.QtCore import QVariant ,QAbstractTableModel, QModelIndex, Qt
 import pandas as pd
 import processing
 from . import utils as Utils
+from . import browse_relations_utils as BrowseRelationsUtils
 from .select_geo_package_dalog import SelectGeoPackageDialog
 from .help_dialog import HelpDialog
-
+######################################
+#from . import browse_relations_utils as browse_relations_utils
+######################################
 MESSAGE_CATEGORY = 'Class_Subclass_Browser'
 
 '''This loads your .ui file so that 
@@ -88,6 +90,8 @@ class IntrasisAnalysisBrowseTablesDialog(QtWidgets.QDialog, FORM_CLASS):
                                     ,'Every SubClass':self.tr('All SubClasses')
                                     , 'No SubClass':self.tr('No SubClass')}
         ############################################################
+        self.add_parent_id_to_layer = False
+        ############################################################
         #Pushbutton logics
         self.pushButton_read_to_table.setEnabled(False)
         self.pushButton_export_as_chart.setEnabled(False)
@@ -105,10 +109,19 @@ class IntrasisAnalysisBrowseTablesDialog(QtWidgets.QDialog, FORM_CLASS):
         self.pushButton_load_to_map.clicked.connect(self.load_to_qgis_layer)
         self.buttonBox_close_help.rejected.connect(self.closed)
         self.buttonBox_close_help.helpRequested.connect(self.on_help_clicked)
+        self.checkBoxAddParentId.stateChanged.connect(self.on_state_changed)
 
     def on_help_clicked(self):
         """Show Help dialog"""
         HelpDialog.show_help("ClassSubclassDialog")
+        
+    def on_state_changed(self, state):
+        if state == Qt.Checked:
+            print("Kryssrutan är ikryssad")
+            self.add_parent_id_to_layer = True
+        else:
+            print("Kryssrutan är inte ikryssad")
+            self.add_parent_id_to_layer = False
 
     def showEvent(self, event):
         """DialogShow event, returns selected databases to top list."""
@@ -419,6 +432,17 @@ class IntrasisAnalysisBrowseTablesDialog(QtWidgets.QDialog, FORM_CLASS):
         for col_name in objects_dataframe_colnames:
             field = QgsField(str(col_name), type_map[col_dict[col_name]])
             attribute_fields.append(field)
+        #############################################
+        #lägg till fält för parent_id
+        #print(attribute_fields)
+        if self.add_parent_id_to_layer == True:
+            print("Add parent id")
+            field = QgsField(str("parent_id"), QVariant.String)
+            attribute_fields.append(field)
+        #field = QgsField(str("grandparent_id"), QVariant.String)
+        #attribute_fields.append(field)
+        #print(attribute_fields)
+        #############################################    
         temp_data.addAttributes(attribute_fields)
         temp.updateFields()
         progressbarlength = 100
@@ -432,6 +456,32 @@ class IntrasisAnalysisBrowseTablesDialog(QtWidgets.QDialog, FORM_CLASS):
         # Create concatenated strings of attributes
         str_objects = objects_dataframe.apply(
             lambda x: x.astype(str).tolist(), axis=1).tolist()
+        ######################################################
+        #print(str_objects)
+        #lägg till ett värde i fältet som lades till
+        #for rad in str_objects:
+        #    rad.append("testvärde")
+        #for rad in str_objects:
+        #    rad.append("testvärde2")
+        #print(str_objects)
+        ######################################################
+        #lägg till parents
+        #print(self.current_gpkg)
+        if self.add_parent_id_to_layer == True:
+            for objec in str_objects:
+                #print(objec)
+                #print(type(objec))
+                #print(objec[1])
+                #print(type(objec[1]))
+                a = BrowseRelationsUtils.get_realated_above(self.current_gpkg, int(objec[1]))
+                #print(a)
+                if len(a) > 0:
+                    #print([str(item) for item in a[:,0]])
+                    objec.append(','.join([str(item) for item in a[:,0]]) )
+                if len(a) == 0:
+                    objec.append("No parent_id found")
+                #print(objec)
+        ######################################################
 
         #Create QGS features and set attributes
         i = 1

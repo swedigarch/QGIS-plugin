@@ -13,7 +13,7 @@
   <property name="windowTitle">
    <string>Intrasis Analysis Class/Subclass Browser</string>
   </property>
-   <property name="windowIcon">
+  <property name="windowIcon">
    <iconset>
     <normaloff>assets/svedigark.svg</normaloff>assets/svedigark.svg</iconset>
   </property>
@@ -64,6 +64,13 @@
              </size>
             </property>
            </spacer>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="checkBoxAddParentId">
+            <property name="text">
+             <string>Add Parent ID</string>
+            </property>
+           </widget>
           </item>
           <item>
            <widget class="QPushButton" name="pushButton_load_to_map">
