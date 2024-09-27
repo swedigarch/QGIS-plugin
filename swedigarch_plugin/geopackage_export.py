@@ -46,7 +46,7 @@ from .symbol_builder import SymbolBuilder
 from . import utils as Utils
 from .constant import Intrasis, RetCode, WriterError
 
-def export_to_geopackage(host:int, port:int, user_name:str, password:str, databases:[str], export_folder:str, overwrite:bool, csv:bool, callback:Callable = None, detailed_print_outs:bool = True, log_file:io.TextIOWrapper = None):
+def export_to_geopackage(host:int, port:int, user_name:str, password:str, databases:list[str], export_folder:str, overwrite:bool, csv:bool, callback:Callable = None, detailed_print_outs:bool = True, log_file:io.TextIOWrapper = None):
     """Main GeoPackage export function, also can run CSV export if csv is True"""
     export_ok_count = 0
     if callback is None:

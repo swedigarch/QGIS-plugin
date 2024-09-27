@@ -48,6 +48,7 @@ from .select_connection_dialog import SelectConnectionDialog
 from .export_confirmation_dialog import ExportConfirmationDialog
 from .geo_package_export_task import GeoPackageExportTask
 from .geo_package_bulk_export_task import GeoPackageBulkExportMainTask
+from .select_subclasses_to_filter_dialog import SelectSubClassesToFilterDialog
 
 # This loads your .ui file so that PyQt can populate your plugin with the elements from Qt Designer
 FORM_CLASS, _ = uic.loadUiType(os.path.join(os.path.dirname(__file__), 'swedigarch_export_dialog_base.ui'))
@@ -89,6 +90,8 @@ class SwedigarchExportDialog(QtWidgets.QDialog, FORM_CLASS):
         self.cbOverwriteExistingGeoPackage.setToolTip(self.tr("If the GeoPackage already exist it will be overwritten if checked.\nOtherwice the GeoPackage will not be exported."))
         self.cbExportCSV.setText(self.tr("Export CSV"))
         self.cbExportCSV.setToolTip(self.tr("Should an CSV export also be done for every exported database"))
+        self.cbFilterSubClass.setText(self.tr("Filter by SubClass"))
+        self.cbFilterSubClass.setToolTip(self.tr("Should we filter by Subclass in every exported database"))
 
         self.pbSelectAllDb.setEnabled(False)
         self.lwDatabases.setSortingEnabled(True)
@@ -396,6 +399,13 @@ class SwedigarchExportDialog(QtWidgets.QDialog, FORM_CLASS):
                 msg_box.setStandardButtons(QMessageBox.Ok)
                 msg_box.exec()
             else:
+                if self.cbFilterSubClass.isChecked():
+                    databases = [self.lwSelectedDatabases.item(x).text() for x in range(self.lwSelectedDatabases.count())]
+                    select_sub_classes_dlg = SelectSubClassesToFilterDialog(databases, self.host, self.user_name, self.password, self.port, self.sslmode_text, parent=self)
+                    select_sub_classes_dlg.init_data_and_gui()
+                    if not select_sub_classes_dlg.exec_():
+                        return
+
                 number_of_databases = self.lwSelectedDatabases.count()
                 export_confirmed = False
                 if number_of_databases >= self.bulk_export_threshold:
@@ -404,7 +414,6 @@ class SwedigarchExportDialog(QtWidgets.QDialog, FORM_CLASS):
                     export_confirmed = self.confirm_export_dialog()
                 if export_confirmed:
                     export_folder = self.lineEditExportDirectory.text()
-                    databases = [self.lwSelectedDatabases.item(x).text() for x in range(self.lwSelectedDatabases.count())]
                     print(f"export_to_geopackage(db_count: {len(databases)}  export_folder: {export_folder})")
                     main_export_task = self.create_export_task(databases, export_folder)
                     QgsApplication.taskManager().addTask(main_export_task)
@@ -418,7 +427,7 @@ class SwedigarchExportDialog(QtWidgets.QDialog, FORM_CLASS):
         """Show Help dialog"""
         HelpDialog.show_help("ExportDialog")
 
-    def create_export_task(self, databases:[str], export_folder:str) -> QgsTask:
+    def create_export_task(self, databases:list[str], export_folder:str) -> QgsTask:
         """Create export tasks"""
         bulk_export_mode = len(databases) >= self.bulk_export_threshold
         #bulk_export_mode = False #Bulk mode disabled

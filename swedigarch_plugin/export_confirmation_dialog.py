@@ -42,7 +42,7 @@ FORM_CLASS, _ = uic.loadUiType(os.path.join(
 
 class ExportConfirmationDialog(QtWidgets.QDialog, FORM_CLASS):
     """Init export confirmation dialog"""
-    def __init__(self, databases:[str], parent=None) -> None:
+    def __init__(self, databases:list[str], parent=None) -> None:
         """Constructor."""
         super(ExportConfirmationDialog, self).__init__(parent)
         self.setupUi(self)

@@ -132,7 +132,7 @@ def threadsafe_make_archive(zip_name: str, path: str):
             for file in files:
                 zip_file.write(os.path.join(root, file), os.path.relpath(os.path.join(root, file), path))
 
-def export_features(features:[str], tmpdirname:str, output_file:str) -> None:
+def export_features(features:list[str], tmpdirname:str, output_file:str) -> None:
     """Export all features to combined features CSV"""
     print('Exporting table features')
 
