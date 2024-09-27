@@ -40,7 +40,7 @@ from qgis.core import (
   QgsVectorFileWriter, QgsVectorLayer, QgsField, QgsFeature, QgsProject
 )
 from qgis.PyQt import uic, QtWidgets
-from PyQt5.QtWidgets import QDialogButtonBox, QMessageBox
+from PyQt5.QtWidgets import QDialogButtonBox, QMessageBox, QTableView
 from PyQt5.QtCore import QVariant ,QAbstractTableModel, QModelIndex, Qt
 import pandas as pd
 import processing
@@ -779,6 +779,8 @@ class IntrasisAnalysisBrowseTablesDialog(QtWidgets.QDialog, FORM_CLASS):
                     message_text,
                     MESSAGE_CATEGORY, Qgis.Warning)
             else:
+                print("update stats qtablewidget")
+                self.class_subclass_attributes.update_number_of_rows_qtablewidget()
                 QgsMessageLog.logMessage(f'Completed task: {result["Read Class Subclass Attributes "]}'
                                          ,MESSAGE_CATEGORY,Qgis.Info)
 
@@ -1223,25 +1225,39 @@ class populateTableFromGpkg:
         table_data.set_index('object_id')
         self.tableV.setModel(TableModel(table_data=table_data))
 
-
-            #Alternative shows statistics of loaded data
-        object_id_filter = list(table_data['object_id'])
-        object_id_filter = str(object_id_filter).replace('[', '(').replace(']', ')')
-
-        sql_query_string_statistics = 'select count(*) AS \'Total loaded objects\', sum(hasgeometry) AS \'Objects with Geometry\', sum(hasnogeometry) AS \'Objects without Geometry\' from (SELECT o.object_id, f.GeoObjectId, f.spatial_type, CASE WHEN f.object_id IS NOT NULL THEN 1 ELSE 0 END AS hasgeometry, CASE WHEN f.object_id IS NULL THEN 1 ELSE 0 END AS hasnogeometry FROM objects o LEFT JOIN features f ON o.object_id = f.object_id where o.object_id IN '+object_id_filter+')'
-        print(sql_query_string_statistics)
-        conn = sqlite3.connect(self.selected_gpkg)
-        table_loaded_data_stats = pd.read_sql_query(sql_query_string_statistics, conn)
-        conn.close()
-        print(table_loaded_data_stats)
-        #num_loaded_objects = len(table_data.index)
-        #table_loaded_data_stats = pd.DataFrame(data={'Loaded objects': [num_loaded_objects], 'Objects with geometry': [1]})
-        self.tableViewStats.setModel(TableModel(table_data=table_loaded_data_stats))
-        self.tableV.setModel(TableModel(table_data=self.objects_dataframe))
-
         task.setProgress(int(100))
         QgsMessageLog.logMessage(f'Finished: {task.description()} {task.progress()}'.format(),MESSAGE_CATEGORY, Qgis.Info)
         return self.objects_dataframe
+    
+    def update_number_of_rows_qtablewidget(self):
+        '''Update the QTable widget with number of loaded objects in class subclass browser'''
+        object_id_filter = list(self.objects_dataframe['object_id'])
+        object_id_filter = str(object_id_filter).replace('[', '(').replace(']', ')')
+        
+        sql_query_string_statistics = 'select count(*) AS \'Total loaded objects\', sum(hasgeometry) AS \'Objects with Geometry\', sum(hasnogeometry) AS \'Objects without Geometry\' from (SELECT o.object_id, f.GeoObjectId, f.spatial_type, CASE WHEN f.object_id IS NOT NULL THEN 1 ELSE 0 END AS hasgeometry, CASE WHEN f.object_id IS NULL THEN 1 ELSE 0 END AS hasnogeometry FROM objects o LEFT JOIN features f ON o.object_id = f.object_id where o.object_id IN '+object_id_filter+')'
+        
+        conn = sqlite3.connect(self.selected_gpkg)
+        table_loaded_data_stats = pd.read_sql_query(sql_query_string_statistics, conn)
+        conn.close()
+
+        self.tableViewStats.setModel(TableModel(table_data=table_loaded_data_stats))
+        
+        self.tableViewStats.resizeColumnsToContents()
+        print("adjust_tableview_width")
+        #self.adjust_tableview_width(self.tableViewStats)
+        print("adjust_tableview_width done")
+
+    def adjust_tableview_width(self, tableView):
+        '''Adjust the width of the QTableView to fit the width of all columns'''
+        print(f"adjusting... {tableView}")
+        total_width = 500
+        
+        # for column in range(tableView.model().columnCount()):
+        #     total_width += tableView.columnWidth(column)
+    
+        print(f"total_width {total_width}")
+        tableView.setMinimumWidth(total_width)
+        tableView.setMaximumWidth(total_width)
 
 class TableModel(QAbstractTableModel):
     """Class representing QAbstractTableModel"""
@@ -1256,6 +1272,7 @@ class TableModel(QAbstractTableModel):
 
     def columnCount(self, parent: QModelIndex) -> int:
         """Returns number of columns of data table"""
+        print(f"Column count requested, table_data shape: {self.table_data.shape}")
         return self.table_data.shape[1]
 
     def data(self, index: QModelIndex, role: int = ...) -> typing.Any:
