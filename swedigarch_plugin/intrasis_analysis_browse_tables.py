@@ -40,7 +40,7 @@ from qgis.core import (
   QgsVectorFileWriter, QgsVectorLayer, QgsField, QgsFeature, QgsProject
 )
 from qgis.PyQt import uic, QtWidgets
-from PyQt5.QtWidgets import QDialogButtonBox, QMessageBox, QTableView
+from PyQt5.QtWidgets import QDialogButtonBox, QMessageBox
 from PyQt5.QtCore import QVariant ,QAbstractTableModel, QModelIndex, Qt
 import pandas as pd
 import processing
@@ -806,14 +806,12 @@ class IntrasisAnalysisBrowseTablesDialog(QtWidgets.QDialog, FORM_CLASS):
         '''Create object that hold attributes of 
         class and subclass as a QGS Task'''
 
-        #self.class_subclass_attributes = populateTableFromGpkg(
-        #    self.tableView_class_browser
-        #    ,self.comboBox_class.currentText()
-        #    ,self.comboBox_subclass.currentText()
-        #    ,self.current_gpkg
-        #    ,subclass_items_dict = self.subclass_items_dict)
-        #Alternative shows statistics of loaded data
-        self.class_subclass_attributes = populateTableFromGpkg(self.tableView_class_browser, self.comboBox_class.currentText(), self.comboBox_subclass.currentText(),self.current_gpkg, subclass_items_dict = self.subclass_items_dict, label_num_loaded_objects_info=self.label_num_loaded_objects_info)
+        self.class_subclass_attributes = populateTableFromGpkg(
+           self.tableView_class_browser
+           ,self.comboBox_class.currentText()
+           ,self.comboBox_subclass.currentText()
+           ,self.current_gpkg
+           ,subclass_items_dict = self.subclass_items_dict)
 
         self.class_subclass_attributes.populate_table(task)
         self.class_subclass_attributes.update_qtablewidget(task)
@@ -918,12 +916,9 @@ class IntrasisAnalysisBrowseTablesDialog(QtWidgets.QDialog, FORM_CLASS):
 class populateTableFromGpkg:
     """Class representing class subclass attribute table"""
 
-    #def __init__(self, tableView, class_item, subclass_item
-    #             , selected_gpkg, subclass_items_dict):
-    '''Holds functions and creates Class Subclass object'''
-        #Alternative shows statistics of loaded data
-    def __init__(self, tableView, class_item, subclass_item, selected_gpkg, subclass_items_dict, label_num_loaded_objects_info):
-
+    def __init__(self, tableView, class_item, subclass_item
+                , selected_gpkg, subclass_items_dict):
+        '''Holds functions and creates Class Subclass object'''
         self.tableV = tableView
         self.class_item = class_item
         self.subclass_item = subclass_item
@@ -935,7 +930,6 @@ class populateTableFromGpkg:
         self.nRows = None
         self.nCols = None
         self.temp_layername = None
-        self.label_num_loaded_objects_info = label_num_loaded_objects_info
 
     def populate_table(self,task:QgsTask) -> None:
         '''Reads and arranges data to be viewed in
