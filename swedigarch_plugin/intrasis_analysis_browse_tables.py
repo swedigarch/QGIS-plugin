@@ -796,12 +796,9 @@ class IntrasisAnalysisBrowseTablesDialog(QtWidgets.QDialog, FORM_CLASS):
         objects_without_geometry = loaded_rows_info_data_frame['Objects without Geometry'].iloc[0]
         
         rows_string = self.tr("rows") if total_objects > 1 else self.tr("row")
-        label_text = self.tr("{total_objects} {rows_string} ({objects_with_geometry} with geometry, {objects_without_geometry} without geometry)").format(
-            total_objects=total_objects,
-            rows_string=rows_string,
-            objects_with_geometry=objects_with_geometry,
-            objects_without_geometry=objects_without_geometry
-        )
+        with_geometry_string = self.tr("with geometry")
+        without_geometry_string = self.tr("without geometry")
+        label_text = f"{total_objects} {rows_string} ({objects_with_geometry} {with_geometry_string}, {objects_without_geometry} {without_geometry_string})"
 
         self.label_num_loaded_objects_info.setText(label_text)
         
@@ -1256,14 +1253,6 @@ class populateTableFromGpkg:
         conn.close()
 
         return table_loaded_data_stats
-            
-    def update_labels(self, data_table):
-        total_objects = data_table['Total loaded objects'].iloc[0]
-        objects_with_geometry = data_table['Objects with Geometry'].iloc[0]
-        objects_without_geometry = data_table['Objects without Geometry'].iloc[0]
-        
-        rows_string = "rows" if total_objects > 1 else "row"
-        self.label_num_loaded_objects_info.setText(f"{total_objects} {rows_string} ({objects_with_geometry} with geometry, {objects_without_geometry} without geometry)")
 
 class TableModel(QAbstractTableModel):
     """Class representing QAbstractTableModel"""
