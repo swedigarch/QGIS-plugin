@@ -780,7 +780,7 @@ class IntrasisAnalysisBrowseTablesDialog(QtWidgets.QDialog, FORM_CLASS):
                     message_text,
                     MESSAGE_CATEGORY, Qgis.Warning)
             else:
-                self.class_subclass_attributes.update_number_of_rows_qtablewidget()
+                self.update_number_of_rows_label(self.class_subclass_attributes.get_loaded_rows_info_data_frame())
                 QgsMessageLog.logMessage(f'Completed task: {result["Read Class Subclass Attributes "]}'
                                          ,MESSAGE_CATEGORY,Qgis.Info)
 
@@ -789,6 +789,22 @@ class IntrasisAnalysisBrowseTablesDialog(QtWidgets.QDialog, FORM_CLASS):
                                  ,MESSAGE_CATEGORY, Qgis.Critical)
             raise exception
 
+    def update_number_of_rows_label(self, loaded_rows_info_data_frame:pd.DataFrame) -> None:
+        '''Update the QTable widget with number of loaded objects in class subclass browser'''
+        total_objects = loaded_rows_info_data_frame['Total loaded objects'].iloc[0]
+        objects_with_geometry = loaded_rows_info_data_frame['Objects with Geometry'].iloc[0]
+        objects_without_geometry = loaded_rows_info_data_frame['Objects without Geometry'].iloc[0]
+        
+        rows_string = self.tr("rows") if total_objects > 1 else self.tr("row")
+        label_text = self.tr("{total_objects} {rows_string} ({objects_with_geometry} with geometry, {objects_without_geometry} without geometry)").format(
+            total_objects=total_objects,
+            rows_string=rows_string,
+            objects_with_geometry=objects_with_geometry,
+            objects_without_geometry=objects_without_geometry
+        )
+
+        self.label_num_loaded_objects_info.setText(label_text)
+        
     def read_class_subclass_attributes(self, task:QgsTask) -> dict:
         '''Create object that hold attributes of 
         class and subclass as a QGS Task'''
@@ -1227,7 +1243,7 @@ class populateTableFromGpkg:
         QgsMessageLog.logMessage(f'Finished: {task.description()} {task.progress()}'.format(),MESSAGE_CATEGORY, Qgis.Info)
         return self.objects_dataframe
     
-    def update_number_of_rows_qtablewidget(self):
+    def get_loaded_rows_info_data_frame(self):
         '''Update the QTable widget with number of loaded objects in class subclass browser'''
         object_id_filter = list(self.objects_dataframe['object_id'])
         print(object_id_filter)
@@ -1239,7 +1255,7 @@ class populateTableFromGpkg:
         table_loaded_data_stats = pd.read_sql_query(sql_query_string_statistics, conn)
         conn.close()
 
-        self.update_labels(table_loaded_data_stats)
+        return table_loaded_data_stats
             
     def update_labels(self, data_table):
         total_objects = data_table['Total loaded objects'].iloc[0]
