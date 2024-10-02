@@ -1242,14 +1242,13 @@ class populateTableFromGpkg:
     
     def get_loaded_rows_info_data_frame(self):
         '''Update the QTable widget with number of loaded objects in class subclass browser'''
-        object_id_filter = list(self.objects_dataframe['object_id'])
-        print(object_id_filter)
-        object_id_filter = str(object_id_filter).replace('[', '(').replace(']', ')')
+        object_id_list = list(self.objects_dataframe['object_id'])
+        object_ids = str(object_id_list).replace('[', '').replace(']', '')
         
-        sql_query_string_statistics = 'select count(*) AS \'Total loaded objects\', sum(hasgeometry) AS \'Objects with Geometry\', sum(hasnogeometry) AS \'Objects without Geometry\' from (SELECT o.object_id, f.GeoObjectId, f.spatial_type, CASE WHEN f.object_id IS NOT NULL THEN 1 ELSE 0 END AS hasgeometry, CASE WHEN f.object_id IS NULL THEN 1 ELSE 0 END AS hasnogeometry FROM objects o LEFT JOIN features f ON o.object_id = f.object_id where o.object_id IN '+object_id_filter+')'
-        
+        sql = Utils.load_resource('sql/browse_tables_select_number_of_object.sql')
+        sql = sql.replace("__OBJECT_ID__", f"{object_ids}")
         conn = sqlite3.connect(self.selected_gpkg)
-        table_loaded_data_stats = pd.read_sql_query(sql_query_string_statistics, conn)
+        table_loaded_data_stats = pd.read_sql_query(sql, conn)
         conn.close()
 
         return table_loaded_data_stats
