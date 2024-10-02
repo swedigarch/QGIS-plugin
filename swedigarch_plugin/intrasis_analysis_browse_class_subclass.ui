@@ -13,6 +13,10 @@
   <property name="windowTitle">
    <string>Intrasis Analysis Class/Subclass Browser</string>
   </property>
+  <property name="windowIcon">
+   <iconset>
+    <normaloff>assets/svedigark.svg</normaloff>assets/svedigark.svg</iconset>
+  </property>
   <property name="sizeGripEnabled">
    <bool>true</bool>
   </property>
