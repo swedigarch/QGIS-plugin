@@ -104,6 +104,7 @@ class IntrasisAnalysisBrowseTablesDialog(QtWidgets.QDialog, FORM_CLASS):
         self.pushButton_load_to_map.clicked.connect(self.load_to_qgis_layer)
         self.buttonBox_close_help.rejected.connect(self.closed)
         self.buttonBox_close_help.helpRequested.connect(self.on_help_clicked)
+        self.label_num_loaded_objects_info.setText('')
 
     def on_help_clicked(self):
         """Show Help dialog"""
@@ -779,7 +780,6 @@ class IntrasisAnalysisBrowseTablesDialog(QtWidgets.QDialog, FORM_CLASS):
                     message_text,
                     MESSAGE_CATEGORY, Qgis.Warning)
             else:
-                print("update stats qtablewidget")
                 self.class_subclass_attributes.update_number_of_rows_qtablewidget()
                 QgsMessageLog.logMessage(f'Completed task: {result["Read Class Subclass Attributes "]}'
                                          ,MESSAGE_CATEGORY,Qgis.Info)
@@ -800,7 +800,7 @@ class IntrasisAnalysisBrowseTablesDialog(QtWidgets.QDialog, FORM_CLASS):
         #    ,self.current_gpkg
         #    ,subclass_items_dict = self.subclass_items_dict)
         #Alternative shows statistics of loaded data
-        self.class_subclass_attributes = populateTableFromGpkg(self.tableView_class_browser_load_stats,self.tableView_class_browser, self.comboBox_class.currentText(), self.comboBox_subclass.currentText(),self.current_gpkg, subclass_items_dict = self.subclass_items_dict)
+        self.class_subclass_attributes = populateTableFromGpkg(self.tableView_class_browser, self.comboBox_class.currentText(), self.comboBox_subclass.currentText(),self.current_gpkg, subclass_items_dict = self.subclass_items_dict, label_num_loaded_objects_info=self.label_num_loaded_objects_info)
 
         self.class_subclass_attributes.populate_table(task)
         self.class_subclass_attributes.update_qtablewidget(task)
@@ -909,10 +909,9 @@ class populateTableFromGpkg:
     #             , selected_gpkg, subclass_items_dict):
     '''Holds functions and creates Class Subclass object'''
         #Alternative shows statistics of loaded data
-    def __init__(self, tableViewStat, tableView, class_item, subclass_item, selected_gpkg, subclass_items_dict):
+    def __init__(self, tableView, class_item, subclass_item, selected_gpkg, subclass_items_dict, label_num_loaded_objects_info):
 
         self.tableV = tableView
-        self.tableViewStats = tableViewStat
         self.class_item = class_item
         self.subclass_item = subclass_item
         self.selected_gpkg = selected_gpkg
@@ -923,6 +922,7 @@ class populateTableFromGpkg:
         self.nRows = None
         self.nCols = None
         self.temp_layername = None
+        self.label_num_loaded_objects_info = label_num_loaded_objects_info
 
     def populate_table(self,task:QgsTask) -> None:
         '''Reads and arranges data to be viewed in
@@ -1211,8 +1211,6 @@ class populateTableFromGpkg:
         '''Clears data from class subclass browser'''
         table_data = pd.DataFrame(data={'': []})
         self.tableV.setModel(TableModel(table_data=table_data))
-        #Alternative shows statistics of loaded data
-        self.tableViewStats.setModel(TableModel(table_data=table_data))
 
     def update_qtablewidget(self, task:QgsTask) -> pd.DataFrame:
         '''Update class subclass browser with data'''
@@ -1232,6 +1230,7 @@ class populateTableFromGpkg:
     def update_number_of_rows_qtablewidget(self):
         '''Update the QTable widget with number of loaded objects in class subclass browser'''
         object_id_filter = list(self.objects_dataframe['object_id'])
+        print(object_id_filter)
         object_id_filter = str(object_id_filter).replace('[', '(').replace(']', ')')
         
         sql_query_string_statistics = 'select count(*) AS \'Total loaded objects\', sum(hasgeometry) AS \'Objects with Geometry\', sum(hasnogeometry) AS \'Objects without Geometry\' from (SELECT o.object_id, f.GeoObjectId, f.spatial_type, CASE WHEN f.object_id IS NOT NULL THEN 1 ELSE 0 END AS hasgeometry, CASE WHEN f.object_id IS NULL THEN 1 ELSE 0 END AS hasnogeometry FROM objects o LEFT JOIN features f ON o.object_id = f.object_id where o.object_id IN '+object_id_filter+')'
@@ -1240,24 +1239,15 @@ class populateTableFromGpkg:
         table_loaded_data_stats = pd.read_sql_query(sql_query_string_statistics, conn)
         conn.close()
 
-        self.tableViewStats.setModel(TableModel(table_data=table_loaded_data_stats))
+        self.update_labels(table_loaded_data_stats)
+            
+    def update_labels(self, data_table):
+        total_objects = data_table['Total loaded objects'].iloc[0]
+        objects_with_geometry = data_table['Objects with Geometry'].iloc[0]
+        objects_without_geometry = data_table['Objects without Geometry'].iloc[0]
         
-        self.tableViewStats.resizeColumnsToContents()
-        print("adjust_tableview_width")
-        #self.adjust_tableview_width(self.tableViewStats)
-        print("adjust_tableview_width done")
-
-    def adjust_tableview_width(self, tableView):
-        '''Adjust the width of the QTableView to fit the width of all columns'''
-        print(f"adjusting... {tableView}")
-        total_width = 500
-        
-        # for column in range(tableView.model().columnCount()):
-        #     total_width += tableView.columnWidth(column)
-    
-        print(f"total_width {total_width}")
-        tableView.setMinimumWidth(total_width)
-        tableView.setMaximumWidth(total_width)
+        rows_string = "rows" if total_objects > 1 else "row"
+        self.label_num_loaded_objects_info.setText(f"{total_objects} {rows_string} ({objects_with_geometry} with geometry, {objects_without_geometry} without geometry)")
 
 class TableModel(QAbstractTableModel):
     """Class representing QAbstractTableModel"""
@@ -1272,7 +1262,6 @@ class TableModel(QAbstractTableModel):
 
     def columnCount(self, parent: QModelIndex) -> int:
         """Returns number of columns of data table"""
-        print(f"Column count requested, table_data shape: {self.table_data.shape}")
         return self.table_data.shape[1]
 
     def data(self, index: QModelIndex, role: int = ...) -> typing.Any:
