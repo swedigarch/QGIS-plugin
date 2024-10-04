@@ -66,16 +66,16 @@
            </spacer>
           </item>
           <item>
-           <widget class="QCheckBox" name="checkBoxAddParentId">
+           <widget class="QPushButton" name="pushButton_load_to_map">
             <property name="text">
-             <string>Add Parent ID</string>
+             <string>Create Layer</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="pushButton_load_to_map">
+           <widget class="QCheckBox" name="checkBoxAddParentId">
             <property name="text">
-             <string>Create Layer</string>
+             <string>Create With ParentID</string>
             </property>
            </widget>
           </item>
