@@ -71,6 +71,7 @@ class SwedigarchExportDialog(QtWidgets.QDialog, FORM_CLASS):
         self.sslmode_text = ""
         self.export_folder = None
         self.bulk_export_threshold = 8
+        self.subclasses_to_exclude = []
         print(f'cpu_count(): {cpu_count()}')
         if cpu_count() >= 4:
             self.bulk_export_max_number_of_subtasks = cpu_count() - 2 # leave 2 as spare
@@ -235,6 +236,7 @@ class SwedigarchExportDialog(QtWidgets.QDialog, FORM_CLASS):
     # pylint: disable=invalid-name
     def closeEvent(self, _):
         """The close dialog event (QCloseEvent)"""
+        self.subclasses_to_exclude = []
         point = self.pos()
         settings = QgsSettings()
         settings.setValue("SwedigarchGeotools/dialog_position", point)
@@ -399,6 +401,7 @@ class SwedigarchExportDialog(QtWidgets.QDialog, FORM_CLASS):
                 msg_box.setStandardButtons(QMessageBox.Ok)
                 msg_box.exec()
             else:
+                self.subclasses_to_exclude = []
                 databases = [self.lwSelectedDatabases.item(x).text() for x in range(self.lwSelectedDatabases.count())]
                 
                 if self.cbFilterSubClass.isChecked():
@@ -406,7 +409,8 @@ class SwedigarchExportDialog(QtWidgets.QDialog, FORM_CLASS):
                     select_sub_classes_dlg.init_data_and_gui()
                     if not select_sub_classes_dlg.exec_():
                         return
-
+                    self.subclasses_to_exclude = select_sub_classes_dlg.get_selected_sub_classes_list_items()
+            
                 number_of_databases = self.lwSelectedDatabases.count()
                 export_confirmed = False
                 if number_of_databases >= self.bulk_export_threshold:
@@ -416,6 +420,7 @@ class SwedigarchExportDialog(QtWidgets.QDialog, FORM_CLASS):
                 if export_confirmed:
                     export_folder = self.lineEditExportDirectory.text()
                     print(f"export_to_geopackage(db_count: {len(databases)}  export_folder: {export_folder})")
+                    print(f"subclasses_to_exclude: {self.subclasses_to_exclude}")
                     main_export_task = self.create_export_task(databases, export_folder)
                     QgsApplication.taskManager().addTask(main_export_task)
                     QgsApplication.processEvents()
@@ -447,8 +452,8 @@ class SwedigarchExportDialog(QtWidgets.QDialog, FORM_CLASS):
     def confirm_export_dialog(self) -> bool:
         """Dialog to confirm export, used before normal export (one by one)"""
         databases = [self.lwSelectedDatabases.item(x).text() for x in range(self.lwSelectedDatabases.count())]
-        comfirm_dlg = ExportConfirmationDialog(databases)
-        return_value = comfirm_dlg.exec()
+        confirm_dlg = ExportConfirmationDialog(databases, self.subclasses_to_exclude)
+        return_value = confirm_dlg.exec()
         return return_value == 1
 
     def confirm_export_messagebox(self, number_of_databases:int) -> bool:
