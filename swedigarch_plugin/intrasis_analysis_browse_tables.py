@@ -45,9 +45,12 @@ from PyQt5.QtCore import QVariant ,QAbstractTableModel, QModelIndex, Qt
 import pandas as pd
 import processing
 from . import utils as Utils
+from . import browse_relations_utils as BrowseRelationsUtils
 from .select_geo_package_dalog import SelectGeoPackageDialog
 from .help_dialog import HelpDialog
-
+######################################
+#from . import browse_relations_utils as browse_relations_utils
+######################################
 MESSAGE_CATEGORY = 'Class_Subclass_Browser'
 
 '''This loads your .ui file so that 
@@ -87,6 +90,8 @@ class IntrasisAnalysisBrowseTablesDialog(QtWidgets.QDialog, FORM_CLASS):
                                     ,'Every SubClass':self.tr('All SubClasses')
                                     , 'No SubClass':self.tr('No SubClass')}
         ############################################################
+        self.add_parent_id_to_layer = False
+        ############################################################
         #Pushbutton logics
         self.pushButton_read_to_table.setEnabled(False)
         self.pushButton_export_as_chart.setEnabled(False)
@@ -104,11 +109,19 @@ class IntrasisAnalysisBrowseTablesDialog(QtWidgets.QDialog, FORM_CLASS):
         self.pushButton_load_to_map.clicked.connect(self.load_to_qgis_layer)
         self.buttonBox_close_help.rejected.connect(self.closed)
         self.buttonBox_close_help.helpRequested.connect(self.on_help_clicked)
+        self.checkBoxAddParentId.stateChanged.connect(self.on_create_with_parent_changed)
         self.label_num_loaded_objects_info.setText('')
 
     def on_help_clicked(self):
         """Show Help dialog"""
         HelpDialog.show_help("ClassSubclassDialog")
+        
+    def on_create_with_parent_changed(self, state):
+        """When checked create add attributes parent id and grand parent id to objects without geometry"""
+        if state == Qt.Checked:
+            self.add_parent_id_to_layer = True
+        else:
+            self.add_parent_id_to_layer = False
 
     def showEvent(self, event):
         """DialogShow event, returns selected databases to top list."""
@@ -419,6 +432,14 @@ class IntrasisAnalysisBrowseTablesDialog(QtWidgets.QDialog, FORM_CLASS):
         for col_name in objects_dataframe_colnames:
             field = QgsField(str(col_name), type_map[col_dict[col_name]])
             attribute_fields.append(field)
+        #############################################
+        #Add parent_id, and grand parent id
+        if self.add_parent_id_to_layer is True:
+            field = QgsField(str("parent_id"), QVariant.String)
+            attribute_fields.append(field)
+            field = QgsField(str("grandparent_id"), QVariant.String)
+            attribute_fields.append(field)
+        #############################################
         temp_data.addAttributes(attribute_fields)
         temp.updateFields()
         progressbarlength = 100
@@ -432,6 +453,54 @@ class IntrasisAnalysisBrowseTablesDialog(QtWidgets.QDialog, FORM_CLASS):
         # Create concatenated strings of attributes
         str_objects = objects_dataframe.apply(
             lambda x: x.astype(str).tolist(), axis=1).tolist()
+
+        # Get parent and grandparent id, Intrasis id is the output
+        if self.add_parent_id_to_layer is True:
+            for attributes_string in str_objects:
+                # Get parent object ids
+                parent_object_id_list = BrowseRelationsUtils.get_realated_above(
+                    self.current_gpkg, int(attributes_string[1]))
+
+                if len(parent_object_id_list) > 0:
+
+                    parent_intrasis_id_list = [Utils.get_objects_data_for_object_id(MESSAGE_CATEGORY
+                                                     , self.current_gpkg
+                                                     , int(item))["IntrasisId"].tolist()
+                                                     for item in parent_object_id_list[:,0]]                    
+                    attributes_string.append(','.join([str(item)
+                                                       for sublist in
+                                                       parent_intrasis_id_list
+                                                       for item in sublist]))
+                    # Get grand parent object ids
+                    grand_parent_id_list = []
+                    for objectid in parent_object_id_list[:,0]:
+                        grandparent_object_id = BrowseRelationsUtils.get_realated_above(
+                            self.current_gpkg, objectid)
+                        if len(grandparent_object_id) > 0:
+                            grandparent_object_id = grandparent_object_id.tolist()
+                            grand_parent_id_list.append(grandparent_object_id)
+
+                    grand_parent_id_list = [item[0] for sublist in
+                                            grand_parent_id_list for item in sublist]
+
+                    # Get grand parent intrasis ids
+                    if len(grand_parent_id_list) > 0:
+                        grand_parent_intrasis_id_list = [Utils.get_objects_data_for_object_id(
+                            MESSAGE_CATEGORY
+                            , self.current_gpkg
+                            , int(item))["IntrasisId"].tolist()
+                            for item in grand_parent_id_list]
+                        #
+                        attributes_string.append(
+                            ','.join([str(item) for sublist in
+                                      grand_parent_intrasis_id_list
+                                      for item in sublist]))
+                    else:
+                        attributes_string.append("No grand_parent_id found")
+                if len(parent_object_id_list) == 0:
+                    attributes_string.append("No parent_id found")
+                    attributes_string.append("No grand_parent_id found")
+        ######################################################
 
         #Create QGS features and set attributes
         i = 1
