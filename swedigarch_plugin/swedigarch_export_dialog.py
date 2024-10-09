@@ -409,7 +409,7 @@ class SwedigarchExportDialog(QtWidgets.QDialog, FORM_CLASS):
                     select_sub_classes_dlg.init_data_and_gui()
                     if not select_sub_classes_dlg.exec_():
                         return
-                    self.subclasses_to_exclude = select_sub_classes_dlg.selected_sub_classes
+                    self.subclasses_to_exclude = select_sub_classes_dlg.get_selected_sub_classes_list_items()
             
                 number_of_databases = self.lwSelectedDatabases.count()
                 export_confirmed = False

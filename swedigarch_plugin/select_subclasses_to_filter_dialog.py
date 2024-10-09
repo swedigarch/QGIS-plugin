@@ -177,6 +177,10 @@ class SelectSubClassesToFilterDialog(QtWidgets.QDialog, FORM_CLASS):
             traceback.print_exc()
             print(f"Exception in init_data_and_gui(): {err}")
 
+    def get_selected_sub_classes_list_items(self) -> list[str]:
+        """Get selected sub classes list items as a list of strings"""
+        return [self.lwSelectedSubClasses.item(x).text() for x in range(self.lwSelectedSubClasses.count())]
+    
     def on_ok(self):
         """Selection of tree nodes done"""
         self.button_clicked = QDialogButtonBox.Ok
