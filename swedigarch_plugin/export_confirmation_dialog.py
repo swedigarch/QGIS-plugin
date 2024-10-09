@@ -66,7 +66,7 @@ class ExportConfirmationDialog(QtWidgets.QDialog, FORM_CLASS):
 
         self.lwExcludedSubclasses.clear()
         if not self.subclasses_to_exclude:
-            self.lwExcludedSubclasses.addItem("No subclasses selcted")
+            self.lwExcludedSubclasses.addItem(self.tr("No subclasses selcted"))
         else:
             for subclass in self.subclasses_to_exclude:
                 self.lwExcludedSubclasses.addItem(subclass)
