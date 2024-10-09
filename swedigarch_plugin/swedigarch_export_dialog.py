@@ -399,8 +399,9 @@ class SwedigarchExportDialog(QtWidgets.QDialog, FORM_CLASS):
                 msg_box.setStandardButtons(QMessageBox.Ok)
                 msg_box.exec()
             else:
+                databases = [self.lwSelectedDatabases.item(x).text() for x in range(self.lwSelectedDatabases.count())]
+                
                 if self.cbFilterSubClass.isChecked():
-                    databases = [self.lwSelectedDatabases.item(x).text() for x in range(self.lwSelectedDatabases.count())]
                     select_sub_classes_dlg = SelectSubClassesToFilterDialog(databases, self.host, self.user_name, self.password, self.port, self.sslmode_text, parent=self)
                     select_sub_classes_dlg.init_data_and_gui()
                     if not select_sub_classes_dlg.exec_():
