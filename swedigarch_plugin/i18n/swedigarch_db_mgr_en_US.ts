@@ -386,12 +386,12 @@
         <translation>Save Table As...</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="972"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="974"/>
         <source>Intrasis Analysis Class/SubClass Browser, Save File</source>
         <translation>Intrasis Class/Subclass Browser, Save File</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="973"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="975"/>
         <source>Text Files (*.csv);;Excel xlsx (*.xlsx)</source>
         <translation>Text Files (*.csv);;Excel xlsx (*.xlsx)</translation>
     </message>
@@ -411,27 +411,27 @@
         <translation>All Objects</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="179"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="181"/>
         <source>No intrasis geopackage loaded</source>
         <translation>To view data in the Class/Subclass browser on or more Intrasis Geopackages must be loaded</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="173"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="174"/>
         <source>analysis dialog closed</source>
         <translation>Analysis dialog closed</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="180"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="182"/>
         <source>To view data in the Class/Subclass browser one or more Intrasis Geopackages must be loaded</source>
         <translation>To view data in the Class/Subclass browser one or more Intrasis Geopackages must be loaded</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="225"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="227"/>
         <source>No intrasis geopackage(s) loaded</source>
         <translation>No intrasis geopackage(s) loaded</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="847"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="849"/>
         <source>Completed with no exception and no result (probably manually canceled by the user)</source>
         <translation>Completed with no exception and no result (probably manually canceled by the user)</translation>
     </message>
@@ -446,39 +446,44 @@
         <translation type="obsolete">Could not create layer</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="820"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="822"/>
         <source>Could not write (all) features</source>
         <translation>Could not write (all) features</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="797"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="799"/>
         <source>something went wrong: {ex}, perhaps Invalid join fields?</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="817"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="819"/>
         <source>could not create layer {ex}</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="867"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="869"/>
         <source>rows</source>
         <translation>rows</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="867"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="869"/>
         <source>row</source>
         <translation>row</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="868"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="870"/>
         <source>with geometry</source>
         <translation>with geometry</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="869"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="871"/>
         <source>without geometry</source>
         <translation>without geometry</translation>
+    </message>
+    <message>
+        <location filename="../intrasis_analysis_browse_tables.py" line="92"/>
+        <source>Create With ParentID</source>
+        <translation>Create With ParentID</translation>
     </message>
 </context>
 <context>
@@ -790,12 +795,12 @@ Otherwice the GeoPackage will not be exported.</translation>
     <message>
         <location filename="../swedigarch_export_dialog.py" line="94"/>
         <source>Filter by SubClass</source>
-        <translation type="unfinished"></translation>
+        <translation>Filter by SubClass</translation>
     </message>
     <message>
         <location filename="../swedigarch_export_dialog.py" line="95"/>
         <source>Should we filter by Subclass in every exported database</source>
-        <translation type="unfinished"></translation>
+        <translation>Should we filter by Subclass in every exported database</translation>
     </message>
 </context>
 <context>
@@ -903,7 +908,7 @@ Otherwice the GeoPackage will not be exported.</translation>
     <message>
         <location filename="../swedigarch_export_dialog_base.ui" line="358"/>
         <source>â¦</source>
-        <translation>...</translation>
+        <translation type="unfinished">...</translation>
     </message>
     <message>
         <location filename="../swedigarch_export_dialog_base.ui" line="418"/>
@@ -945,7 +950,7 @@ Otherwice the GeoPackage will not be exported.</translation>
     <message>
         <location filename="../swedigarch_export_dialog_base.ui" line="390"/>
         <source>Filter by SubClass</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
 </context>
 <context>

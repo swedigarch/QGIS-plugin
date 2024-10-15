@@ -299,7 +299,7 @@ class SwedigarchGeotools:
 
         intrasis_gpkg_loaded = self.dlg_browse_tables.check_if_intrasis_geopackage_is_loaded()
         if intrasis_gpkg_loaded == False:
-            self.dlg_browse_tables.show_messagebox_no_loaded_gpkg()
+            self.dlg_browse_tables.show_messagebox_no_loaded_gpkg(QIcon(":/plugins/swedigarch_plugin/assets/svedigark.svg"))
             return
         user_select_klicked = self.dlg_browse_tables.select_and_activate_intrasis_geopackage()
         if user_select_klicked == False:

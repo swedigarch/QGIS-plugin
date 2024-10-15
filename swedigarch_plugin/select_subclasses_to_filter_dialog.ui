@@ -15,7 +15,7 @@
   </property>
   <property name="windowIcon">
    <iconset>
-    <normaloff>../Projects/swedigarch/swedigarch_plugin/assets/svedigark.svg</normaloff>../Projects/swedigarch/swedigarch_plugin/assets/svedigark.svg</iconset>
+    <normaloff>assets/svedigark.svg</normaloff>assets/svedigark.svg</iconset>
   </property>
   <property name="sizeGripEnabled">
    <bool>true</bool>

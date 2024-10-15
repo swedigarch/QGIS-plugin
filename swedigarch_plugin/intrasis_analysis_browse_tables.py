@@ -89,6 +89,7 @@ class IntrasisAnalysisBrowseTablesDialog(QtWidgets.QDialog, FORM_CLASS):
         self.subclass_items_dict = {'All Objects':self.tr('All Objects')
                                     ,'Every SubClass':self.tr('All SubClasses')
                                     , 'No SubClass':self.tr('No SubClass')}
+        self.checkBoxAddParentId.setText(self.tr("Create With ParentID"))
         ############################################################
         self.add_parent_id_to_layer = False
         ############################################################
@@ -172,10 +173,11 @@ class IntrasisAnalysisBrowseTablesDialog(QtWidgets.QDialog, FORM_CLASS):
         except Exception as ex:
             print(self.tr("analysis dialog closed")+f' {ex}')
 
-    def show_messagebox_no_loaded_gpkg(self):
+    def show_messagebox_no_loaded_gpkg(self, icon):
         """Show a message box to inform user that intrasis
         geopackage must be loaded before opening class/subclasss browser"""
         msg_box = QMessageBox()
+        #msg_box.setWindowIcon(icon)
         msg_box.setWindowTitle(self.tr("No intrasis geopackage loaded"))
         msg_box.setText(self.tr("To view data in the Class/Subclass browser one or more Intrasis Geopackages must be loaded"))
         msg_box.setStandardButtons(QMessageBox.Ok)

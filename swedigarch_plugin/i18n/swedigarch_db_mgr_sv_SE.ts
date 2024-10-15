@@ -130,7 +130,7 @@
     <message>
         <location filename="../export_confirmation_dialog.ui" line="72"/>
         <source>These subclasses will be excluded from the export</source>
-        <translation type="unfinished">Dessa subklasser kommer att exkluderas från exporten</translation>
+        <translation>Dessa subklasser kommer att exkluderas från exporten</translation>
     </message>
     <message>
         <location filename="../export_confirmation_dialog.py" line="69"/>
@@ -424,12 +424,12 @@
         <translation>Spara tabell som...</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="972"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="974"/>
         <source>Intrasis Analysis Class/SubClass Browser, Save File</source>
         <translation>Intrasis Class/Subclass Browser, Spara tabell som</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="973"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="975"/>
         <source>Text Files (*.csv);;Excel xlsx (*.xlsx)</source>
         <translation>Text Fil (*.csv);;Excel xlsx (*.xlsx)</translation>
     </message>
@@ -449,27 +449,27 @@
         <translation>Alla objekt</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="179"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="181"/>
         <source>No intrasis geopackage loaded</source>
         <translation>För att kunna titta på data i Class/Subclass browser måste ett eller flera Intrasis-GeoPackages vara laddade</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="173"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="174"/>
         <source>analysis dialog closed</source>
         <translation>Klass subklass browsern stängdes</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="180"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="182"/>
         <source>To view data in the Class/Subclass browser one or more Intrasis Geopackages must be loaded</source>
         <translation>För att kunna titta på data i Klass subklass browsern måste ett eller flera Intrasis-GeoPackages vara laddade</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="225"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="227"/>
         <source>No intrasis geopackage(s) loaded</source>
         <translation>Inga intrasis-GeoPackage laddade</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="847"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="849"/>
         <source>Completed with no exception and no result (probably manually canceled by the user)</source>
         <translation>Inget undantag inträffade och inget resultat skapades (avbrutet av användaren?)</translation>
     </message>
@@ -484,39 +484,44 @@
         <translation type="obsolete">Lager kunder inte skapas</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="820"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="822"/>
         <source>Could not write (all) features</source>
         <translation>Kunde inte skriva (alla) geoobjekt</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="797"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="799"/>
         <source>something went wrong: {ex}, perhaps Invalid join fields?</source>
         <translation>Något gick fel: {ex}, kanske ogiltiga kopplingsfält?</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="817"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="819"/>
         <source>could not create layer {ex}</source>
         <translation>Lager kunder inte skapas</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="867"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="869"/>
         <source>rows</source>
         <translation>rader</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="867"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="869"/>
         <source>row</source>
         <translation>rad</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="868"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="870"/>
         <source>with geometry</source>
         <translation>med geometri</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="869"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="871"/>
         <source>without geometry</source>
         <translation>utan geometri</translation>
+    </message>
+    <message>
+        <location filename="../intrasis_analysis_browse_tables.py" line="92"/>
+        <source>Create With ParentID</source>
+        <translation>Skapa med ParentID</translation>
     </message>
 </context>
 <context>
@@ -862,12 +867,12 @@ Annars kommer GeoPackage inte att exporteras.</translation>
     <message>
         <location filename="../swedigarch_export_dialog.py" line="94"/>
         <source>Filter by SubClass</source>
-        <translation type="unfinished"></translation>
+        <translation>Filtrera efter SubKlass</translation>
     </message>
     <message>
         <location filename="../swedigarch_export_dialog.py" line="95"/>
         <source>Should we filter by Subclass in every exported database</source>
-        <translation type="unfinished"></translation>
+        <translation>Ska vi filtrera efter SubKlass för varje exporterad databas</translation>
     </message>
 </context>
 <context>
@@ -935,7 +940,7 @@ Annars kommer GeoPackage inte att exporteras.</translation>
     <message>
         <location filename="../swedigarch_export_dialog_base.ui" line="358"/>
         <source>â¦</source>
-        <translation>...</translation>
+        <translation type="unfinished">...</translation>
     </message>
     <message>
         <location filename="../swedigarch_export_dialog_base.ui" line="86"/>
@@ -1017,7 +1022,7 @@ Annars kommer GeoPackage inte att exporteras.</translation>
     <message>
         <location filename="../swedigarch_export_dialog_base.ui" line="390"/>
         <source>Filter by SubClass</source>
-        <translation type="unfinished"></translation>
+        <translation>Filtrera efter SubKlass</translation>
     </message>
 </context>
 <context>
