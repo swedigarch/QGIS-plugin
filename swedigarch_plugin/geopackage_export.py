@@ -46,7 +46,7 @@ from .symbol_builder import SymbolBuilder
 from . import utils as Utils
 from .constant import Intrasis, RetCode, WriterError
 
-def export_to_geopackage(host:int, port:int, user_name:str, password:str, databases:list[str], export_folder:str, overwrite:bool, csv:bool, callback:Callable = None, detailed_print_outs:bool = True, log_file:io.TextIOWrapper = None):
+def export_to_geopackage(host:int, port:int, user_name:str, password:str, databases:list[str], export_folder:str, overwrite:bool, csv:bool, callback:Callable = None, detailed_print_outs:bool = True, log_file:io.TextIOWrapper = None, subclasses_to_exclude:list=None) -> tuple[int, int]:
     """Main GeoPackage export function, also can run CSV export if csv is True"""
     export_ok_count = 0
     if callback is None:
@@ -99,7 +99,7 @@ def export_to_geopackage(host:int, port:int, user_name:str, password:str, databa
             if delete_on_faliure is False and overwrite:
                 delete_on_faliure = True
 
-            db_ret, error_msg, rights_error = export_database(conn, host, port, user_name, password, database, len(databases), progress, export_folder, overwrite, combine_layers, callback, detailed_print_outs)
+            db_ret, error_msg, rights_error = export_database(conn, host, port, user_name, password, database, len(databases), progress, export_folder, overwrite, combine_layers, callback, detailed_print_outs, subclasses_to_exclude)
             if db_ret:
                 export_ok_count += 1
                 print(f'export_database(db: {database}) db_ret: {db_ret}')
@@ -155,7 +155,7 @@ def export_to_geopackage(host:int, port:int, user_name:str, password:str, databa
         log_file.close()
         return RetCode.UNKNOWN_ERROR, export_ok_count
 
-def export_database(conn:psycopg2.extensions.connection, host:str, port:int, user_name:str, password:str, database:str, db_count:int, progress:int, export_folder:str, overwrite:bool, combine_layers:bool, callback:Callable, detailed_print_outs:bool=True) -> tuple[bool,str,bool]:
+def export_database(conn:psycopg2.extensions.connection, host:str, port:int, user_name:str, password:str, database:str, db_count:int, progress:int, export_folder:str, overwrite:bool, combine_layers:bool, callback:Callable, detailed_print_outs:bool=True, subclasses_to_exclude:list=None) -> tuple[bool,str,bool]:
     """Function to export from given connection to new GeoPackage in export_folder"""
     # Returns: db_ret, error_msg, rights_error (bool, string, bool)
     db_progress = 0 # Progress of the export of this database
@@ -163,7 +163,7 @@ def export_database(conn:psycopg2.extensions.connection, host:str, port:int, use
     ret = callback(curr_progress - 5, f"Starting export of {database}")
     if ret is False: # export have been canceled
         return False, None, False
-
+    
     try:
         output_file = os.path.join(export_folder, f"{database.lower()}.gpkg")
         print(f'export_database() output_file {output_file} exist: {QFile(output_file).exists()} overwrite: {overwrite}\n')
@@ -301,6 +301,7 @@ def export_database(conn:psycopg2.extensions.connection, host:str, port:int, use
         attr_steps = layer_export_steps / 2
         sql = Utils.load_resource('sql/select_classes_to_export.sql')
         sql = sql.replace("__EXCLUDE_META_IDS__", f"{staf_meta_id}, {geo_obj_meta_id}")
+        print(f'sql: {sql}')
         data_frame = pd.read_sql(sql, conn)
         cls_count = len(data_frame)
         attr_inc = attr_steps / cls_count
@@ -314,8 +315,17 @@ def export_database(conn:psycopg2.extensions.connection, host:str, port:int, use
             # Do update inside a transaction to speed up
             cur.execute("BEGIN TRANSACTION;")
 
+            subclasses_to_exclude_tuple_set = set(subclasses_to_exclude)
+            print(f'subclasses_to_exclude_tuple_set: {subclasses_to_exclude_tuple_set}')
             for row in data_frame.itertuples(index=False):
-                export_class_attributes(conn, cur, row.ClassId, row.SubClassId, callback, detailed_print_outs)
+                include_subclass_attributes = False
+                if (row.Class, row.SubClass) not in subclasses_to_exclude_tuple_set:
+                    include_subclass_attributes = True
+                else:
+                    print(f"Skipping {row.Class} \\ {row.SubClass}")
+                
+                export_class_attributes(conn, cur, row.ClassId, row.SubClassId, callback, detailed_print_outs, include_subclass_attributes)
+
                 layers_done = layers_done + attr_inc
                 db_progress = (layers_done / layer_export_steps) * 100
                 curr_progress = progress + db_progress / db_count
@@ -482,6 +492,7 @@ def export_objects(conn:psycopg2.extensions.connection, output_file:str, callbac
             staf_meta_id = Utils.get_meta_id(conn, Intrasis.CLASS_STAFF_META_ID)
             geo_obj_meta_id = Utils.get_meta_id(conn, Intrasis.CLASS_GEOOBJECT_META_ID)
             sql = sql.replace("__EXCLUDE_META_IDS__", f"{staf_meta_id}, {geo_obj_meta_id}")
+            print(f"sql: {sql}")
             data_frame = pd.read_sql(sql, conn)
             data_frame.to_sql(name='objects', con = gp_conn, if_exists='append', index=False)
             gp_conn.commit()
@@ -595,11 +606,11 @@ def export_project_information(host:str, port:int, user_name:str, password:str, 
         traceback.print_exc()
         callback(None, "Error in export_project_information()", err)
 
-def export_class_attributes(conn:psycopg2.extensions.connection, cur:sqlite3.Cursor, class_id:int, sub_class_id:int, callback:Callable, detailed_print_outs:bool=True) -> None:
+def export_class_attributes(conn:psycopg2.extensions.connection, cur:sqlite3.Cursor, class_id:int, sub_class_id:int, callback:Callable, detailed_print_outs:bool=True, include_subclass_attributes:bool=True) -> None:
     """Export attributes for class (and SubClass if sub_class_id has value) and write them to the GeoPackage"""
     try:
         sql = Utils.load_resource('sql/select_object_attributes.sql')
-        if Utils.is_nan(sub_class_id) or sub_class_id is None:
+        if not include_subclass_attributes or Utils.is_nan(sub_class_id) or sub_class_id is None:
             sql =  sql.replace("__CLASS__", f" {class_id} AND o.\"SubClassId\" is NULL")
             sql = sql.replace("__CLS_IDS__", f"{class_id}")
             sql = sql.replace("__ORDERING__", "")
