@@ -412,11 +412,9 @@ class SwedigarchExportDialog(QtWidgets.QDialog, FORM_CLASS):
                     self.subclasses_to_exclude = select_sub_classes_dlg.get_selected_sub_classes_list_items()
             
                 number_of_databases = self.lwSelectedDatabases.count()
-                export_confirmed = False
-                if number_of_databases >= self.bulk_export_threshold:
-                    export_confirmed = self.confirm_export_messagebox(number_of_databases)
-                else:
-                    export_confirmed = self.confirm_export_dialog()
+                bulk_export_mode = number_of_databases >= self.bulk_export_threshold
+                export_confirmed = self.confirm_export_dialog(bulk_export_mode)
+                
                 if export_confirmed:
                     export_folder = self.lineEditExportDirectory.text()
                     print(f"export_to_geopackage(db_count: {len(databases)}  export_folder: {export_folder})")
@@ -449,23 +447,12 @@ class SwedigarchExportDialog(QtWidgets.QDialog, FORM_CLASS):
         main_export_task.create_subtasks("Exporting GeoPackages", min(len(databases),self.bulk_export_max_number_of_subtasks))
         return main_export_task
 
-    def confirm_export_dialog(self) -> bool:
+    def confirm_export_dialog(self, bulk_export_mode: bool) -> bool:
         """Dialog to confirm export, used before normal export (one by one)"""
         databases = [self.lwSelectedDatabases.item(x).text() for x in range(self.lwSelectedDatabases.count())]
-        confirm_dlg = ExportConfirmationDialog(databases, self.subclasses_to_exclude)
+        confirm_dlg = ExportConfirmationDialog(databases, self.subclasses_to_exclude, bulk_export_mode, parent=self)
         return_value = confirm_dlg.exec()
         return return_value == 1
-
-    def confirm_export_messagebox(self, number_of_databases:int) -> bool:
-        """Create messagebox to confirm export, used before bulk export (multiple exports in parallel)"""
-        msg_box = QMessageBox()
-        msg_box.setText(self.tr("Are you sure that you want to export ") + str(number_of_databases) + self.tr(" databases?"))
-        msg_box.setWindowTitle(self.tr("Confirm export"))
-        msg_box.setStandardButtons(QMessageBox.Yes | QMessageBox.Cancel)
-        msg_box.button(QMessageBox.Cancel).setText(self.tr("Cancel"))
-        msg_box.button(QMessageBox.Yes).setText(self.tr("Yes"))
-        return_value = msg_box.exec()
-        return return_value == QMessageBox.Yes
 
     def export_ready_check(self):
         """Check if we are ready for export and then enable export button"""

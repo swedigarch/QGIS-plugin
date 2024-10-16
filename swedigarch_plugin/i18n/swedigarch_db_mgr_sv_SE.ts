@@ -115,7 +115,7 @@
     <message>
         <location filename="../export_confirmation_dialog.ui" line="38"/>
         <source>Start export of these databases?</source>
-        <translation>Starta export av dessa databaser ?</translation>
+        <translation type="unfinished">Starta export av dessa databaser?</translation>
     </message>
     <message>
         <location filename="../export_confirmation_dialog.py" line="52"/>
@@ -133,9 +133,24 @@
         <translation>Dessa subklasser kommer att exkluderas från exporten</translation>
     </message>
     <message>
-        <location filename="../export_confirmation_dialog.py" line="69"/>
+        <location filename="../export_confirmation_dialog.py" line="78"/>
         <source>No subclasses selcted</source>
         <translation>Inga subklasser valda</translation>
+    </message>
+    <message>
+        <location filename="../export_confirmation_dialog.py" line="67"/>
+        <source>Start export of</source>
+        <translation>Starta export av</translation>
+    </message>
+    <message>
+        <location filename="../export_confirmation_dialog.py" line="68"/>
+        <source>databases?</source>
+        <translation type="unfinished">databaser?</translation>
+    </message>
+    <message>
+        <location filename="../export_confirmation_dialog.py" line="69"/>
+        <source>databases will be exported</source>
+        <translation>databaser kommer att exporteras</translation>
     </message>
 </context>
 <context>
@@ -743,7 +758,7 @@ select which to analyze.</source>
         <translation>Kör export</translation>
     </message>
     <message>
-        <location filename="../swedigarch_export_dialog.py" line="465"/>
+        <location filename="../swedigarch_export_dialog.py" line="463"/>
         <source>Cancel</source>
         <translation>Avbryt</translation>
     </message>
@@ -778,7 +793,7 @@ select which to analyze.</source>
         <translation>Pågående export</translation>
     </message>
     <message>
-        <location filename="../swedigarch_export_dialog.py" line="463"/>
+        <location filename="../swedigarch_export_dialog.py" line="461"/>
         <source>Confirm export</source>
         <translation>Bekräfta export</translation>
     </message>
@@ -788,17 +803,17 @@ select which to analyze.</source>
         <translation type="obsolete">Nej</translation>
     </message>
     <message>
-        <location filename="../swedigarch_export_dialog.py" line="466"/>
+        <location filename="../swedigarch_export_dialog.py" line="464"/>
         <source>Yes</source>
         <translation>Ja</translation>
     </message>
     <message>
-        <location filename="../swedigarch_export_dialog.py" line="462"/>
+        <location filename="../swedigarch_export_dialog.py" line="460"/>
         <source> databases?</source>
         <translation> databaser?</translation>
     </message>
     <message>
-        <location filename="../swedigarch_export_dialog.py" line="462"/>
+        <location filename="../swedigarch_export_dialog.py" line="460"/>
         <source>Are you sure that you want to export </source>
         <translation>Är du säker på att du vill exportera </translation>
     </message>
@@ -940,7 +955,7 @@ Annars kommer GeoPackage inte att exporteras.</translation>
     <message>
         <location filename="../swedigarch_export_dialog_base.ui" line="358"/>
         <source>â¦</source>
-        <translation type="unfinished">...</translation>
+        <translation>...</translation>
     </message>
     <message>
         <location filename="../swedigarch_export_dialog_base.ui" line="86"/>
