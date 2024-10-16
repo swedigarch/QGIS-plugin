@@ -42,7 +42,7 @@ FORM_CLASS, _ = uic.loadUiType(os.path.join(
 
 class ExportConfirmationDialog(QtWidgets.QDialog, FORM_CLASS):
     """Init export confirmation dialog"""
-    def __init__(self, databases:list[str], subclasses_to_exclude:list[str]=[], parent=None) -> None:
+    def __init__(self, databases:list[str], subclasses_to_exclude:list[str]=[], bulk_export_mode:bool=False, parent=None) -> None:
         """Constructor."""
         super(ExportConfirmationDialog, self).__init__(parent)
         self.setupUi(self)
@@ -56,13 +56,19 @@ class ExportConfirmationDialog(QtWidgets.QDialog, FORM_CLASS):
         self.lwDatabases.setSortingEnabled(True)
         self.databases = databases
         self.subclasses_to_exclude = subclasses_to_exclude
+        self.bulk_export_mode = bulk_export_mode
         self.init_gui_load_data()
     
     def init_gui_load_data(self) -> None:
         """Load data to GUI"""
         self.lwDatabases.clear()
-        for database in self.databases:
-            self.lwDatabases.addItem(database)
+
+        if self.bulk_export_mode:
+            self.lblExportInfo.setText(self.tr(f"Start export of {len(self.databases)} databases?"))
+            self.lwDatabases.addItem(self.tr(f"{len(self.databases)} databases will be exported"))
+        else:
+            for database in self.databases:
+                self.lwDatabases.addItem(database)
 
         self.lwExcludedSubclasses.clear()
         if not self.subclasses_to_exclude:
