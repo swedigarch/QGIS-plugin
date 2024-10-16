@@ -445,7 +445,7 @@ class SwedigarchExportDialog(QtWidgets.QDialog, FORM_CLASS):
             return GeoPackageExportTask("Exporting GeoPackages", self.host, self.port, self.user_name, self.password, databases, export_folder, overwrite, csv, detailed_print_outs, self.subclasses_to_exclude)
 
         # is bulk export: create bulk main task with subtasks
-        main_export_task = GeoPackageBulkExportMainTask("Exporting GeoPackages", self.host, self.port, self.user_name, self.password, export_folder, overwrite, csv, databases)
+        main_export_task = GeoPackageBulkExportMainTask("Exporting GeoPackages", self.host, self.port, self.user_name, self.password, export_folder, overwrite, csv, databases, self.subclasses_to_exclude)
         main_export_task.create_subtasks("Exporting GeoPackages", min(len(databases),self.bulk_export_max_number_of_subtasks))
         return main_export_task
 

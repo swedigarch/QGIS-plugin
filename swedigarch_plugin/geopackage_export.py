@@ -314,15 +314,15 @@ def export_database(conn:psycopg2.extensions.connection, host:str, port:int, use
             cur.execute("SELECT load_extension(\"mod_spatialite\");")
             # Do update inside a transaction to speed up
             cur.execute("BEGIN TRANSACTION;")
-
-            subclasses_to_exclude_tuple_set = set(subclasses_to_exclude)
-            print(f'subclasses_to_exclude_tuple_set: {subclasses_to_exclude_tuple_set}')
+            
+            subclasses_to_exclude_tuple_set = set()
+            if subclasses_to_exclude is not None:
+                subclasses_to_exclude_tuple_set = set(subclasses_to_exclude)
+            print(f'SubClasses to exclude: {subclasses_to_exclude_tuple_set}')
             for row in data_frame.itertuples(index=False):
                 include_subclass_attributes = False
                 if (row.Class, row.SubClass) not in subclasses_to_exclude_tuple_set:
                     include_subclass_attributes = True
-                else:
-                    print(f"Skipping {row.Class} \\ {row.SubClass}")
                 
                 export_class_attributes(conn, cur, row.ClassId, row.SubClassId, callback, detailed_print_outs, include_subclass_attributes)
 
