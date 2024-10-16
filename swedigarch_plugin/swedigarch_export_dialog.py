@@ -70,7 +70,7 @@ class SwedigarchExportDialog(QtWidgets.QDialog, FORM_CLASS):
         self.sslmode = QgsDataSourceUri.SslMode.SslDisable
         self.sslmode_text = ""
         self.export_folder = None
-        self.bulk_export_threshold = 2
+        self.bulk_export_threshold = 8
         self.subclasses_to_exclude = []
         print(f'cpu_count(): {cpu_count()}')
         if cpu_count() >= 4:
@@ -453,17 +453,6 @@ class SwedigarchExportDialog(QtWidgets.QDialog, FORM_CLASS):
         confirm_dlg = ExportConfirmationDialog(databases, self.subclasses_to_exclude, bulk_export_mode, parent=self)
         return_value = confirm_dlg.exec()
         return return_value == 1
-
-    def confirm_export_messagebox(self, number_of_databases:int) -> bool:
-        """Create messagebox to confirm export, used before bulk export (multiple exports in parallel)"""
-        msg_box = QMessageBox()
-        msg_box.setText(self.tr("Are you sure that you want to export ") + str(number_of_databases) + self.tr(" databases?"))
-        msg_box.setWindowTitle(self.tr("Confirm export"))
-        msg_box.setStandardButtons(QMessageBox.Yes | QMessageBox.Cancel)
-        msg_box.button(QMessageBox.Cancel).setText(self.tr("Cancel"))
-        msg_box.button(QMessageBox.Yes).setText(self.tr("Yes"))
-        return_value = msg_box.exec()
-        return return_value == QMessageBox.Yes
 
     def export_ready_check(self):
         """Check if we are ready for export and then enable export button"""
