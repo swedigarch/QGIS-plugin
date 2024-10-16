@@ -64,8 +64,11 @@ class ExportConfirmationDialog(QtWidgets.QDialog, FORM_CLASS):
         self.lwDatabases.clear()
 
         if self.bulk_export_mode:
-            self.lblExportInfo.setText(self.tr(f"Start export of {len(self.databases)} databases?"))
-            self.lwDatabases.addItem(self.tr(f"{len(self.databases)} databases will be exported"))
+            label_text_part_1 = self.tr("Start export of")
+            label_text_part_2 = self.tr("databases?")
+            list_widget_text = self.tr("databases will be exported")
+            self.lblExportInfo.setText(f"{label_text_part_1} {len(self.databases)} {label_text_part_2}")
+            self.lwDatabases.addItem(f"{len(self.databases)} {list_widget_text}")
         else:
             for database in self.databases:
                 self.lwDatabases.addItem(database)
