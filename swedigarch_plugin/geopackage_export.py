@@ -317,7 +317,14 @@ def export_database(conn:psycopg2.extensions.connection, host:str, port:int, use
             subclasses_to_exclude_tuple_set = set()
             if subclasses_to_exclude is not None:
                 subclasses_to_exclude_tuple_set = set(subclasses_to_exclude)
-            print(f'SubClasses to exclude: {subclasses_to_exclude_tuple_set}')
+            
+            subclasses_message = "SubClasses to exclude: "
+            if len(subclasses_to_exclude_tuple_set) > 0:
+                subclasses_message += f"{subclasses_to_exclude_tuple_set}"
+            else:
+                subclasses_message += "None"
+            print(subclasses_message)
+            
             for row in data_frame.itertuples(index=False):
                 include_subclass_attributes = False
                 if (row.Class, row.SubClass) not in subclasses_to_exclude_tuple_set:
