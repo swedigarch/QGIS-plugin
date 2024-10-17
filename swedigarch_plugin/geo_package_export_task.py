@@ -42,7 +42,7 @@ MESSAGE_CATEGORY = 'GeoPackageExportTask'
 class GeoPackageExportTask(QgsTask):
     """Subclass to QgsTask that handles normal export, where dabases are exported one by one."""
 
-    def __init__(self, description, host, port, user_name, password, databases, export_folder, overwrite, csv, detailed_print_outs=True):
+    def __init__(self, description, host, port, user_name, password, databases, export_folder, overwrite, csv, detailed_print_outs=True, subclasses_to_exclude=None):
         super().__init__(description, QgsTask.CanCancel)
         self.log_file = None
         self.host = host
@@ -58,6 +58,7 @@ class GeoPackageExportTask(QgsTask):
         self.exception = None
         self.detailed_print_outs = detailed_print_outs
         self.last_log_line = None
+        self.subclasses_to_exclude = subclasses_to_exclude
         self.setProgress(0)
         if self.detailed_print_outs:
             print("GeoPackageExportTask.init()")
@@ -96,7 +97,7 @@ class GeoPackageExportTask(QgsTask):
             if self.detailed_print_outs:
                 print("GeoPackageExportTask.run()")
             QgsMessageLog.logMessage("GeoPackage Export Task Started", MESSAGE_CATEGORY, Qgis.Info)
-            ret, export_ok_count = export_to_geopackage(self.host, self.port, self.user_name, self.password, self.databases, self.export_folder, self.overwrite, self.csv, self.callback, self.detailed_print_outs, self.log_file)
+            ret, export_ok_count = export_to_geopackage(self.host, self.port, self.user_name, self.password, self.databases, self.export_folder, self.overwrite, self.csv, self.callback, self.detailed_print_outs, self.log_file, self.subclasses_to_exclude)  
             QgsMessageLog.logMessage(f"GeoPackage export done, ret : {ret}", MESSAGE_CATEGORY, Qgis.Info)
             if self.csv:
                 max_length = len(max(self.databases, key=len))

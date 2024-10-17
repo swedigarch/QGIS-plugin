@@ -42,7 +42,7 @@ MESSAGE_CATEGORY = 'GeoPackageExportTask'
 
 class GeoPackageBulkExportMainTask(QgsTask):
     """Subclass to QgsTask that handles bulk export to geopackage"""
-    def __init__(self, description, host, port, user_name, password, export_folder, overwrite, csv, databases):
+    def __init__(self, description, host, port, user_name, password, export_folder, overwrite, csv, databases, subclasses_to_exclude=None):
         super().__init__(description, QgsTask.CanCancel)
         self.log_file = None
         self.databases = databases
@@ -56,6 +56,7 @@ class GeoPackageBulkExportMainTask(QgsTask):
         self.overwrite = overwrite
         self.csv = csv
         self.databases_in_progress_dict = dict()
+        self.subclasses_to_exclude = subclasses_to_exclude
         # Get longest database name
         self.max_length = len(max(databases, key=len))
         self.setProgress(0)
@@ -94,7 +95,7 @@ class GeoPackageBulkExportMainTask(QgsTask):
         print(f'create_subtasks(number_of_subtasks: {number_of_subtasks}) num databases: {len(self.databases)}')
 
         for i in range(0, number_of_subtasks):
-            subtask = GeoPackageBulkExportSubtask(description, self.host, self.port, self.user_name, self.password, self.export_folder, self.overwrite, self.csv, self.max_length, self.write_log_line, self.get_next_database_name, self.export_status_callback)
+            subtask = GeoPackageBulkExportSubtask(description, self.host, self.port, self.user_name, self.password, self.export_folder, self.overwrite, self.csv, self.max_length, self.write_log_line, self.get_next_database_name, self.export_status_callback, self.subclasses_to_exclude)
             self.addSubTask(subtask, [], QgsTask.ParentDependsOnSubTask) #Make sure the main task is run only after all subtasks are done
 
     def write_log_line(self, message):
@@ -164,7 +165,7 @@ class GeoPackageBulkExportMainTask(QgsTask):
 
 class GeoPackageBulkExportSubtask(QgsTask):
     """Subclass to QgsTask that handles bulk export to geopackage"""
-    def __init__(self, description, host, port, user_name, password, export_folder, overwrite, csv, max_length, write_log_line, get_next_database_name, export_status_callback):
+    def __init__(self, description, host, port, user_name, password, export_folder, overwrite, csv, max_length, write_log_line, get_next_database_name, export_status_callback, subclasses_to_exclude=None):
         super().__init__(description, QgsTask.CanCancel)
         #self.master_task = master_task
         self.get_next_database_name_callback = get_next_database_name
@@ -184,6 +185,7 @@ class GeoPackageBulkExportSubtask(QgsTask):
         self.max_length = max_length
         self.write_log_line = write_log_line
         self.last_error = None
+        self.subclasses_to_exclude = subclasses_to_exclude
 
     def callback(self, progress = None, message = None, error = None):
         """Callback function called from the geopackage_export script."""
@@ -219,7 +221,7 @@ class GeoPackageBulkExportSubtask(QgsTask):
                     if delete_on_faliure is False and self.overwrite:
                         delete_on_faliure = True
 
-                    ret, export_ok_count = export_to_geopackage(self.host, self.port, self.user_name, self.password, [self.database], self.export_folder, self.overwrite, self.csv, self.callback, detailed_print_outs=False)
+                    ret, export_ok_count = export_to_geopackage(self.host, self.port, self.user_name, self.password, [self.database], self.export_folder, self.overwrite, self.csv, self.callback, detailed_print_outs=False, subclasses_to_exclude=self.subclasses_to_exclude)
                     print(f'GeoPackageBulkExportSubtask.run() export_to_geopackage({self.database}) ret: {ret}  self.last_error: {self.last_error}')
                     geo_package_file = os.path.join(self.export_folder, f"{self.database.lower()}.gpkg")
                     if ret == RetCode.EXPORT_OK:
