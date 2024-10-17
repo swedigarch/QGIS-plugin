@@ -70,7 +70,7 @@ class SwedigarchExportDialog(QtWidgets.QDialog, FORM_CLASS):
         self.sslmode = QgsDataSourceUri.SslMode.SslDisable
         self.sslmode_text = ""
         self.export_folder = None
-        self.bulk_export_threshold = 2
+        self.bulk_export_threshold = 8
         print(f'cpu_count(): {cpu_count()}')
         if cpu_count() >= 4:
             self.bulk_export_max_number_of_subtasks = cpu_count() - 2 # leave 2 as spare
