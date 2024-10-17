@@ -301,7 +301,6 @@ def export_database(conn:psycopg2.extensions.connection, host:str, port:int, use
         attr_steps = layer_export_steps / 2
         sql = Utils.load_resource('sql/select_classes_to_export.sql')
         sql = sql.replace("__EXCLUDE_META_IDS__", f"{staf_meta_id}, {geo_obj_meta_id}")
-        print(f'sql: {sql}')
         data_frame = pd.read_sql(sql, conn)
         cls_count = len(data_frame)
         attr_inc = attr_steps / cls_count
@@ -492,7 +491,6 @@ def export_objects(conn:psycopg2.extensions.connection, output_file:str, callbac
             staf_meta_id = Utils.get_meta_id(conn, Intrasis.CLASS_STAFF_META_ID)
             geo_obj_meta_id = Utils.get_meta_id(conn, Intrasis.CLASS_GEOOBJECT_META_ID)
             sql = sql.replace("__EXCLUDE_META_IDS__", f"{staf_meta_id}, {geo_obj_meta_id}")
-            print(f"sql: {sql}")
             data_frame = pd.read_sql(sql, conn)
             data_frame.to_sql(name='objects', con = gp_conn, if_exists='append', index=False)
             gp_conn.commit()

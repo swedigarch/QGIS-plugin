@@ -70,8 +70,7 @@ class SwedigarchExportDialog(QtWidgets.QDialog, FORM_CLASS):
         self.sslmode = QgsDataSourceUri.SslMode.SslDisable
         self.sslmode_text = ""
         self.export_folder = None
-        self.bulk_export_threshold = 8
-        self.subclasses_to_exclude = []
+        self.bulk_export_threshold = 2
         print(f'cpu_count(): {cpu_count()}')
         if cpu_count() >= 4:
             self.bulk_export_max_number_of_subtasks = cpu_count() - 2 # leave 2 as spare
@@ -236,7 +235,6 @@ class SwedigarchExportDialog(QtWidgets.QDialog, FORM_CLASS):
     # pylint: disable=invalid-name
     def closeEvent(self, _):
         """The close dialog event (QCloseEvent)"""
-        self.subclasses_to_exclude = []
         point = self.pos()
         settings = QgsSettings()
         settings.setValue("SwedigarchGeotools/dialog_position", point)
@@ -401,8 +399,8 @@ class SwedigarchExportDialog(QtWidgets.QDialog, FORM_CLASS):
                 msg_box.setStandardButtons(QMessageBox.Ok)
                 msg_box.exec()
             else:
-                self.subclasses_to_exclude = []
-                class_subclass_list = []
+                subclasses_to_exclude = []
+                selected_subclasses_list = []
                 databases = [self.lwSelectedDatabases.item(x).text() for x in range(self.lwSelectedDatabases.count())]
                 
                 if self.cbFilterSubClass.isChecked():
@@ -410,18 +408,17 @@ class SwedigarchExportDialog(QtWidgets.QDialog, FORM_CLASS):
                     select_sub_classes_dlg.init_data_and_gui()
                     if not select_sub_classes_dlg.exec_():
                         return
-                    self.subclasses_to_exclude = select_sub_classes_dlg.get_selected_sub_classes_as_list_of_tuples()
-                    class_subclass_list = select_sub_classes_dlg.get_selected_sub_classes_as_list_of_strings()
+                    subclasses_to_exclude = select_sub_classes_dlg.get_selected_subclasses_as_list_of_tuples()
+                    selected_subclasses_list = select_sub_classes_dlg.get_selected_subclasses_as_list_of_strings()
                 
                 number_of_databases = self.lwSelectedDatabases.count()
                 bulk_export_mode = number_of_databases >= self.bulk_export_threshold
-                export_confirmed = self.confirm_export_dialog(bulk_export_mode, class_subclass_list)
+                export_confirmed = self.confirm_export_dialog(bulk_export_mode, selected_subclasses_list)
                 
                 if export_confirmed:
                     export_folder = self.lineEditExportDirectory.text()
                     print(f"export_to_geopackage(db_count: {len(databases)}  export_folder: {export_folder})")
-                    print(f"subclasses_to_exclude: {self.subclasses_to_exclude}")
-                    main_export_task = self.create_export_task(databases, export_folder)
+                    main_export_task = self.create_export_task(databases, export_folder, subclasses_to_exclude)
                     QgsApplication.taskManager().addTask(main_export_task)
                     QgsApplication.processEvents()
                     self.close()
@@ -433,7 +430,7 @@ class SwedigarchExportDialog(QtWidgets.QDialog, FORM_CLASS):
         """Show Help dialog"""
         HelpDialog.show_help("ExportDialog")
 
-    def create_export_task(self, databases:list[str], export_folder:str) -> QgsTask:
+    def create_export_task(self, databases:list[str], export_folder:str, subclasses_to_exclude:list[tuple[str,str]]) -> QgsTask:
         """Create export tasks"""
         bulk_export_mode = len(databases) >= self.bulk_export_threshold
         #bulk_export_mode = False #Bulk mode disabled
@@ -442,10 +439,10 @@ class SwedigarchExportDialog(QtWidgets.QDialog, FORM_CLASS):
         csv = self.cbExportCSV.isChecked()
         #print(f'overwrite: {overwrite} csv: {csv}')
         if not bulk_export_mode: #If not bulk export: create one main task
-            return GeoPackageExportTask("Exporting GeoPackages", self.host, self.port, self.user_name, self.password, databases, export_folder, overwrite, csv, detailed_print_outs, self.subclasses_to_exclude)
+            return GeoPackageExportTask("Exporting GeoPackages", self.host, self.port, self.user_name, self.password, databases, export_folder, overwrite, csv, detailed_print_outs, subclasses_to_exclude)
 
         # is bulk export: create bulk main task with subtasks
-        main_export_task = GeoPackageBulkExportMainTask("Exporting GeoPackages", self.host, self.port, self.user_name, self.password, export_folder, overwrite, csv, databases, self.subclasses_to_exclude)
+        main_export_task = GeoPackageBulkExportMainTask("Exporting GeoPackages", self.host, self.port, self.user_name, self.password, export_folder, overwrite, csv, databases, subclasses_to_exclude)
         main_export_task.create_subtasks("Exporting GeoPackages", min(len(databases),self.bulk_export_max_number_of_subtasks))
         return main_export_task
 

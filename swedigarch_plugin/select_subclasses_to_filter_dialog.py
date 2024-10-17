@@ -178,19 +178,19 @@ class SelectSubClassesToFilterDialog(QtWidgets.QDialog, FORM_CLASS):
             traceback.print_exc()
             print(f"Exception in init_data_and_gui(): {err}")
 
-    def get_selected_sub_classes_as_list_of_strings(self) -> list[str]:
-        """Get selected sub classes list items as a list of strings"""
+    def get_selected_subclasses_as_list_of_strings(self) -> list[str]:
+        """Get selected list items as a list of strings"""
         return [self.lwSelectedSubClasses.item(x).text() for x in range(self.lwSelectedSubClasses.count())]
     
-    def get_selected_sub_classes_as_list_of_tuples(self) -> list[tuple[str,str]]:
-        """Get selected sub classes list items as a list of tuples, each tuple is a string (className,subClassName)"""
+    def get_selected_subclasses_as_list_of_tuples(self) -> list[tuple[str,str]]:
+        """Get selected SubClasses list items as a list of tuples, each tuple is (className, subClassName)"""
         item_list = [self.lwSelectedSubClasses.item(x).text() for x in range(self.lwSelectedSubClasses.count())]
         return [self.extract_class_and_subclass_from_string(s) for s in item_list]
     
     def extract_class_and_subclass_from_string(self, s):
-        """Extract class and subclass from a string on the form 'class_name \\ subclass_name (occurrence)'"""
+        """Extract class_name and subclass_name from a string on the form 'class_name \\ subclass_name (occurrence)'"""
         class_name, subclass_with_occurrence = s.split(' \\ ')
-        subclass_name = re.sub(r' \(\d+\)', '', subclass_with_occurrence)  # Remove the occurrence part
+        subclass_name = re.sub(r' \(\d+\)', '', subclass_with_occurrence)
         return (class_name, subclass_name)
 
     def on_ok(self):
