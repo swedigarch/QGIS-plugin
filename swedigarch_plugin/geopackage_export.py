@@ -326,11 +326,11 @@ def export_database(conn:psycopg2.extensions.connection, host:str, port:int, use
             print(subclasses_message)
             
             for row in data_frame.itertuples(index=False):
-                include_subclass_attributes = False
+                exclude_subclass_attributes = True
                 if (row.Class, row.SubClass) not in subclasses_to_exclude_tuple_set:
-                    include_subclass_attributes = True
+                    exclude_subclass_attributes = False
                 
-                export_class_attributes(conn, cur, row.ClassId, row.SubClassId, callback, detailed_print_outs, include_subclass_attributes)
+                export_class_attributes(conn, cur, row.ClassId, row.SubClassId, callback, detailed_print_outs, exclude_subclass_attributes)
 
                 layers_done = layers_done + attr_inc
                 db_progress = (layers_done / layer_export_steps) * 100
@@ -611,22 +611,30 @@ def export_project_information(host:str, port:int, user_name:str, password:str, 
         traceback.print_exc()
         callback(None, "Error in export_project_information()", err)
 
-def export_class_attributes(conn:psycopg2.extensions.connection, cur:sqlite3.Cursor, class_id:int, sub_class_id:int, callback:Callable, detailed_print_outs:bool=True, include_subclass_attributes:bool=True) -> None:
+def export_class_attributes(conn:psycopg2.extensions.connection, cur:sqlite3.Cursor, class_id:int, sub_class_id:int, callback:Callable, detailed_print_outs:bool=True, exclude_subclass_attributes:bool=False) -> None:
     """Export attributes for class (and SubClass if sub_class_id has value) and write them to the GeoPackage"""
     try:
         sql = Utils.load_resource('sql/select_object_attributes.sql')
-        if not include_subclass_attributes or Utils.is_nan(sub_class_id) or sub_class_id is None:
+        if Utils.is_nan(sub_class_id) or sub_class_id is None:
             sql =  sql.replace("__CLASS__", f" {class_id} AND o.\"SubClassId\" is NULL")
             sql = sql.replace("__CLS_IDS__", f"{class_id}")
             sql = sql.replace("__ORDERING__", "")
             if detailed_print_outs:
                 print(f"Attribute export for ClassId: {class_id}, SubClassId: NULL")
         else:
-            sql = sql.replace("__CLASS__", f" {class_id} AND o.\"SubClassId\" = {sub_class_id}")
-            sql = sql.replace("__CLS_IDS__", f"{class_id}, {sub_class_id}")
-            sql = sql.replace("__ORDERING__", f", am.\"ObjectDefId\" = {sub_class_id}")
-            if detailed_print_outs:
-                print(f"Attribute export for ClassId: {class_id}, SubClassId: {sub_class_id}")
+            if exclude_subclass_attributes:
+                sql = sql.replace("__CLASS__", f" {class_id} AND o.\"SubClassId\" = {sub_class_id}")
+                sql = sql.replace("__CLS_IDS__", f"{class_id}")
+                sql = sql.replace("__ORDERING__", "")
+                if detailed_print_outs:
+                    print(f"Attribute export for ClassId: {class_id}, SubClassId: {sub_class_id} (SubClass attributes excluded)")
+            else:
+                sql = sql.replace("__CLASS__", f" {class_id} AND o.\"SubClassId\" = {sub_class_id}")
+                sql = sql.replace("__CLS_IDS__", f"{class_id}, {sub_class_id}")
+                sql = sql.replace("__ORDERING__", f", am.\"ObjectDefId\" = {sub_class_id}")
+                if detailed_print_outs:
+                    print(f"Attribute export for ClassId: {class_id}, SubClassId: {sub_class_id}")
+        
         data_frame = pd.read_sql(sql, conn)
         export_utils.store_attributes(cur, data_frame)
     except Exception as err:
