@@ -243,7 +243,7 @@ def export_database(conn:psycopg2.extensions.connection, host:str, port:int, use
         gc.collect() # To free up QgsVectorLayer and close its connection.
 
         #region "export all objects to objects table"
-        export_objects(conn, output_file, callback)
+        export_objects(conn, output_file, callback, subclasses_to_exclude)
 
         export_utils.if_missing_create_gpkg_extensions(output_file)
 
@@ -488,7 +488,20 @@ def export_raster_layer_to_gpkg(conn:psycopg2.extensions.connection, meta_ids:st
         traceback.print_exc()
         callback(None, "Error in export_raster_layer_to_gpkg()", err)
 
-def export_objects(conn:psycopg2.extensions.connection, output_file:str, callback:Callable) -> None:
+def generate_case_statement_from_subclasses_to_exclude(subclasses_to_exclude):
+    """Generate a CASE statement to exclude subclass name from the export based on the list of tuples."""
+    if not subclasses_to_exclude:
+        return 'd2."Name" as "SubClass"'
+
+    case_lines = ['CASE']
+    for class_name, sub_class_name in subclasses_to_exclude:
+        case_lines.append(f"    WHEN d1.\"Name\" = '{class_name}' AND d2.\"Name\" = '{sub_class_name}' THEN NULL")
+    case_lines.append('    ELSE d2."Name"')
+    case_lines.append('END as "SubClass"')
+
+    return '\n'.join(case_lines)
+
+def export_objects(conn:psycopg2.extensions.connection, output_file:str, callback:Callable, subclasses_to_exclude:list) -> None:
     """Export all objects to objects table, with Staf and GeoObject filtered out"""
     try:
         sql = Utils.load_resource('sql/create_objects_table.sql')
@@ -498,6 +511,7 @@ def export_objects(conn:psycopg2.extensions.connection, output_file:str, callbac
             staf_meta_id = Utils.get_meta_id(conn, Intrasis.CLASS_STAFF_META_ID)
             geo_obj_meta_id = Utils.get_meta_id(conn, Intrasis.CLASS_GEOOBJECT_META_ID)
             sql = sql.replace("__EXCLUDE_META_IDS__", f"{staf_meta_id}, {geo_obj_meta_id}")
+            sql = sql.replace("__SUBCLASS_NAME_SELECT__", generate_case_statement_from_subclasses_to_exclude(subclasses_to_exclude))
             data_frame = pd.read_sql(sql, conn)
             data_frame.to_sql(name='objects', con = gp_conn, if_exists='append', index=False)
             gp_conn.commit()
