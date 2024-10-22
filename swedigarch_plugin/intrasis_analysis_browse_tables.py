@@ -882,7 +882,8 @@ class IntrasisAnalysisBrowseTablesDialog(QtWidgets.QDialog, FORM_CLASS):
            ,self.comboBox_class.currentText()
            ,self.comboBox_subclass.currentText()
            ,self.current_gpkg
-           ,subclass_items_dict = self.subclass_items_dict)
+           ,subclass_items_dict = self.subclass_items_dict
+           ,add_parent_id_to_layer = self.add_parent_id_to_layer)
 
         self.class_subclass_attributes.populate_table(task)
         self.class_subclass_attributes.update_qtablewidget(task)
@@ -988,7 +989,7 @@ class populateTableFromGpkg:
     """Class representing class subclass attribute table"""
 
     def __init__(self, tableView, class_item, subclass_item
-                , selected_gpkg, subclass_items_dict):
+                , selected_gpkg, subclass_items_dict, add_parent_id_to_layer):
         '''Holds functions and creates Class Subclass object'''
         self.tableV = tableView
         self.class_item = class_item
@@ -996,6 +997,7 @@ class populateTableFromGpkg:
         self.selected_gpkg = selected_gpkg
         self.error_dialog = QtWidgets.QErrorMessage()
         self.subclass_items_dict = subclass_items_dict
+        self.add_parent_id_to_layer = add_parent_id_to_layer
         self.objects_dataframe = None
         self.attributes_datatypes_dict = [] #skapa en tom lista
         self.nRows = None
@@ -1207,6 +1209,54 @@ class populateTableFromGpkg:
         self.objects_dataframe = self.objects_dataframe.drop_duplicates().copy(deep=True)
         self.objects_dataframe = self.objects_dataframe.fillna('').copy(deep=True)
 
+        #progress_steps = 80/len(self.objects_dataframe.index)
+        #progress = 20
+        if self.add_parent_id_to_layer is True:
+            #parent_id_string = None
+            #grand_parent_id_string = None
+            #self.objects_dataframe['parent_idx'] = ''
+            #self.objects_dataframe['grandparent_idx'] = ''
+            self.objects_dataframe[['parent_objectid', 'parent_intrasisid']] = self.objects_dataframe['object_id'].apply(lambda x: pd.Series([self.get_parent_id_string(self.selected_gpkg, x)[3],self.get_parent_id_string(self.selected_gpkg, x)[1]]))
+            #self.objects_dataframe['grandparent_intrasisid'] = self.objects_dataframe['parent_objectid'].apply(lambda x: ','.join([self.get_parent_id_string(self.selected_gpkg, int(i))[1] for i in x.split(',')]) if len(x) > 0 else None)
+            self.objects_dataframe['grandparent_intrasisid'] = self.objects_dataframe['parent_objectid'].apply(lambda x: ','.join(filter(None, [self.get_parent_id_string(self.selected_gpkg, int(i))[1] for i in x.split(',')])) if len(x) > 0 else None)
+            #self.objects_dataframe['parent_objectid'] = self.objects_dataframe['object_id'].apply(lambda x: self.get_parent_id_string(self.selected_gpkg, x)[3])
+            #task.setProgress(40)
+            #self.objects_dataframe['parent_intrasisid'] = self.objects_dataframe['object_id'].apply(lambda x: self.get_parent_id_string(self.selected_gpkg, x)[1])
+            #task.setProgress(60)
+            #self.objects_dataframe['grandparent_intrasisid'] = self.objects_dataframe['parent_objectid'].apply(lambda x: ','.join([self.get_parent_id_string(self.selected_gpkg, int(i))[1] for i in x.split(',')]) if len(x) > 0 else '')
+            #task.setProgress(80)
+            '''for index, row in self.objects_dataframe.iterrows():
+                grandparents_id_string_x = ''
+                #print(row['object_id'])
+                #parent_object_id_list = BrowseRelationsUtils.get_realated_above(
+                #    self.selected_gpkg, row['object_id'])
+                #print(f"från browse relationsutils: '{parent_object_id_list}")
+                parent_intrasis_id_list_x, parent_id_string_x, parent_object_id_list_x, parent_objectid_string = self.get_parent_id_string(self.selected_gpkg
+                                                                                                                   , row['object_id'])
+                #print(f"från ny funktion intrasis id list :{parent_intrasis_id_list_x}")
+                #print(f"från ny funktion parent string: {parent_id_string_x}")
+                if len(parent_id_string_x) > 0:
+
+                    self.objects_dataframe.at[index, 'parent_idx'] = parent_id_string_x
+                    # Get grand parent object ids
+                    grand_parent_id_list = []
+                    for objectid in parent_object_id_list_x[:,0]:
+                    #for objectid in parent_object_id_list[:,0]:
+                        grandparent_intrasis_id_list_x, grandparent_id_string_x, grandparent_object_id_list_x, grandparent_objectid_string = self.get_parent_id_string(self.selected_gpkg
+                                                                                                                   , objectid)
+                        if len(grandparent_id_string_x) > 0:
+                            grandparents_id_string_x += grandparent_id_string_x
+                            #self.objects_dataframe.at[index, 'grandparent_idx'] = grandparents_id_string_x
+                    if len(grandparents_id_string_x) > 0:
+                        self.objects_dataframe.at[index, 'grandparent_idx'] = grandparents_id_string_x
+                    else:
+                        self.objects_dataframe.at[index, 'grandparent_idx'] = "No grand_parent_id found"
+                if len(parent_id_string_x) == 0:
+                #if len(parent_object_id_list) == 0:
+                    self.objects_dataframe.at[index, 'parent_idx'] = "No parent_id found"
+                    self.objects_dataframe.at[index, 'grandparent_idx'] = "No grand_parent_id found"'''
+
+
         self.nRows = len(self.objects_dataframe.index)
         self.nCols = len(self.objects_dataframe.columns)
 
@@ -1317,6 +1367,37 @@ class populateTableFromGpkg:
         conn.close()
 
         return table_loaded_data_stats
+
+    def get_parent_id_string(self, gpkg:str, object_id:int) -> (str | None | None):
+        parent_object_id_list = BrowseRelationsUtils.get_realated_above(
+                    gpkg, object_id)
+                #print(parent_object_id_list)
+        parent_object_id_string = ''
+        if len(parent_object_id_list) > 0:
+            parent_intrasis_id_list = [Utils.get_objects_data_for_object_id(MESSAGE_CATEGORY
+                                                     , gpkg
+                                                     , int(item))["IntrasisId"].tolist()
+                                                     for item in parent_object_id_list[:,0]]
+                    #print(parent_intrasis_id_list)
+            parent_id_string = ','.join([str(item)
+                                                       for sublist in
+                                                       parent_intrasis_id_list
+                                                       for item in sublist])
+            parent_object_id_string = list(parent_object_id_list[:,0])
+            parent_object_id_string = ','.join(map(str, parent_object_id_string))
+            #print(parent_object_id_string)
+            
+            if len(parent_id_string) > 0:
+                return parent_intrasis_id_list, parent_id_string, parent_object_id_list, parent_object_id_string
+            if len(parent_id_string) == 0:
+                parent_id_string = ''
+                parent_object_id_string = ''
+                return parent_intrasis_id_list, parent_id_string, parent_object_id_list, parent_object_id_string
+        else:
+            parent_intrasis_id_list = []
+            parent_id_string = ''
+            parent_object_id_string = ''
+            return parent_intrasis_id_list, parent_id_string, parent_object_id_list, parent_object_id_string
 
 class TableModel(QAbstractTableModel):
     """Class representing QAbstractTableModel"""
