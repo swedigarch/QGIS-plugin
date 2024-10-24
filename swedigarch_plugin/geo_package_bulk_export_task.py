@@ -107,7 +107,8 @@ class GeoPackageBulkExportMainTask(QgsTask):
         padded_db_name = database.ljust(self.max_length + 2)
         if result:
             self.export_ok_count += 1
-            self.log_file.write(f'{log_excluded_subclasses}\n')
+            if log_excluded_subclasses is not None:
+                self.log_file.write(f'{log_excluded_subclasses}\n')
             self.log_file.write(f'{padded_db_name} Exported OK\n')
             QgsMessageLog.logMessage(f"Database {database} Exported OK", MESSAGE_CATEGORY, Qgis.Info)
             return

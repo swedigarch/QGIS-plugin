@@ -110,7 +110,8 @@ def export_to_geopackage(host:int, port:int, user_name:str, password:str, databa
 
             if log_file is not None:
                 if db_ret:
-                    log_file.write(f'{log_excluded_subclasses}\n')
+                    if log_excluded_subclasses is not None:
+                        log_file.write(f'{log_excluded_subclasses}\n')
                     log_file.write(f'{padded_db_name} Exported OK\n')
                 elif error_msg is not None:
                     if error_msg == 'Skipped because GeoPackage file already exist':
