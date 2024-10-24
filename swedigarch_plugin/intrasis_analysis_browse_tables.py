@@ -1003,6 +1003,7 @@ class populateTableFromGpkg:
         self.nRows = None
         self.nCols = None
         self.temp_layername = None
+        self.objects_dataframe_relations = None
 
     def populate_table(self,task:QgsTask) -> None:
         '''Reads and arranges data to be viewed in
@@ -1212,6 +1213,24 @@ class populateTableFromGpkg:
         #progress_steps = 80/len(self.objects_dataframe.index)
         #progress = 20
         if self.add_parent_id_to_layer is True:
+            self.objects_dataframe_relations = self.objects_dataframe.copy(deep=True)
+            #parent_ids = self.objects_dataframe['object_id'].apply(self.get_parent_id_string_string).str.cat(sep=', ')
+            
+            parent_ids = self.objects_dataframe['object_id'].apply(lambda x: self.get_parent_id_string_string(self.selected_gpkg, x))
+            print(f'type(parent_ids): {type(parent_ids)}')
+            all_values = ', '.join(parent_ids)
+            print(f'all_values: {all_values}')
+            unique_values = sorted(set(all_values.replace(' ', '').split(',')))
+            #Remove empty strings returned from self.get_parent_id_string_string()
+            unique_values = [value for value in unique_values if value]
+            result = ','.join(unique_values)
+            print(f'result: {result}')
+            a =self.get_related_classes_and_subclasses(self.selected_gpkg, result)
+            print(a)
+            #unique_parent_ids = sorted(set(parent_ids.replace(' ', '').split(',')))
+            #parent_id_string = ','.join(unique_parent_ids)
+            #print(f'Lång sträng med unika parent_id: {parent_id_string}')
+            
             #parent_id_string = None
             #grand_parent_id_string = None
             #self.objects_dataframe['parent_idx'] = ''
@@ -1398,6 +1417,49 @@ class populateTableFromGpkg:
             parent_id_string = ''
             parent_object_id_string = ''
             return parent_intrasis_id_list, parent_id_string, parent_object_id_list, parent_object_id_string
+  
+    def get_parent_id_string_string(self, gpkg:str, object_id:int) -> (str | None | None):
+        parent_object_id_list = BrowseRelationsUtils.get_realated_above(
+                    gpkg, object_id)
+                #print(parent_object_id_list)
+        parent_object_id_string = ''
+        if len(parent_object_id_list) > 0:
+            parent_intrasis_id_list = [Utils.get_objects_data_for_object_id(MESSAGE_CATEGORY
+                                                     , gpkg
+                                                     , int(item))["IntrasisId"].tolist()
+                                                     for item in parent_object_id_list[:,0]]
+                    #print(parent_intrasis_id_list)
+            parent_id_string = ','.join([str(item)
+                                                       for sublist in
+                                                       parent_intrasis_id_list
+                                                       for item in sublist])
+            parent_object_id_string = list(parent_object_id_list[:,0])
+            parent_object_id_string = ','.join(map(str, parent_object_id_string))
+            #print(parent_object_id_string)
+            
+            if len(parent_id_string) > 0:
+                #return parent_intrasis_id_list, parent_id_string, parent_object_id_list, parent_object_id_string
+                return parent_id_string
+            if len(parent_id_string) == 0:
+                parent_id_string = ''
+                parent_object_id_string = ''
+                #return parent_intrasis_id_list, parent_id_string, parent_object_id_list, parent_object_id_string
+                return parent_id_string
+        else:
+            parent_intrasis_id_list = []
+            parent_id_string = ''
+            parent_object_id_string = ''
+            #return parent_intrasis_id_list, parent_id_string, parent_object_id_list, parent_object_id_string
+            return parent_id_string
+    def get_related_classes_and_subclasses(self, gpkg,  object_id_string):
+        '''Returns a Pandas dataframe containing related class and subclass combinations'''
+        sql_query = f"select Class, SubClass, REPLACE(Class, ' ', '_') || '.' || REPLACE(Subclass, ' ', '_') AS 'Class.SubClass', count() as count from objects where IntrasisId in ({object_id_string}) group by Class, SubClass"
+        print(sql_query)
+        conn = sqlite3.connect(gpkg)
+        related_classes_subclasses = pd.read_sql_query(sql_query, conn)
+        #class_subclass_dataframe = class_subclass_dataframe.set_index(['object_id'])
+        conn.close()
+        return related_classes_subclasses
 
 class TableModel(QAbstractTableModel):
     """Class representing QAbstractTableModel"""
