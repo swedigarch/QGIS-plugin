@@ -102,11 +102,12 @@ class GeoPackageBulkExportMainTask(QgsTask):
         """Write log line to log file"""
         self.log_file.write(message)
 
-    def export_status_callback(self, database, result, message = None):
+    def export_status_callback(self, database, result, message = None, log_excluded_subclasses = None):
         """Callback that gets called from subtasks to send export status of a database"""
         padded_db_name = database.ljust(self.max_length + 2)
         if result:
             self.export_ok_count += 1
+            self.log_file.write(f'{log_excluded_subclasses}\n')
             self.log_file.write(f'{padded_db_name} Exported OK\n')
             QgsMessageLog.logMessage(f"Database {database} Exported OK", MESSAGE_CATEGORY, Qgis.Info)
             return
@@ -221,14 +222,14 @@ class GeoPackageBulkExportSubtask(QgsTask):
                     if delete_on_faliure is False and self.overwrite:
                         delete_on_faliure = True
 
-                    ret, export_ok_count = export_to_geopackage(self.host, self.port, self.user_name, self.password, [self.database], self.export_folder, self.overwrite, self.csv, self.callback, detailed_print_outs=False, subclasses_to_exclude=self.subclasses_to_exclude)
+                    ret, export_ok_count, log_excluded_subclasses = export_to_geopackage(self.host, self.port, self.user_name, self.password, [self.database], self.export_folder, self.overwrite, self.csv, self.callback, detailed_print_outs=False, subclasses_to_exclude=self.subclasses_to_exclude)
                     print(f'GeoPackageBulkExportSubtask.run() export_to_geopackage({self.database}) ret: {ret}  self.last_error: {self.last_error}')
                     geo_package_file = os.path.join(self.export_folder, f"{self.database.lower()}.gpkg")
                     if ret == RetCode.EXPORT_OK:
-                        self.export_status_callback(self.database, True, None)
+                        self.export_status_callback(self.database, True, None, log_excluded_subclasses)
                     else:
                         print(f'before export_status_callback({self.database}, False, {self.last_error})')
-                        self.export_status_callback(self.database, False, self.last_error)
+                        self.export_status_callback(self.database, False, self.last_error, log_excluded_subclasses)
                         if QFile(geo_package_file).exists():
                             if delete_on_faliure:
                                 print(f'GeoPackageBulkExportSubtask.run() export failed, export file {geo_package_file} still exist, deleting it')
@@ -268,12 +269,12 @@ class GeoPackageBulkExportSubtask(QgsTask):
             QgsMessageLog.logMessage(f"Exception from export_to_geopackage() Exception: {err}", MESSAGE_CATEGORY, Qgis.Info)
             return False
 
-    def report_export_status(self, database, ret, last_error):
+    def report_export_status(self, database, ret, last_error, log_excluded_subclasses):
         """Report back export status"""
         if ret == RetCode.EXPORT_OK:
-            self.export_status_callback(database, True, None)
+            self.export_status_callback(database, True, None, log_excluded_subclasses)
         else:
-            self.export_status_callback(database, False, last_error)
+            self.export_status_callback(database, False, last_error, None)
 
     def finished(self, result):
         """Task finished"""
