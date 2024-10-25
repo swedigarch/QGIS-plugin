@@ -563,7 +563,7 @@ def export_none_geometry_objects(host:str, port:int, user_name:str, password:str
         del layer
         layer = None
         del uri
-        uri = None        
+        uri = None
         return staf_meta_id, geo_obj_meta_id
     except Exception as err:
         traceback.print_exc()

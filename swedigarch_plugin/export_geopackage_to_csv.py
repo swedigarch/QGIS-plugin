@@ -136,7 +136,7 @@ def export_features(features:list[str], tmpdirname:str, output_file:str) -> None
     """Export all features to combined features CSV"""
     print('Exporting table features')
 
-    csv.field_size_limit(2500000)
+    csv.field_size_limit(3500000)
     with open(output_file, 'w', encoding='UTF-8', newline='') as file:
         writer = csv.writer(file, delimiter=';', quotechar='"', quoting=csv.QUOTE_NONNUMERIC)
         headers_writen = False

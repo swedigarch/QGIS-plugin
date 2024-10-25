@@ -30,16 +30,20 @@
 import configparser
 from pathlib import Path
 import os.path
+import glob
+from datetime import datetime
+import traceback
 from typing import Callable
-import numpy as np
+#import numpy as np
 # Import the code for the dialog
+from qgis.core import QgsApplication, QgsTask, Qgis, QgsSettings, QgsMessageLog
 from qgis.PyQt.QtCore import QSettings, QTranslator, QCoreApplication
 from qgis.PyQt.QtGui import QIcon
 from PyQt5 import QtWidgets
 from qgis.PyQt.QtWidgets import QAction, QMessageBox, QStyle, QWidget
 from PyQt5.QtWidgets import QFileDialog
 from qgis.utils import iface
-from qgis.core import QgsSettings
+from PyQt5.QtCore import QDir, QFile, QSettings
 from osgeo import ogr
 from .swedigarch_export_dialog import SwedigarchExportDialog
 from .intrasis_analysis_browse_relations import IntrasisAnalysisBrowseRelationsDialog
@@ -49,6 +53,7 @@ from .export_geopackage_to_csv import export_geopackage_to_csv
 from .resources import * # This row is needed for the ToolBar button to get its icon.
 from . import utils as Utils
 from .constant import RetCode
+from .export_geopackage_to_csv import export_geopackage_to_csv
 
 class SwedigarchGeotools:
     """QGIS Plugin Implementation."""
@@ -102,6 +107,8 @@ class SwedigarchGeotools:
         self.first_start = None
         self.first_start_browse_relations = None
         self.first_start_browse_tables = None
+
+        self.title_export_gpkg_to_csv = self.tr('Export GPKG to CSV')
 
         # Explicitly signal using exceptions to silence warning
         ogr.UseExceptions()
@@ -202,6 +209,14 @@ class SwedigarchGeotools:
             text=self.tr('Intrasis Relationship Browser'),
             callback=self.run_analysis_browse_relations,
             parent=self.iface.mainWindow())
+
+        icon_path = ':/plugins/swedigarch_plugin/assets/csv.svg'
+        self.add_action(
+            icon_path,
+            text=self.title_export_gpkg_to_csv,
+            callback=self.export_gpkg_to_csv,
+            parent=self.iface.mainWindow(),
+            add_to_toolbar=False)
 
         self.add_action(
             self.menu.style().standardIcon(QStyle.SP_MessageBoxInformation),
@@ -314,6 +329,130 @@ class SwedigarchGeotools:
             # Do something useful here - delete the line containing pass and
             # substitute with your code.
             pass
+
+    def export_gpkg_to_csv(self) -> None:
+        """Export all GPKG in selected folder to CSV"""
+        try:
+            s = QgsSettings()
+            export_folder = s.value("SwedigarchGeotools/exportFolder", "")
+            print(f'start export_folder: {export_folder}')
+            if QDir(export_folder).exists():
+                export_folder = QFileDialog.getExistingDirectory(None, self.tr('Select folder to convert GPKG to CSV in'), export_folder, QtWidgets.QFileDialog.ShowDirsOnly)
+            else:
+                export_folder = QFileDialog.getExistingDirectory(None, self.tr('Select folder to convert GPKG to CSV in'), "", QtWidgets.QFileDialog.ShowDirsOnly)
+            if export_folder == '':
+                return # Canceled
+
+            print(f'Selected export_folder: {export_folder}')
+            globals()['Task_export_gpkg_to_csv'] = QgsTask.fromFunction(
+                self.title_export_gpkg_to_csv,
+                self.task_export_gpkg_to_csv,
+                on_finished=self.export_gpkg_to_csv_done,
+                export_folder = export_folder)
+            QgsApplication.taskManager().addTask(globals()['Task_export_gpkg_to_csv'])
+            QgsApplication.processEvents()
+
+        except Exception as err:
+            print(f'export_gpkg_to_csv() Exception: {err}')
+
+    def task_export_gpkg_to_csv(self, task:QgsTask, export_folder:str) -> tuple[int, int]:
+        """Task to run actual calls to export_geopackage_to_csv()"""
+        try:
+            task.setProgress(1)
+            now = datetime.now()
+            date_tag = now.strftime('%Y-%m-%d_%H-%M-%S')
+            bulk_log_filename = os.path.join(export_folder, f'bulk_gpkg_to_csv_{date_tag}.log')
+            with open(bulk_log_filename, "w", encoding='utf-8') as log_file:
+                failed = 0
+                total_count = 0
+                all_gpkg_files = []
+                gpkg_files = []
+                QgsMessageLog.logMessage(f'Searching folder: \"{export_folder}\" to find all GPKG files', self.title_export_gpkg_to_csv, Qgis.Info)
+                for gpkg_file in glob.glob(f'{export_folder}/*.gpkg'):
+                    all_gpkg_files.append(gpkg_file)
+                    if Utils.is_intrasis_gpkg_export(gpkg_file) is True:
+                        gpkg_files.append(gpkg_file)
+                    else:
+                        QgsMessageLog.logMessage(f'{gpkg_file} is not an Intrasis GPKG, skipping', self.title_export_gpkg_to_csv, Qgis.Info)
+                        print(f'Not Intrasis GPKG: {gpkg_file}')
+
+                    if task.isCanceled():
+                        QgsMessageLog.logMessage(f'Task was canceled: {task.description()}', self.title_export_gpkg_to_csv, Qgis.Info)
+                        return None
+
+                #print(f'Folder contained {len(all_gpkg_files)} GPKG files')
+                #print(f'Found {len(gpkg_files)} Intrasis GPKG files in folder: {export_folder}')
+                max_length = len(max(gpkg_files, key=len))
+                log_file.write(f'Starting export of {len(gpkg_files)} Intrasis GPKG files in folder: {export_folder}\n')
+                log_file.flush()
+                progress = 0
+                file_count = len(gpkg_files)
+                QgsMessageLog.logMessage(f'Starting export of {file_count} Intrasis GPKG files to CSV' ,self.title_export_gpkg_to_csv, Qgis.Info)
+                for gpkg_file in gpkg_files:
+                    if task.isCanceled():
+                        QgsMessageLog.logMessage(f'Task was canceled: {task.description()}', self.title_export_gpkg_to_csv, Qgis.Info)
+                        return None
+
+                    db_name = Path(gpkg_file).stem
+                    output_filename = os.path.join(export_folder, f"{db_name.lower()}")
+                    padded_gpkg_file = gpkg_file.ljust(max_length + 2)
+
+                    ret_code, error_msg, output_filename = export_geopackage_to_csv(gpkg_file)
+                    total_count += 1
+                    if ret_code == RetCode.EXPORT_OK:
+                        log_file.write(f'{padded_gpkg_file} CSV export OK  ({output_filename})\n')
+                        message = f'{padded_gpkg_file} CSV export OK ({output_filename})'
+                        QgsMessageLog.logMessage(message ,self.title_export_gpkg_to_csv, Qgis.Info)
+                    else:
+                        log_file.write(f'{padded_gpkg_file} Error during CSV export: {error_msg}\n')
+                        message = f'{padded_gpkg_file} Error during CSV export: {error_msg})'
+                        QgsMessageLog.logMessage(message ,self.title_export_gpkg_to_csv, Qgis.Warning)
+                        failed += 1
+
+                    log_file.flush()
+                    progress = (total_count / file_count) * 100
+                    task.setProgress(progress)
+
+                task.setProgress(100)
+                return total_count, failed
+
+        except Exception as err:
+            print(f'export_gpkg_to_csv() Exception: {err}')
+            QgsMessageLog.logMessage(f'Error: {err}', self.title_export_gpkg_to_csv, Qgis.Critical)
+            raise
+        finally:
+            if log_file is not None:
+                log_file.close()
+
+    def export_gpkg_to_csv_done(self, exception:Exception, result:tuple[int, int]=None) -> None:
+        """GPKG export to CSV done
+        Exception is not None if self.task_export_gpkg_to_csv raises an exception.
+        result is the return value of self.task_export_gpkg_to_csv."""
+        try:
+            msg_box = QMessageBox()
+            msg_box.setWindowTitle(self.tr(f'Result from: {self.title_export_gpkg_to_csv}'))
+            msg_box.setStandardButtons(QMessageBox.Ok)
+            if result is None:
+                text = f'Error during runnig of "{self.title_export_gpkg_to_csv}" Exception: {exception}'
+                msg_box.setText(text)
+                msg_box.setIcon(QMessageBox.Critical)
+            else:
+                total_count, failed = result
+                if failed == 0:
+                    text = self.tr("Sucessfully converted all _COUNT_ GeoPackages to CSV.")
+                    text = text.replace('_COUNT_', f'{total_count}')
+                    msg_box.setIcon(QMessageBox.Information)
+                elif failed > 0:
+                    text = self.tr("Have tried to convert _COUNT_ALL_ GeoPackages to CSV, _COUNT_ failed.")
+                    text = text.replace('_COUNT_ALL_', f'{total_count}')
+                    text = text.replace('_COUNT_', f'{failed}')
+                    msg_box.setIcon(QMessageBox.Warning)
+                msg_box.setText(text)
+            msg_box.exec()
+            del globals()['Task_export_gpkg_to_csv']
+        except Exception as err:
+            traceback.print_exc()
+            print(f'export_gpkg_to_csv_done() Exception: {err}')
 
     def show_about(self) -> None:
         """Display the about message box"""

@@ -101,7 +101,7 @@ class GeoPackageExportTask(QgsTask):
             QgsMessageLog.logMessage(f"GeoPackage export done, ret : {ret}", MESSAGE_CATEGORY, Qgis.Info)
             if self.csv:
                 max_length = len(max(self.databases, key=len))
-                print(f'Starting CSV export')
+                print('Starting CSV export')
                 self.callback(95, "Starting CSV export")
                 for database in self.databases:
                     geo_package_file = os.path.join(self.export_folder, f"{database.lower()}.gpkg")
