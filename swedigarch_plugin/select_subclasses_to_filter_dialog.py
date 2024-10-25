@@ -27,7 +27,6 @@
 """
 
 import os
-import copy
 import re
 import traceback
 import psycopg2
@@ -123,7 +122,12 @@ class SelectSubClassesToFilterDialog(QtWidgets.QDialog, FORM_CLASS):
                 conn = psycopg2.connect(connection_string)
 
                 sql = Utils.load_resource('sql/select_classes.sql')
-                data_frame = pd.read_sql(sql, conn)
+                try:
+                    data_frame = pd.read_sql(sql, conn)
+                except pd.errors.DatabaseError:
+                    print(f'Database "{database}" is not a valid Intrasis database, skipping')
+                    continue
+
                 classes = {}
                 for row in data_frame.itertuples(index=False):
                     #print(f"ClassId: {row.MetaId}  Class: {row.Name}")
@@ -181,12 +185,12 @@ class SelectSubClassesToFilterDialog(QtWidgets.QDialog, FORM_CLASS):
     def get_selected_subclasses_as_list_of_strings(self) -> list[str]:
         """Get selected list items as a list of strings"""
         return [self.lwSelectedSubClasses.item(x).text() for x in range(self.lwSelectedSubClasses.count())]
-    
+
     def get_selected_subclasses_as_list_of_tuples(self) -> list[tuple[str,str]]:
         """Get selected SubClasses list items as a list of tuples, each tuple is (className, subClassName)"""
         item_list = [self.lwSelectedSubClasses.item(x).text() for x in range(self.lwSelectedSubClasses.count())]
         return [self.extract_class_and_subclass_from_string(s) for s in item_list]
-    
+
     def extract_class_and_subclass_from_string(self, s):
         """Extract class_name and subclass_name from a string on the form 'class_name \\ subclass_name (occurrence)'"""
         class_name, subclass_with_occurrence = s.split(' \\ ')
