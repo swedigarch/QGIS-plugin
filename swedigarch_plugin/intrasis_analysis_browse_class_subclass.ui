@@ -53,6 +53,13 @@
            </widget>
           </item>
           <item>
+           <widget class="QPushButton" name="pb_open_parent_id_dialog">
+            <property name="text">
+             <string>Generate ParentId</string>
+            </property>
+           </widget>
+          </item>
+          <item>
            <spacer name="horizontalSpacer">
             <property name="orientation">
              <enum>Qt::Horizontal</enum>

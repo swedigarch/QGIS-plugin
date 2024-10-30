@@ -46,8 +46,10 @@ import pandas as pd
 import processing
 from . import utils as Utils
 from . import browse_relations_utils as BrowseRelationsUtils
+from . import class_subclass_browser_utils as ClassSubclassBrowserUtils
 from .select_geo_package_dalog import SelectGeoPackageDialog
 from .help_dialog import HelpDialog
+from .class_subclass_browser_parent_id_dialog import ClassSubclassBrowserParentIdDialog
 ######################################
 #from . import browse_relations_utils as browse_relations_utils
 ######################################
@@ -92,6 +94,8 @@ class IntrasisAnalysisBrowseTablesDialog(QtWidgets.QDialog, FORM_CLASS):
         self.checkBoxAddParentId.setText(self.tr("Create With ParentID"))
         ############################################################
         self.add_parent_id_to_layer = False
+        self.pb_open_parent_id_dialog.setText(self.tr("Generate ParentId"))
+        self.pb_open_parent_id_dialog.clicked.connect(self.generate_parent_id)
         ############################################################
         #Pushbutton logics
         self.pushButton_read_to_table.setEnabled(False)
@@ -123,6 +127,55 @@ class IntrasisAnalysisBrowseTablesDialog(QtWidgets.QDialog, FORM_CLASS):
             self.add_parent_id_to_layer = True
         else:
             self.add_parent_id_to_layer = False
+    
+    def generate_parent_id(self) -> None:
+    #def generate_parent_id(self, top_level_item:QTreeWidgetItem) -> Tuple[QDialogButtonBox.StandardButton, IntrasisTreeWidgetItem, bool, bool]:
+
+        """Show dialog for generating parent id to objects without geometry"""
+        object_id_data_frame = self.class_subclass_attributes.objects_dataframe.copy()
+        print(object_id_data_frame.head())
+        object_id_data_frame[['parent_objectid', 'parent_intrasisid']] = object_id_data_frame['object_id'].apply(lambda x: pd.Series([ClassSubclassBrowserUtils.get_parent_id_string(self.selected_gpkg[0], x)[3],ClassSubclassBrowserUtils.get_parent_id_string(self.selected_gpkg[0], x)[1]]))
+        object_id_data_frame['grandparent_objectid'] = object_id_data_frame['parent_objectid'].apply(lambda x: ','.join(filter(None, [ClassSubclassBrowserUtils.get_parent_id_string(self.selected_gpkg[0], int(i))[3] for i in x.split(',')])) if len(x) > 0 else '')
+        print(f"grandparentobjectid: {object_id_data_frame['grandparent_objectid']}")
+        object_id_data_frame['grandparent_intrasisid'] = object_id_data_frame['parent_objectid'].apply(lambda x: ','.join(filter(None, [ClassSubclassBrowserUtils.get_parent_id_string(self.selected_gpkg[0], int(i))[1] for i in x.split(',')])) if len(x) > 0 else '')
+        object_id_data_frame['greatgrandparent_objectid'] = object_id_data_frame['grandparent_objectid'].apply(lambda x: ','.join(filter(None, [ClassSubclassBrowserUtils.get_parent_id_string(self.selected_gpkg[0], int(i))[3] for i in x.split(',')])) if len(x) > 0 else '')
+        object_id_data_frame['greatgrandparent_intrasisid'] = object_id_data_frame['grandparent_objectid'].apply(lambda x: ','.join(filter(None, [ClassSubclassBrowserUtils.get_parent_id_string(self.selected_gpkg[0], int(i))[1] for i in x.split(',')])) if len(x) > 0 else '')
+        print(object_id_data_frame.head())
+        #win_title = self.tr("Create Layer from children")
+        #parent_id_dlg = SelectTreeNodesDialog(parent=self, top_level_intrasis_tree_item=top_level_item, gpkg_path=self.gpkg_path, win_titel=win_title)
+        ##print(object_id_data_frame)
+        ##print(self.selected_gpkg)
+        #parent_ids = object_id_data_frame['object_id'].apply(
+        #    lambda x: ClassSubclassBrowserUtils.get_parent_id_string_string(self.selected_gpkg[0], x))
+        #parent_ids = ', '.join(object_id_data_frame['parent_intrasisid'].tolist())
+        '''parent_ids = object_id_data_frame['parent_intrasisid']
+        print(f'type(parent_ids): {type(parent_ids)}')
+        all_values = ', '.join(parent_ids)
+        ##print(f'all_values: {all_values}')
+        unique_values = sorted(set(all_values.replace(' ', '').split(',')))
+        #Remove empty strings returned from self.get_parent_id_string_string()
+        unique_values = [value for value in unique_values if value]
+        result = ','.join(unique_values)'''
+        unique_id_string = ClassSubclassBrowserUtils.get_string_of_unique_ids(object_id_data_frame['parent_intrasisid'])
+        parent_classes = ClassSubclassBrowserUtils.get_related_classes_and_subclasses(
+            self.selected_gpkg[0],  unique_id_string)
+        unique_id_string = ClassSubclassBrowserUtils.get_string_of_unique_ids(object_id_data_frame['grandparent_intrasisid'])
+        grandparent_classes = ClassSubclassBrowserUtils.get_related_classes_and_subclasses(
+            self.selected_gpkg[0],  unique_id_string)
+        unique_id_string = ClassSubclassBrowserUtils.get_string_of_unique_ids(object_id_data_frame['greatgrandparent_intrasisid'])
+        greatgrandparent_classes = ClassSubclassBrowserUtils.get_related_classes_and_subclasses(
+            self.selected_gpkg[0],  unique_id_string)
+        #ClassSubclassBrowserUtils.get_parent_id_string_string()
+        #select_tree_nodes_dlg.flattened_layers = self.check_box_flat_layers.isChecked()
+        #select_tree_nodes_dlg.hierarchical_layers = self.check_box_hierarchical_layers.isChecked()
+        #select_tree_nodes_dlg.init_data_and_gui()
+        parent_id_dlg = ClassSubclassBrowserParentIdDialog(parent_classes=parent_classes
+                                                           , grandparent_classes=grandparent_classes
+                                                           , greatgrandparent_classes=greatgrandparent_classes)
+        parent_id_dlg.exec_()
+        #return select_tree_nodes_dlg.button_clicked, select_tree_nodes_dlg.final_top_level_item, select_tree_nodes_dlg.flattened_layers, select_tree_nodes_dlg.hierarchical_layers
+        return None
+
 
     def showEvent(self, event):
         """DialogShow event, returns selected databases to top list."""
