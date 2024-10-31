@@ -28,6 +28,7 @@
 """Utils functions for Class SubClass Browser"""
 import sqlite3
 import pandas as pd
+import numpy as np
 #from typing import Union
 from qgis.core import QgsMessageLog, Qgis
 #from PyQt5.QtWidgets import QTreeWidgetItem, QHeaderView, QTreeWidget
@@ -107,13 +108,18 @@ def get_parent_id_string(gpkg:str, object_id:int) -> (str | None | None):
 
 def get_related_classes_and_subclasses(gpkg,  object_id_string):
     '''Returns a Pandas dataframe containing related class and subclass combinations'''
-    sql_query = f"select Class, SubClass, REPLACE(Class, ' ', '_') || '.' || REPLACE(Subclass, ' ', '_') AS 'Class.SubClass', count() as count from objects where IntrasisId in ({object_id_string}) group by Class, SubClass"
-    #print(sql_query)
+    #sql_query = f"select Class, SubClass, REPLACE(Class, ' ', '_') || '.' || REPLACE(Subclass, ' ', '_') AS 'Class.SubClass', count() as count from objects where IntrasisId in ({object_id_string}) group by Class, SubClass"
+    sql_query = f"select object_id, IntrasisId, Class, SubClass, REPLACE(Class, ' ', '_') || '.' || REPLACE(Subclass, ' ', '_') AS 'Class.SubClass' from objects where IntrasisId in ({object_id_string})"
+    print(sql_query)
     conn = sqlite3.connect(gpkg)
     related_classes_subclasses = pd.read_sql_query(sql_query, conn)
+    unique_related_classes_subclasses = related_classes_subclasses['Class.SubClass'].drop_duplicates()
+    print(117)
+    print(unique_related_classes_subclasses)
+    print(related_classes_subclasses)
     #class_subclass_dataframe = class_subclass_dataframe.set_index(['object_id'])
     conn.close()
-    return related_classes_subclasses
+    return related_classes_subclasses, unique_related_classes_subclasses
 
 def get_string_of_unique_ids(object_ids):
     parent_ids = object_ids #object_id_data_frame['parent_intrasisid']
@@ -125,6 +131,14 @@ def get_string_of_unique_ids(object_ids):
     unique_values = [value for value in unique_values if value]
     result = ','.join(unique_values)
     return result
+
+def convert_numeric_string_to_int(value):
+    if ',' in value:
+        return np.nan
+    if '' in value:
+        return np.nan
+    else:
+        return int(value)
 
 '''def expand_tree_widget_item(tree_widget:QTreeWidget, tree_widget_item:QTreeWidgetItem):
     """Expand given QTreeWidget tree_widget downwards from start item 'tree_widget_item'"""

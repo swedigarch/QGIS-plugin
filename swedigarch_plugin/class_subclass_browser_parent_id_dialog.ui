@@ -60,7 +60,7 @@
    <widget class="QLabel" name="label">
     <property name="geometry">
      <rect>
-      <x>20</x>
+      <x>10</x>
       <y>30</y>
       <width>47</width>
       <height>13</height>
@@ -73,8 +73,8 @@
    <widget class="QLabel" name="label_2">
     <property name="geometry">
      <rect>
-      <x>100</x>
-      <y>30</y>
+      <x>60</x>
+      <y>80</y>
       <width>47</width>
       <height>13</height>
      </rect>
@@ -86,8 +86,8 @@
    <widget class="QComboBox" name="combo_box_grandparentlayer">
     <property name="geometry">
      <rect>
-      <x>90</x>
-      <y>50</y>
+      <x>50</x>
+      <y>100</y>
       <width>69</width>
       <height>22</height>
      </rect>
@@ -96,11 +96,50 @@
    <widget class="QComboBox" name="combo_box_greatgrandparentlayer">
     <property name="geometry">
      <rect>
-      <x>170</x>
-      <y>50</y>
+      <x>190</x>
+      <y>100</y>
       <width>69</width>
       <height>22</height>
      </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_3">
+    <property name="geometry">
+     <rect>
+      <x>190</x>
+      <y>80</y>
+      <width>47</width>
+      <height>13</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Great Grand Parent Layer</string>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="check_box_activate_grand_parent">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>100</y>
+      <width>70</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="check_box_activate_great_parent">
+    <property name="geometry">
+     <rect>
+      <x>170</x>
+      <y>100</y>
+      <width>70</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
     </property>
    </widget>
   </widget>

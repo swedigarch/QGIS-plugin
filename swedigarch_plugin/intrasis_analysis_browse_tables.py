@@ -40,7 +40,7 @@ from qgis.core import (
   QgsVectorFileWriter, QgsVectorLayer, QgsField, QgsFeature, QgsProject
 )
 from qgis.PyQt import uic, QtWidgets
-from PyQt5.QtWidgets import QDialogButtonBox, QMessageBox
+from PyQt5.QtWidgets import QDialogButtonBox, QMessageBox, QDialog
 from PyQt5.QtCore import QVariant ,QAbstractTableModel, QModelIndex, Qt
 import pandas as pd
 import processing
@@ -133,7 +133,7 @@ class IntrasisAnalysisBrowseTablesDialog(QtWidgets.QDialog, FORM_CLASS):
 
         """Show dialog for generating parent id to objects without geometry"""
         object_id_data_frame = self.class_subclass_attributes.objects_dataframe.copy()
-        print(object_id_data_frame.head())
+        print(f"object:id_data_frame: {object_id_data_frame.head()}")
         object_id_data_frame[['parent_objectid', 'parent_intrasisid']] = object_id_data_frame['object_id'].apply(lambda x: pd.Series([ClassSubclassBrowserUtils.get_parent_id_string(self.selected_gpkg[0], x)[3],ClassSubclassBrowserUtils.get_parent_id_string(self.selected_gpkg[0], x)[1]]))
         object_id_data_frame['grandparent_objectid'] = object_id_data_frame['parent_objectid'].apply(lambda x: ','.join(filter(None, [ClassSubclassBrowserUtils.get_parent_id_string(self.selected_gpkg[0], int(i))[3] for i in x.split(',')])) if len(x) > 0 else '')
         print(f"grandparentobjectid: {object_id_data_frame['grandparent_objectid']}")
@@ -141,6 +141,14 @@ class IntrasisAnalysisBrowseTablesDialog(QtWidgets.QDialog, FORM_CLASS):
         object_id_data_frame['greatgrandparent_objectid'] = object_id_data_frame['grandparent_objectid'].apply(lambda x: ','.join(filter(None, [ClassSubclassBrowserUtils.get_parent_id_string(self.selected_gpkg[0], int(i))[3] for i in x.split(',')])) if len(x) > 0 else '')
         object_id_data_frame['greatgrandparent_intrasisid'] = object_id_data_frame['grandparent_objectid'].apply(lambda x: ','.join(filter(None, [ClassSubclassBrowserUtils.get_parent_id_string(self.selected_gpkg[0], int(i))[1] for i in x.split(',')])) if len(x) > 0 else '')
         print(object_id_data_frame.head())
+        object_id_data_frame['parent_objectid_int'] = object_id_data_frame['parent_objectid'].apply(ClassSubclassBrowserUtils.convert_numeric_string_to_int)
+        ####explodera id####
+        test = object_id_data_frame[['object_id', 'parent_intrasisid']]
+        test['parent_intrasisid'] = test['parent_intrasisid'].str.split(',')
+        test = test.explode('parent_intrasisid').astype(int)
+        #test['parent_intrasisid'] = test['parent_intrasisid'].apply(ClassSubclassBrowserUtils.convert_numeric_string_to_int)
+        print(148)
+        print(test)
         #win_title = self.tr("Create Layer from children")
         #parent_id_dlg = SelectTreeNodesDialog(parent=self, top_level_intrasis_tree_item=top_level_item, gpkg_path=self.gpkg_path, win_titel=win_title)
         ##print(object_id_data_frame)
@@ -169,12 +177,30 @@ class IntrasisAnalysisBrowseTablesDialog(QtWidgets.QDialog, FORM_CLASS):
         #select_tree_nodes_dlg.flattened_layers = self.check_box_flat_layers.isChecked()
         #select_tree_nodes_dlg.hierarchical_layers = self.check_box_hierarchical_layers.isChecked()
         #select_tree_nodes_dlg.init_data_and_gui()
-        parent_id_dlg = ClassSubclassBrowserParentIdDialog(parent_classes=parent_classes
-                                                           , grandparent_classes=grandparent_classes
-                                                           , greatgrandparent_classes=greatgrandparent_classes)
-        parent_id_dlg.exec_()
+        parent_id_dlg = ClassSubclassBrowserParentIdDialog(parent_classes=parent_classes[1]
+                                                           , grandparent_classes=grandparent_classes[1]
+                                                           , greatgrandparent_classes=greatgrandparent_classes[1])
+        #parent_id_dlg.exec_()
+        if parent_id_dlg.exec_() == QDialog.Accepted:
+            #values = parent_id_dlg.get_values()
+            #values = parent_id_dlg.on_ok()
+            values = parent_id_dlg.settings
+            self.handle_values(values, test, parent_classes[0])
         #return select_tree_nodes_dlg.button_clicked, select_tree_nodes_dlg.final_top_level_item, select_tree_nodes_dlg.flattened_layers, select_tree_nodes_dlg.hierarchical_layers
         return None
+    
+    def handle_values(self, values, test, parent_classes):
+        print(f"Received values: {values} Start building relations")
+        print(values[0])
+        print(191)
+        print(parent_classes)
+        a = parent_classes[(parent_classes['Class.SubClass'] == values[0])]
+        print(a)
+        print(test)
+        print(a['IntrasisId'].tolist())
+        print(test['parent_intrasisid'].unique())
+        filtered = test[test['parent_intrasisid'].isin(a['IntrasisId'].tolist())]
+        print(filtered)
 
 
     def showEvent(self, event):

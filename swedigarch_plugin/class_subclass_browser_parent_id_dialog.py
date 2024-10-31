@@ -32,6 +32,7 @@ from qgis.core import Qgis, QgsMessageLog
 from qgis.PyQt import uic, QtWidgets
 from PyQt5 import QtCore
 from PyQt5.QtWidgets import QDialogButtonBox, QMenu, QAction, QTreeWidgetItem
+from PyQt5.QtCore import QVariant ,QAbstractTableModel, QModelIndex, Qt
 #from . import browse_relations_utils as BrowseRelationsUtils
 #from .browse_relations_utils_classes import IntrasisTreeWidgetItem
 
@@ -71,8 +72,13 @@ class ClassSubclassBrowserParentIdDialog(QtWidgets.QDialog, FORM_CLASS):
         '''
 
         self.button_box_generate_parent_id.button(QtWidgets.QDialogButtonBox.Cancel).setText(self.tr("Cancel"))
-        #self.button_box_generate_parent_id.accepted.connect(self.on_ok)
+        #self.button_box_generate_parent_id.button(QtWidgets.QDialogButtonBox.Cancel).connect(self.accept)
+        self.button_box_generate_parent_id.accepted.connect(self.on_ok)
         #self.button_box_generate_parent_id.rejected.connect(self.on_cancel)
+
+        self.check_box_activate_grand_parent.stateChanged.connect(self.on_activate_grand_parent)
+        self.settings = []
+        self.layers_chosen = []
 
         '''self.check_box_hierarchical_layers.stateChanged.connect(self.on_check_box_hierarchical_create_layers_state_changed)
         self.check_box_flat_layers.stateChanged.connect(self.on_check_box_flat_create_layers_state_changed)
@@ -81,37 +87,49 @@ class ClassSubclassBrowserParentIdDialog(QtWidgets.QDialog, FORM_CLASS):
         #self.push_button_undo.clicked.connect(self.on_undo_clicked)
         self.init_gui()
 
-    def showEvent(self, event):
-        """DialogShow event"""
-        super(ClassSubclassBrowserParentIdDialog, self).showEvent(event)
+    #def showEvent(self, event):
+    #    """DialogShow event"""
+    #    super(ClassSubclassBrowserParentIdDialog, self).showEvent(event)
         
-    def closeEvent(self, event):
-        """The close dialog event (QCloseEvent)"""
-        self.button_clicked = QDialogButtonBox.Cancel
+    #def closeEvent(self, event):
+    #    """The close dialog event (QCloseEvent)"""
+    #    self.button_clicked = QDialogButtonBox.Cancel
 
     #def init_data_and_gui(self):
     #    """Load data and init gui"""
     #    self.init_gui()
     #    #self.set_ok_button_enabled_state()
+    def on_activate_grand_parent(self, state):
+        """When checked create add attributes parent id and grand parent id to objects without geometry"""
+        if state == Qt.Checked:
+            self.combo_box_grandparentlayer.setEnabled(True)
+        else:
+            self.combo_box_grandparentlayer.setEnabled(False)
 
     def update_combobox_class(self) -> None:
         '''Update and changes Class(es) in combobox'''
         self.combo_box_parentlayer.clear()
         self.combo_box_grandparentlayer.clear()
         self.combo_box_greatgrandparentlayer.clear()
-        class_items = self.parent_classes['Class.SubClass'].tolist()
+        #class_items = self.parent_classes['Class.SubClass'].tolist()
+        class_items = self.parent_classes.tolist()
         #class_items = ['kalle','anka']#self.archeological_classes[1]
         class_items.insert(0,'-')
         self.combo_box_parentlayer.addItems(class_items)
-        self.combo_box_grandparentlayer.addItems(self.grandparent_classes['Class.SubClass'].tolist())
-        self.combo_box_greatgrandparentlayer.addItems(self.greatgrandparent_classes['Class.SubClass'].tolist())
+        # skapa kontroll om inga klasser returneras sätt item att inga finns
+        # Behöver man även göra att det inte går att aktivera då?
+        self.combo_box_grandparentlayer.addItems(self.grandparent_classes.tolist())
+        self.combo_box_greatgrandparentlayer.addItems(self.greatgrandparent_classes.tolist())
 
     def on_ok(self):
-        """Selection of tree nodes done"""
+        """Selection of parent layers done"""
         #self.final_top_level_item = copy.deepcopy(self.top_level_item)
         #self.button_clicked = QDialogButtonBox.Ok
-        print("Ok clicked")
+        #print("Ok clicked")
+        self.get_values()
+        print(self.settings)
         self.accept()
+        self.close()
 
     def on_cancel(self):
         """Handle cancel clicked - close dialog"""
@@ -128,6 +146,13 @@ class ClassSubclassBrowserParentIdDialog(QtWidgets.QDialog, FORM_CLASS):
         """Initialize gui components and load data"""
         print("dialog open")
         self.update_combobox_class()
+        self.combo_box_grandparentlayer.setEnabled(False)
+        self.combo_box_greatgrandparentlayer.setEnabled(False)
+    
+    def get_values(self):
+        self.settings = [self.combo_box_parentlayer.currentText(), self.combo_box_grandparentlayer.currentText()]
+        #return settings
+
         '''if self.top_level_item is None:
             QgsMessageLog.logMessage("Failed to display tree", BrowseRelationsUtils.MESSAGE_CATEGORY, Qgis.Critical)
             return
