@@ -46,7 +46,7 @@
           </size>
          </property>
          <property name="title">
-          <string>All Classes/SubClasses with objects inte the selected databases</string>
+          <string>All Classes/SubClasses with objects in the selected databases</string>
          </property>
          <layout class="QGridLayout" name="gridLayout_2">
           <item row="0" column="0">
