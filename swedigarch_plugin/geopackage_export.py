@@ -334,7 +334,7 @@ def export_database(conn:psycopg2.extensions.connection, host:str, port:int, use
                 
                 number_excluded = export_class_attributes(conn, cur, row.ClassId, row.SubClassId, callback, detailed_print_outs, exclude_subclass_attributes)
                 if exclude_subclass_attributes:
-                    log_string_excluded_subclasses += '\n' +row.Class +' '+ row.SubClass +' '+ f'number of excluded objects: {number_excluded}'
+                    log_string_excluded_subclasses += '\n' +row.Class +' \ '+ row.SubClass +' '+ f'number of excluded objects: {number_excluded}'
                     #print(log_string_excluded_subclasses)
                 
 
