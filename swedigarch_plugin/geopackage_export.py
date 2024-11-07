@@ -157,7 +157,7 @@ def export_to_geopackage(host:int, port:int, user_name:str, password:str, databa
         log_file.close()
         return RetCode.UNKNOWN_ERROR, export_ok_count, None
 
-def export_database(conn:psycopg2.extensions.connection, host:str, port:int, user_name:str, password:str, database:str, db_count:int, progress:int, export_folder:str, overwrite:bool, combine_layers:bool, callback:Callable, detailed_print_outs:bool=True, subclasses_to_exclude:list=None) -> tuple[bool,str,bool,str]: #tuple[bool,str,bool,str]:
+def export_database(conn:psycopg2.extensions.connection, host:str, port:int, user_name:str, password:str, database:str, db_count:int, progress:int, export_folder:str, overwrite:bool, combine_layers:bool, callback:Callable, detailed_print_outs:bool=True, subclasses_to_exclude:list=None) -> tuple[bool,str,bool,str]:
     """Function to export from given connection to new GeoPackage in export_folder"""
     # Returns: db_ret, error_msg, rights_error (bool, string, bool)
     db_progress = 0 # Progress of the export of this database
@@ -317,27 +317,21 @@ def export_database(conn:psycopg2.extensions.connection, host:str, port:int, use
             cur.execute("BEGIN TRANSACTION;")
             
             subclasses_to_exclude_tuple_set = set()
+            log_string_excluded_subclasses = ''
+            log_string_excluded_subclasses_header = ''
             if subclasses_to_exclude is not None:
                 subclasses_to_exclude_tuple_set = set(subclasses_to_exclude)
-                log_string_excluded_subclasses = f'Excluded SubClasses: {database}'
-            
-            subclasses_message = "SubClasses to exclude: "
-            if len(subclasses_to_exclude_tuple_set) > 0:
-                subclasses_message += f"{subclasses_to_exclude_tuple_set}"
-            else:
-                subclasses_message += "None"
-                log_string_excluded_subclasses = ''
+                log_string_excluded_subclasses_header = f'Excluded SubClasses for {database}:'
+                 
             for row in data_frame.itertuples(index=False):
                 exclude_subclass_attributes = True
                 if (row.Class, row.SubClass) not in subclasses_to_exclude_tuple_set:
                     exclude_subclass_attributes = False
                 
                 number_excluded = export_class_attributes(conn, cur, row.ClassId, row.SubClassId, callback, detailed_print_outs, exclude_subclass_attributes)
-                if exclude_subclass_attributes:
-                    log_string_excluded_subclasses += '\n' +row.Class +' \ '+ row.SubClass +' '+ f'number of excluded objects: {number_excluded}'
-                    #print(log_string_excluded_subclasses)
-                
-
+                if exclude_subclass_attributes and number_excluded > 0:
+                    log_string_excluded_subclasses += '\n"' + row.Class +' \ '+ row.SubClass + f'", number of excluded objects: {number_excluded}'
+                    
                 layers_done = layers_done + attr_inc
                 db_progress = (layers_done / layer_export_steps) * 100
                 curr_progress = progress + db_progress / db_count
@@ -373,8 +367,11 @@ def export_database(conn:psycopg2.extensions.connection, host:str, port:int, use
         print('export_database() Exception: {err}')
         return False, f'{err}', False, False
     print(f"Export db done: {database} to: {output_file}")
+
     if len(log_string_excluded_subclasses) > 0:
+        log_string_excluded_subclasses = log_string_excluded_subclasses_header + log_string_excluded_subclasses
         return True, False, False, log_string_excluded_subclasses
+    
     return True, False, False, None
 
 def export_postgis_layer_to_gpkg(host:str, port:int, user_name:str, password:str, database:str, output_file:str, wkb_type, srid:int, combine_layers:bool, callback:Callable, detailed_print_outs:bool=True) -> tuple[str,str,QgsRectangle]:
