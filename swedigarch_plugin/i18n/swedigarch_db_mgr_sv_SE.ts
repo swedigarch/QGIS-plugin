@@ -115,7 +115,7 @@
     <message>
         <location filename="../export_confirmation_dialog.ui" line="38"/>
         <source>Start export of these databases?</source>
-        <translation type="unfinished">Starta export av dessa databaser?</translation>
+        <translation>Starta export av dessa databaser?</translation>
     </message>
     <message>
         <location filename="../export_confirmation_dialog.py" line="52"/>
@@ -145,7 +145,7 @@
     <message>
         <location filename="../export_confirmation_dialog.py" line="68"/>
         <source>databases?</source>
-        <translation type="unfinished">databaser?</translation>
+        <translation>databaser?</translation>
     </message>
     <message>
         <location filename="../export_confirmation_dialog.py" line="69"/>
@@ -738,6 +738,54 @@ select which to analyze.</source>
     </message>
 </context>
 <context>
+    <name>SelectSubClassesToFilterDialog</name>
+    <message>
+        <location filename="../select_subclasses_to_filter_dialog.ui" line="14"/>
+        <source>Select Subclasses to filter</source>
+        <translation>Välj subklasser att filtrera</translation>
+    </message>
+    <message>
+        <location filename="../select_subclasses_to_filter_dialog_ui.py" line="87"/>
+        <source>All Classes/SubClasses with objects inte the selected databases</source>
+        <translation type="obsolete">Alla Klasser/Subklasser med objekt i valda databaser</translation>
+    </message>
+    <message>
+        <location filename="../select_subclasses_to_filter_dialog.ui" line="92"/>
+        <source>Selected Subclasses for filtering</source>
+        <translation>Valda subklasser för filtrering</translation>
+    </message>
+    <message>
+        <location filename="../select_subclasses_to_filter_dialog.ui" line="106"/>
+        <source>TextLabel</source>
+        <translation>TextLabel</translation>
+    </message>
+    <message>
+        <location filename="../select_subclasses_to_filter_dialog.ui" line="49"/>
+        <source>All Classes/SubClasses with objects in the selected databases</source>
+        <translation>Alla Klasser/Subklasser med objekt i valda databaser</translation>
+    </message>
+    <message>
+        <location filename="../select_subclasses_to_filter_dialog.py" line="237"/>
+        <source>No selection</source>
+        <translation>Inget valt</translation>
+    </message>
+    <message>
+        <location filename="../select_subclasses_to_filter_dialog.py" line="80"/>
+        <source>OK</source>
+        <translation>OK</translation>
+    </message>
+    <message>
+        <location filename="../select_subclasses_to_filter_dialog.py" line="81"/>
+        <source>Cancel</source>
+        <translation>Avbryt</translation>
+    </message>
+    <message>
+        <location filename="../select_subclasses_to_filter_dialog.py" line="235"/>
+        <source>Selected</source>
+        <translation>Valda</translation>
+    </message>
+</context>
+<context>
     <name>SelectTreeNodesDialog</name>
     <message>
         <location filename="../select_tree_nodes_dialog.py" line="67"/>
@@ -753,49 +801,49 @@ select which to analyze.</source>
 <context>
     <name>SwedigarchExportDialog</name>
     <message>
-        <location filename="../swedigarch_export_dialog.py" line="85"/>
+        <location filename="../swedigarch_export_dialog.py" line="84"/>
         <source>Run export</source>
         <translation>Kör export</translation>
     </message>
     <message>
-        <location filename="../swedigarch_export_dialog.py" line="463"/>
+        <location filename="../swedigarch_export_dialog.py" line="330"/>
         <source>Cancel</source>
         <translation>Avbryt</translation>
     </message>
     <message>
-        <location filename="../swedigarch_export_dialog.py" line="335"/>
+        <location filename="../swedigarch_export_dialog.py" line="333"/>
         <source>No connection</source>
         <translation>Ingen anslutning</translation>
     </message>
     <message>
-        <location filename="../swedigarch_export_dialog.py" line="385"/>
+        <location filename="../swedigarch_export_dialog.py" line="383"/>
         <source>Select export folder</source>
         <translation>Välj export katalog</translation>
     </message>
     <message>
-        <location filename="../swedigarch_export_dialog.py" line="329"/>
+        <location filename="../swedigarch_export_dialog.py" line="327"/>
         <source>Disconnect from server?</source>
         <translation>Koppla från servern ?</translation>
     </message>
     <message>
-        <location filename="../swedigarch_export_dialog.py" line="330"/>
+        <location filename="../swedigarch_export_dialog.py" line="328"/>
         <source>Disconnect</source>
         <translation>Koppla från</translation>
     </message>
     <message>
-        <location filename="../swedigarch_export_dialog.py" line="399"/>
+        <location filename="../swedigarch_export_dialog.py" line="397"/>
         <source>Wait for ongoing export to finish</source>
         <translation>Vänta tills pågående export är klar</translation>
     </message>
     <message>
-        <location filename="../swedigarch_export_dialog.py" line="400"/>
+        <location filename="../swedigarch_export_dialog.py" line="398"/>
         <source>Ongoing export</source>
         <translation>Pågående export</translation>
     </message>
     <message>
         <location filename="../swedigarch_export_dialog.py" line="461"/>
         <source>Confirm export</source>
-        <translation>Bekräfta export</translation>
+        <translation type="obsolete">Bekräfta export</translation>
     </message>
     <message>
         <location filename="../swedigarch_export_dialog.py" line="374"/>
@@ -805,87 +853,87 @@ select which to analyze.</source>
     <message>
         <location filename="../swedigarch_export_dialog.py" line="464"/>
         <source>Yes</source>
-        <translation>Ja</translation>
+        <translation type="obsolete">Ja</translation>
     </message>
     <message>
         <location filename="../swedigarch_export_dialog.py" line="460"/>
         <source> databases?</source>
-        <translation> databaser?</translation>
+        <translation type="obsolete"> databaser?</translation>
     </message>
     <message>
         <location filename="../swedigarch_export_dialog.py" line="460"/>
         <source>Are you sure that you want to export </source>
-        <translation>Är du säker på att du vill exportera </translation>
+        <translation type="obsolete">Är du säker på att du vill exportera </translation>
     </message>
     <message>
-        <location filename="../swedigarch_export_dialog.py" line="314"/>
+        <location filename="../swedigarch_export_dialog.py" line="312"/>
         <source>Connected to</source>
         <translation>Ansluten till</translation>
     </message>
     <message>
-        <location filename="../swedigarch_export_dialog.py" line="357"/>
+        <location filename="../swedigarch_export_dialog.py" line="355"/>
         <source>No databases match search string</source>
         <translation>Inga databaser matchar söksträngen</translation>
     </message>
     <message>
-        <location filename="../swedigarch_export_dialog.py" line="216"/>
+        <location filename="../swedigarch_export_dialog.py" line="215"/>
         <source>Select no databases</source>
         <translation>Välj inga databaser</translation>
     </message>
     <message>
-        <location filename="../swedigarch_export_dialog.py" line="208"/>
+        <location filename="../swedigarch_export_dialog.py" line="207"/>
         <source>Select filtered databases</source>
         <translation>Välj filtrerade databaser</translation>
     </message>
     <message>
-        <location filename="../swedigarch_export_dialog.py" line="213"/>
+        <location filename="../swedigarch_export_dialog.py" line="212"/>
         <source>Select all databases</source>
         <translation>Välj alla databaser</translation>
     </message>
     <message>
-        <location filename="../swedigarch_export_dialog.py" line="353"/>
+        <location filename="../swedigarch_export_dialog.py" line="351"/>
         <source>{0} databases found</source>
         <translation>{0} hittade databaser</translation>
     </message>
     <message>
-        <location filename="../swedigarch_export_dialog.py" line="355"/>
+        <location filename="../swedigarch_export_dialog.py" line="353"/>
         <source>{0} databases match filter</source>
         <translation>{0} databaser matchar filter</translation>
     </message>
     <message>
-        <location filename="../swedigarch_export_dialog.py" line="90"/>
+        <location filename="../swedigarch_export_dialog.py" line="89"/>
         <source>Overwrite existing GeoPackage</source>
         <translation>Ersätt befintligt GeoPackage</translation>
     </message>
     <message>
-        <location filename="../swedigarch_export_dialog.py" line="91"/>
+        <location filename="../swedigarch_export_dialog.py" line="90"/>
         <source>If the GeoPackage already exist it will be overwritten if checked.
 Otherwice the GeoPackage will not be exported.</source>
         <translation>Om GeoPackage redan finns kommer det att skrivas över om detta är markerat.
 Annars kommer GeoPackage inte att exporteras.</translation>
     </message>
     <message>
-        <location filename="../swedigarch_export_dialog.py" line="92"/>
+        <location filename="../swedigarch_export_dialog.py" line="91"/>
         <source>Export CSV</source>
         <translation>Exportera CSV</translation>
     </message>
     <message>
-        <location filename="../swedigarch_export_dialog.py" line="93"/>
+        <location filename="../swedigarch_export_dialog.py" line="92"/>
         <source>Should an CSV export also be done for every exported database</source>
         <translation>Ska en CSV-export också göras för varje exporterad databas</translation>
     </message>
     <message>
-        <location filename="../swedigarch_export_dialog.py" line="88"/>
+        <location filename="../swedigarch_export_dialog.py" line="87"/>
         <source>Help</source>
         <translation>Hjälp</translation>
     </message>
     <message>
-        <location filename="../swedigarch_export_dialog.py" line="94"/>
+        <location filename="../swedigarch_export_dialog.py" line="93"/>
         <source>Filter by SubClass</source>
         <translation>Filtrera efter SubKlass</translation>
     </message>
     <message>
-        <location filename="../swedigarch_export_dialog.py" line="95"/>
+        <location filename="../swedigarch_export_dialog.py" line="94"/>
         <source>Should we filter by Subclass in every exported database</source>
         <translation>Ska vi filtrera efter SubKlass för varje exporterad databas</translation>
     </message>
@@ -1043,7 +1091,7 @@ Annars kommer GeoPackage inte att exporteras.</translation>
 <context>
     <name>SwedigarchGeotools</name>
     <message>
-        <location filename="../swedigarch_geotools.py" line="221"/>
+        <location filename="../swedigarch_geotools.py" line="236"/>
         <source>&amp;Swedigarch Geotools</source>
         <translation>&amp;Swedigarch Geotools</translation>
     </message>
@@ -1053,12 +1101,12 @@ Annars kommer GeoPackage inte att exporteras.</translation>
         <translation type="obsolete">Swedigarch Geotools</translation>
     </message>
     <message>
-        <location filename="../swedigarch_geotools.py" line="200"/>
+        <location filename="../swedigarch_geotools.py" line="207"/>
         <source>Intrasis Relationship Browser</source>
         <translation>Intrasis Relationship Browser</translation>
     </message>
     <message>
-        <location filename="../swedigarch_geotools.py" line="193"/>
+        <location filename="../swedigarch_geotools.py" line="200"/>
         <source>Intrasis Class/Subclass Browser</source>
         <translation>Intrasis Class/Subclass Browser</translation>
     </message>
@@ -1108,19 +1156,44 @@ Annars kommer GeoPackage inte att exporteras.</translation>
         <translation type="obsolete">Inga intrasis-GeoPackage laddade</translation>
     </message>
     <message>
-        <location filename="../swedigarch_geotools.py" line="186"/>
+        <location filename="../swedigarch_geotools.py" line="193"/>
         <source>Intrasis DB Manager</source>
         <translation>Intrasis DB Manager</translation>
     </message>
     <message>
-        <location filename="../swedigarch_geotools.py" line="206"/>
+        <location filename="../swedigarch_geotools.py" line="221"/>
         <source>About</source>
         <translation>Om</translation>
     </message>
     <message>
-        <location filename="../swedigarch_geotools.py" line="336"/>
+        <location filename="../swedigarch_geotools.py" line="475"/>
         <source>About {0}</source>
         <translation>Om {0}</translation>
+    </message>
+    <message>
+        <location filename="../swedigarch_geotools.py" line="111"/>
+        <source>Export GPKG to CSV</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../swedigarch_geotools.py" line="342"/>
+        <source>Select folder to convert GPKG to CSV in</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../swedigarch_geotools.py" line="433"/>
+        <source>Result from: {self.title_export_gpkg_to_csv}</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../swedigarch_geotools.py" line="442"/>
+        <source>Sucessfully converted all _COUNT_ GeoPackages to CSV.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../swedigarch_geotools.py" line="446"/>
+        <source>Have tried to convert _COUNT_ALL_ GeoPackages to CSV, _COUNT_ failed.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 </TS>
