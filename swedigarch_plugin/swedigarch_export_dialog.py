@@ -92,6 +92,8 @@ class SwedigarchExportDialog(QtWidgets.QDialog, FORM_CLASS):
         self.cbExportCSV.setToolTip(self.tr("Should an CSV export also be done for every exported database"))
         self.cbFilterSubClass.setText(self.tr("Filter by SubClass"))
         self.cbFilterSubClass.setToolTip(self.tr("Should we filter by Subclass in every exported database"))
+        self.cbSimplifiedExport.setText(self.tr("Simplified Export"))
+        self.cbSimplifiedExport.setToolTip(self.tr("Should simplified GPKG export also be done for every exported database"))
 
         self.pbSelectAllDb.setEnabled(False)
         self.lwDatabases.setSortingEnabled(True)
@@ -402,7 +404,7 @@ class SwedigarchExportDialog(QtWidgets.QDialog, FORM_CLASS):
                 subclasses_to_exclude = []
                 selected_subclasses_list = []
                 databases = [self.lwSelectedDatabases.item(x).text() for x in range(self.lwSelectedDatabases.count())]
-                
+
                 if self.cbFilterSubClass.isChecked():
                     select_sub_classes_dlg = SelectSubClassesToFilterDialog(databases, self.host, self.user_name, self.password, self.port, self.sslmode_text, parent=self)
                     select_sub_classes_dlg.init_data_and_gui()
@@ -410,11 +412,11 @@ class SwedigarchExportDialog(QtWidgets.QDialog, FORM_CLASS):
                         return
                     subclasses_to_exclude = select_sub_classes_dlg.get_selected_subclasses_as_list_of_tuples()
                     selected_subclasses_list = select_sub_classes_dlg.get_selected_subclasses_as_list_of_strings()
-                
+
                 number_of_databases = self.lwSelectedDatabases.count()
                 bulk_export_mode = number_of_databases >= self.bulk_export_threshold
                 export_confirmed = self.confirm_export_dialog(bulk_export_mode, selected_subclasses_list)
-                
+
                 if export_confirmed:
                     export_folder = self.lineEditExportDirectory.text()
                     print(f"export_to_geopackage(db_count: {len(databases)}  export_folder: {export_folder})")
@@ -437,12 +439,13 @@ class SwedigarchExportDialog(QtWidgets.QDialog, FORM_CLASS):
         detailed_print_outs = not bulk_export_mode
         overwrite = self.cbOverwriteExistingGeoPackage.isChecked()
         csv = self.cbExportCSV.isChecked()
+        simplified = self.cbSimplifiedExport.isChecked()
         #print(f'overwrite: {overwrite} csv: {csv}')
         if not bulk_export_mode: #If not bulk export: create one main task
-            return GeoPackageExportTask("Exporting GeoPackages", self.host, self.port, self.user_name, self.password, databases, export_folder, overwrite, csv, detailed_print_outs, subclasses_to_exclude)
+            return GeoPackageExportTask("Exporting GeoPackages", self.host, self.port, self.user_name, self.password, databases, export_folder, overwrite, csv, simplified, detailed_print_outs, subclasses_to_exclude)
 
         # is bulk export: create bulk main task with subtasks
-        main_export_task = GeoPackageBulkExportMainTask("Exporting GeoPackages", self.host, self.port, self.user_name, self.password, export_folder, overwrite, csv, databases, subclasses_to_exclude)
+        main_export_task = GeoPackageBulkExportMainTask("Exporting GeoPackages", self.host, self.port, self.user_name, self.password, export_folder, overwrite, csv, simplified, databases, subclasses_to_exclude)
         main_export_task.create_subtasks("Exporting GeoPackages", min(len(databases),self.bulk_export_max_number_of_subtasks))
         return main_export_task
 

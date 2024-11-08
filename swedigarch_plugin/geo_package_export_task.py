@@ -34,7 +34,7 @@ from qgis.gui import QgsMessageBar
 from qgis.core import QgsTask, QgsMessageLog, Qgis
 from PyQt5.QtCore import QFile
 from .constant import RetCode
-from .geopackage_export import export_to_geopackage
+from .geopackage_export import export_to_geopackage, export_simplified_gpkg
 from .export_geopackage_to_csv import export_geopackage_to_csv
 
 MESSAGE_CATEGORY = 'GeoPackageExportTask'
@@ -42,7 +42,7 @@ MESSAGE_CATEGORY = 'GeoPackageExportTask'
 class GeoPackageExportTask(QgsTask):
     """Subclass to QgsTask that handles normal export, where dabases are exported one by one.""" 
 
-    def __init__(self, description, host, port, user_name, password, databases, export_folder, overwrite, csv, detailed_print_outs=True, subclasses_to_exclude=None):
+    def __init__(self, description, host, port, user_name, password, databases, export_folder, overwrite:bool, csv:bool, simplified:bool, detailed_print_outs=True, subclasses_to_exclude=None):
         super().__init__(description, QgsTask.CanCancel)
         self.log_file = None
         self.host = host
@@ -53,6 +53,7 @@ class GeoPackageExportTask(QgsTask):
         self.export_folder = export_folder
         self.overwrite = overwrite
         self.csv = csv
+        self.simplified = simplified
         self.total = 0
         self.iterations = 0
         self.exception = None
@@ -137,6 +138,15 @@ class GeoPackageExportTask(QgsTask):
                         self.log_file.write(f'\nBulk export done: {date_time}\n{total_number_of_databases} Databases Exported {export_ok_count }')
                     else:
                         self.log_file.write(f'\nBulk export done: {date_time}\nSucceeded with exporting {export_ok_count} of {total_number_of_databases} Databases.')
+
+                if self.simplified:
+                    output_file = os.path.join(self.export_folder, f"{self.database.lower()}.gpkg")
+                    ok, error_msg = export_simplified_gpkg(output_file)
+                    if ok:
+                        self.write_log_line(f'{padded_db_name} simplified GPKG export OK  ({output_filename})\n')
+                    else:
+                        self.write_log_line(f'{padded_db_name} Error during simplified GPKG export: {error_msg}\n')
+
                 self.log_file.close()
             return ret == RetCode.EXPORT_OK
         except Exception as err:

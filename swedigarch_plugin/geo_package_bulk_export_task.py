@@ -37,12 +37,13 @@ from qgis.core import (QgsApplication, QgsTask, QgsMessageLog, Qgis)
 from PyQt5.QtCore import QFile
 from qgis.utils import iface
 from .constant import RetCode
+from .geopackage_export import export_simplified_gpkg
 
 MESSAGE_CATEGORY = 'GeoPackageExportTask'
 
 class GeoPackageBulkExportMainTask(QgsTask):
     """Subclass to QgsTask that handles bulk export to geopackage"""
-    def __init__(self, description, host, port, user_name, password, export_folder, overwrite, csv, databases, subclasses_to_exclude=None):
+    def __init__(self, description, host, port, user_name, password, export_folder, overwrite:bool, csv:bool, simplified:bool, databases, subclasses_to_exclude=None):
         super().__init__(description, QgsTask.CanCancel)
         self.log_file = None
         self.databases = databases
@@ -55,6 +56,7 @@ class GeoPackageBulkExportMainTask(QgsTask):
         self.export_folder = export_folder
         self.overwrite = overwrite
         self.csv = csv
+        self.simplified = simplified
         self.databases_in_progress_dict = dict()
         self.subclasses_to_exclude = subclasses_to_exclude
         # Get longest database name
@@ -95,7 +97,7 @@ class GeoPackageBulkExportMainTask(QgsTask):
         print(f'create_subtasks(number_of_subtasks: {number_of_subtasks}) num databases: {len(self.databases)}')
 
         for i in range(0, number_of_subtasks):
-            subtask = GeoPackageBulkExportSubtask(description, self.host, self.port, self.user_name, self.password, self.export_folder, self.overwrite, self.csv, self.max_length, self.write_log_line, self.get_next_database_name, self.export_status_callback, self.subclasses_to_exclude)
+            subtask = GeoPackageBulkExportSubtask(description, self.host, self.port, self.user_name, self.password, self.export_folder, self.overwrite, self.csv, self.simplified, self.max_length, self.write_log_line, self.get_next_database_name, self.export_status_callback, self.subclasses_to_exclude)
             self.addSubTask(subtask, [], QgsTask.ParentDependsOnSubTask) #Make sure the main task is run only after all subtasks are done
 
     def write_log_line(self, message):
@@ -167,7 +169,7 @@ class GeoPackageBulkExportMainTask(QgsTask):
 
 class GeoPackageBulkExportSubtask(QgsTask):
     """Subclass to QgsTask that handles bulk export to geopackage"""
-    def __init__(self, description, host, port, user_name, password, export_folder, overwrite, csv, max_length, write_log_line, get_next_database_name, export_status_callback, subclasses_to_exclude=None):
+    def __init__(self, description, host, port, user_name, password, export_folder, overwrite:bool, csv:bool, simplified:bool, max_length, write_log_line, get_next_database_name, export_status_callback, subclasses_to_exclude=None):
         super().__init__(description, QgsTask.CanCancel)
         #self.master_task = master_task
         self.get_next_database_name_callback = get_next_database_name
@@ -184,6 +186,7 @@ class GeoPackageBulkExportSubtask(QgsTask):
         self.export_folder = export_folder
         self.overwrite = overwrite
         self.csv = csv
+        self.simplified = simplified
         self.max_length = max_length
         self.write_log_line = write_log_line
         self.last_error = None
@@ -241,6 +244,7 @@ class GeoPackageBulkExportSubtask(QgsTask):
                     if (ret == RetCode.EXPORT_OK or self.last_error == 'Skipped because GeoPackage file already exist') and self.csv:
                         output_filename = os.path.join(self.export_folder, f"{self.database.lower()}.zip")
                         need_csv_export = not QFile(output_filename).exists()
+                        csv_export_old = False
                         if not need_csv_export:
                             gpkg_stat_info = os.stat(geo_package_file)
                             csv_stat_info = os.stat(output_filename)
@@ -261,6 +265,13 @@ class GeoPackageBulkExportSubtask(QgsTask):
                             self.write_log_line(message)
                     else:
                         print(f'ret: {ret}  self.last_error: {self.last_error} self.csv: {self.csv}')
+
+                    if self.simplified:
+                        ok, error_msg = export_simplified_gpkg(output_file)
+                        if ok:
+                            self.write_log_line(f'{padded_db_name} simplified GPKG export OK  ({output_filename})\n')
+                        else:
+                            self.write_log_line(f'{padded_db_name} Error during simplified GPKG export: {error_msg}\n')
 
                     self.last_database = self.database
                     #QgsMessageLog.logMessage(f"Export of {self.database} done, ret : {ret}", MESSAGE_CATEGORY, Qgis.Info)

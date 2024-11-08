@@ -31,6 +31,7 @@ import os
 import io
 import gc
 import sqlite3
+from osgeo import ogr
 from contextlib import closing
 from datetime import datetime
 import traceback
@@ -117,7 +118,7 @@ def export_to_geopackage(host:int, port:int, user_name:str, password:str, databa
                     if error_msg == 'Skipped because GeoPackage file already exist':
                         log_message = error_msg
                     else:
-                        log_message = f'Error during export: {error_msg}'                    
+                        log_message = f'Error during export: {error_msg}'
                     log_file.write(f'{padded_db_name} {log_message}\n')
                 else:
                     log_file.write(f'{padded_db_name} Unknown error during export!\n')
@@ -165,7 +166,7 @@ def export_database(conn:psycopg2.extensions.connection, host:str, port:int, use
     ret = callback(curr_progress - 5, f"Starting export of {database}")
     if ret is False: # export have been canceled
         return False, None, False, None
-    
+
     try:
         output_file = os.path.join(export_folder, f"{database.lower()}.gpkg")
         print(f'export_database() output_file {output_file} exist: {QFile(output_file).exists()} overwrite: {overwrite}\n')
@@ -371,7 +372,7 @@ def export_database(conn:psycopg2.extensions.connection, host:str, port:int, use
     if len(log_string_excluded_subclasses) > 0:
         log_string_excluded_subclasses = log_string_excluded_subclasses_header + log_string_excluded_subclasses
         return True, False, False, log_string_excluded_subclasses
-    
+
     return True, False, False, None
 
 def export_postgis_layer_to_gpkg(host:str, port:int, user_name:str, password:str, database:str, output_file:str, wkb_type, srid:int, combine_layers:bool, callback:Callable, detailed_print_outs:bool=True) -> tuple[str,str,QgsRectangle]:
@@ -738,3 +739,94 @@ def list_geom_types_to_export(conn, callback:Callable) -> tuple[list[QgsWkbTypes
         traceback.print_exc()
         callback(None, "Error in list_geom_types_to_export()", err)
         return [], f'{str(err).rstrip()}', False
+
+def export_simplified_gpkg(gpkg_path:str) -> tuple[bool, str]:
+    """Export given GPKG to simplified format"""
+    try:
+        path, ext = os.path.splitext(gpkg_path)
+        path += '_simplified'
+        output_file = f'{path}{ext}'
+        print(f'output_file: {output_file}')
+
+        layer_names = []
+        gpkg_ds = ogr.Open(gpkg_path)
+        gpkg_layers = [l.GetName() for l in gpkg_ds]
+        for name in gpkg_layers:
+            layer = gpkg_ds.GetLayerByName(name)
+            layer_defn = layer.GetLayerDefn()
+            geom_type = layer_defn.GetGeomType()
+            if geom_type == 100:
+                continue # Is not layer
+            print(f'Layer: {name} geom_type: {geom_type}')
+            layer_names.append(name)
+        gpkg_ds = None
+
+        metadata = QgsLayerMetadata()
+        metadata.setTitle('Intrasis GeoPackage export')
+        metadata.setAbstract('Intrasis database export')
+        metadata.setLicenses(['l1', 'l2'])
+        metadata.setKeywords({'Intrasis Export': ['GeoPackage export'],
+                              'gmd:topicCategory': ['Intrasis']})
+
+        # Copy layers
+        for layer_name in layer_names:
+            layer_src = gpkg_path + f'|layername={layer_name}'
+            #print(f'layer_src: {layer_src}')
+            layer = QgsVectorLayer(layer_src, layer_name, "ogr")
+            if layer.isValid():
+                print(f'Layer: {layer_name} is valid')
+            else:
+                print(f'Layer: {layer_name} is NOT valid')
+
+            options = QgsVectorFileWriter.SaveVectorOptions()
+            options.driverName = 'GPKG'
+            options.fileEncoding = "UTF-8"
+            options.includeZ = True
+            options.layerName = layer_name
+            options.saveMetadata = True
+            options.layerMetadata = metadata
+            if QFile(output_file).exists(): # If exist set to create layer or merge in existing gpkg file.
+                options.actionOnExistingFile = QgsVectorFileWriter.CreateOrOverwriteLayer
+            #write_result, error_message, new_file, new_layer = 
+            QgsVectorFileWriter.writeAsVectorFormatV3(layer, output_file, QgsProject.instance().transformContext(), options)
+            #print(f'write_result: {write_result}  error_message: {error_message}')
+
+        # Copy tables table
+        with closing(sqlite3.connect(gpkg_path)) as srcGp_conn:
+            with closing(sqlite3.connect(output_file)) as gp_conn:
+                # objects table
+                data_frame = pd.read_sql('SELECT * FROM objects', srcGp_conn)
+                #Utils.get_data_frame_from_gpkg()
+                data_frame.to_sql(name='objects', con = gp_conn, if_exists='append', index=False)
+                print('objects table copied')
+
+                # layer_styles table
+                data_frame = pd.read_sql('SELECT * FROM layer_styles', srcGp_conn)
+                #Utils.get_data_frame_from_gpkg()
+                data_frame.to_sql(name='layer_styles', con = gp_conn, if_exists='append', index=False)
+                print('layer_styles table copied')
+
+                gp_conn.commit()
+
+        # Fix field names with space in them, ESRI can't handle them
+        columns_to_fix = []
+        with closing(sqlite3.connect(output_file)) as gp_conn:
+            sql = "pragma table_info('project_information')"
+            data_frame = pd.read_sql(sql, gp_conn)
+            for row in data_frame.values:
+                name = row[1]
+                if ' ' in name:
+                    #print(f'name: {name}')
+                    columns_to_fix.append(name)
+            data_frame = None
+
+            for column in columns_to_fix:
+                fixed_name = column.replace(' ', '_')
+                sql = f'ALTER TABLE project_information RENAME "{column}" TO "{fixed_name}"'
+                gp_conn.execute(sql)
+                gp_conn.commit()
+        return True, None
+    except Exception as ex:
+        traceback.print_exc()
+        print(f"Error in export_simplified_gpkg() {ex}")
+        return False, f"Error in export_simplified_gpkg() {ex}"
