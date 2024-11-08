@@ -171,7 +171,7 @@ additional-builtins=
 [FORMAT]
 
 # Maximum number of characters on a single line.
-max-line-length=240
+max-line-length=280
 
 # Regexp for a line that is allowed to be longer than the limit.
 ignore-long-lines=^\s*(# )?<?https?://\S+>?$
@@ -227,7 +227,7 @@ int-import-graph=
 [DESIGN]
 
 # Maximum number of arguments for function / method
-max-args=5
+max-args=7
 
 # Argument names that match this expression will be ignored. Default to name
 # with leading underscore

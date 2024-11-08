@@ -118,17 +118,17 @@
 <context>
     <name>IntrasisAnalysisBrowseRelationsDialog</name>
     <message>
-        <location filename="../intrasis_analysis_browse_relations.py" line="218"/>
+        <location filename="." line="6357100"/>
         <source>Current Object</source>
         <translation type="obsolete">Current Object</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_relations_dialog.ui" line="62"/>
+        <location filename="." line="6357100"/>
         <source>Create layers with above and below relations</source>
         <translation type="obsolete">Create layers with above and below relations</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_relations_dialog.ui" line="69"/>
+        <location filename="." line="6357100"/>
         <source>Create Layer from all relations</source>
         <translation type="obsolete">Create Layer from all relations</translation>
     </message>
@@ -168,22 +168,22 @@
         <translation>#XXX</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_relations_dialog.ui" line="535"/>
+        <location filename="." line="6357100"/>
         <source>Create Layer from all relations above</source>
         <translation type="obsolete">Create Layer from all relations above</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_relations_dialog.ui" line="455"/>
+        <location filename="." line="6357100"/>
         <source>Relations above</source>
         <translation type="obsolete">Relations above</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_relations_dialog.ui" line="767"/>
+        <location filename="." line="6357100"/>
         <source>Create Layer from all relations below</source>
         <translation type="obsolete">Create Layer from all relations below</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_relations_dialog.ui" line="674"/>
+        <location filename="." line="6357100"/>
         <source>Relations below</source>
         <translation type="obsolete">Relations below</translation>
     </message>
@@ -193,7 +193,7 @@
         <translation>No objects selected</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_relations.py" line="253"/>
+        <location filename="." line="6357100"/>
         <source>To view data in the BrowseRelations dialog one or more objects must be selected either from the geometry layers or the &apos;objects&apos; table.</source>
         <translation type="obsolete">To view data in the BrowseRelations dialog one or more objects must be selected either from the geometry layers or the &apos;objects&apos; table.</translation>
     </message>
@@ -250,25 +250,15 @@
     <message>
         <location filename="../intrasis_analysis_browse_relations_dialog.ui" line="604"/>
         <source>Create Layer from closest parents</source>
-        <translation>Create Layer from closest parents</translation>
+        <translation>Create layers reached</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_relations_dialog.ui" line="867"/>
-        <source>Create Layer from all children</source>
-        <translation type="obsolete">Create Layer from all children</translation>
-    </message>
-    <message>
-        <location filename="../intrasis_analysis_browse_relations.py" line="522"/>
-        <source>Create layers reached</source>
-        <translation type="obsolete">Create layers reached</translation>
-    </message>
-    <message>
-        <location filename="../intrasis_analysis_browse_relations.py" line="523"/>
+        <location filename="." line="6357100"/>
         <source>Max number of nodes</source>
         <translation type="obsolete">Max number of nodes</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_relations.py" line="524"/>
+        <location filename="." line="6357100"/>
         <source>was reached when creating layers. Try choosing a tree structure with less child nodes.</source>
         <translation type="obsolete">was reached when creating layers. Try choosing a tree structure with less child nodes.</translation>
     </message>
@@ -315,40 +305,25 @@
     <message>
         <location filename="../intrasis_analysis_browse_relations_dialog.ui" line="855"/>
         <source>Hierarchical layers</source>
-        <translation>Hierarchical layers</translation>
+        <translation type="unfinished">objects can take several minutes</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_relations.py" line="319"/>
-        <source>Create layers from all children</source>
-        <translation type="obsolete">Create layers from all children</translation>
-    </message>
-    <message>
-        <location filename="../intrasis_analysis_browse_relations.py" line="523"/>
+        <location filename="." line="6357100"/>
         <source>objects</source>
         <translation type="obsolete">objects</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_relations.py" line="534"/>
-        <source>Create layers from over</source>
-        <translation type="obsolete">Create layers from over</translation>
-    </message>
-    <message>
-        <location filename="../intrasis_analysis_browse_relations.py" line="496"/>
-        <source>objects can take several minutes</source>
-        <translation type="obsolete">objects can take several minutes</translation>
-    </message>
-    <message>
-        <location filename="../intrasis_analysis_browse_relations.py" line="529"/>
+        <location filename="." line="6357100"/>
         <source>Cancel</source>
         <translation type="obsolete">Cancel</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_relations.py" line="530"/>
+        <location filename="." line="6357100"/>
         <source>Continue</source>
         <translation type="obsolete">Continue</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_relations.py" line="495"/>
+        <location filename="." line="6357100"/>
         <source>More than</source>
         <translation type="obsolete">More than</translation>
     </message>
@@ -358,7 +333,7 @@
         <translation>Create Layer from children</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_relations.py" line="525"/>
+        <location filename="." line="6357100"/>
         <source>Complex tree strucuters and large databases can take several minutes</source>
         <translation type="obsolete">Complex tree strucuters and large databases can take several minutes</translation>
     </message>
@@ -371,7 +346,7 @@
         <translation>Load table</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="76"/>
+        <location filename="." line="6357100"/>
         <source>Export as Chart</source>
         <translation type="obsolete">Export as Chart</translation>
     </message>
@@ -386,7 +361,7 @@
         <translation>Help</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="95"/>
+        <location filename="." line="6357100"/>
         <source>Intrasis Analysis Class/Subclass Browser</source>
         <translation type="obsolete">Intrasis Analysis Class/Subclass Browser</translation>
     </message>
@@ -409,11 +384,6 @@
         <location filename="../intrasis_analysis_browse_tables.py" line="975"/>
         <source>Text Files (*.csv);;Excel xlsx (*.xlsx)</source>
         <translation>Text Files (*.csv);;Excel xlsx (*.xlsx)</translation>
-    </message>
-    <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="90"/>
-        <source>All SubClasses</source>
-        <translation></translation>
     </message>
     <message>
         <location filename="../intrasis_analysis_browse_tables.py" line="91"/>
@@ -451,12 +421,12 @@
         <translation>Completed with no exception and no result (probably manually canceled by the user)</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="592"/>
+        <location filename="." line="6357100"/>
         <source>something went wrong, perhaps Invalid join fields?</source>
         <translation type="obsolete">Something went wrong, perhaps Invalid join fields?</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="606"/>
+        <location filename="." line="6357100"/>
         <source>could not create layer</source>
         <translation type="obsolete">Could not create layer</translation>
     </message>
@@ -464,16 +434,6 @@
         <location filename="../intrasis_analysis_browse_tables.py" line="822"/>
         <source>Could not write (all) features</source>
         <translation>Could not write (all) features</translation>
-    </message>
-    <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="799"/>
-        <source>something went wrong: {ex}, perhaps Invalid join fields?</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="819"/>
-        <source>could not create layer {ex}</source>
-        <translation></translation>
     </message>
     <message>
         <location filename="../intrasis_analysis_browse_tables.py" line="869"/>
@@ -499,6 +459,21 @@
         <location filename="../intrasis_analysis_browse_tables.py" line="92"/>
         <source>Create With ParentID</source>
         <translation>Create With ParentID</translation>
+    </message>
+    <message>
+        <location filename="../intrasis_analysis_browse_tables.py" line="90"/>
+        <source>All SubClasses</source>
+        <translation>All SubClasses</translation>
+    </message>
+    <message>
+        <location filename="../intrasis_analysis_browse_tables.py" line="799"/>
+        <source>something went wrong: {ex}, perhaps Invalid join fields?</source>
+        <translation>something went wrong: {ex}, perhaps Invalid join fields?</translation>
+    </message>
+    <message>
+        <location filename="../intrasis_analysis_browse_tables.py" line="819"/>
+        <source>could not create layer {ex}</source>
+        <translation>could not create layer {ex}</translation>
     </message>
 </context>
 <context>
@@ -592,11 +567,6 @@ select which to analyze.</source>
 select which to analyze.</translation>
     </message>
     <message>
-        <location filename="../select_geo_package_dalog.ui" line="62"/>
-        <source>Doubleclick to move databaases between lists</source>
-        <translation></translation>
-    </message>
-    <message>
         <location filename="../select_geo_package_dalog.py" line="51"/>
         <source>Select</source>
         <translation>Select</translation>
@@ -615,6 +585,11 @@ select which to analyze.</translation>
         <location filename="../select_geo_package_dalog.py" line="83"/>
         <source>Selected objects</source>
         <translation>Selected objects</translation>
+    </message>
+    <message>
+        <location filename="../select_geo_package_dalog.ui" line="62"/>
+        <source>Doubleclick to move databaases between lists</source>
+        <translation>Doubleclick to move databaases between lists</translation>
     </message>
 </context>
 <context>
@@ -764,27 +739,27 @@ select which to analyze.</translation>
         <translation>Ongoing export</translation>
     </message>
     <message>
-        <location filename="../swedigarch_export_dialog.py" line="461"/>
+        <location filename="." line="6357100"/>
         <source>Confirm export</source>
         <translation type="obsolete">Confirm export</translation>
     </message>
     <message>
-        <location filename="../swedigarch_export_dialog.py" line="374"/>
+        <location filename="." line="6357100"/>
         <source>No</source>
         <translation type="obsolete">No</translation>
     </message>
     <message>
-        <location filename="../swedigarch_export_dialog.py" line="464"/>
+        <location filename="." line="6357100"/>
         <source>Yes</source>
         <translation type="obsolete">Yes</translation>
     </message>
     <message>
-        <location filename="../swedigarch_export_dialog.py" line="460"/>
+        <location filename="." line="6357100"/>
         <source> databases?</source>
         <translation type="obsolete"> databases?</translation>
     </message>
     <message>
-        <location filename="../swedigarch_export_dialog.py" line="460"/>
+        <location filename="." line="6357100"/>
         <source>Are you sure that you want to export </source>
         <translation type="obsolete">Are you sure that you want to export </translation>
     </message>
@@ -919,12 +894,17 @@ Otherwice the GeoPackage will not be exported.</translation>
         <translation>Export catalog</translation>
     </message>
     <message>
+        <location filename="../swedigarch_export_dialog_base.ui" line="358"/>
+        <source>…</source>
+        <translation>…</translation>
+    </message>
+    <message>
         <location filename="../swedigarch_export_dialog_base.ui" line="201"/>
         <source>Select all databases</source>
         <translation>Select all databases</translation>
     </message>
     <message>
-        <location filename="../swedigarch_export_dialog_base.ui" line="204"/>
+        <location filename="." line="6357100"/>
         <source>...</source>
         <translation type="obsolete">...</translation>
     </message>
@@ -964,17 +944,17 @@ Otherwice the GeoPackage will not be exported.</translation>
         <translation>Remove</translation>
     </message>
     <message>
-        <location filename="../swedigarch_export_dialog_base.ui" line="358"/>
+        <location filename="." line="6357100"/>
         <source>â¦</source>
-        <translation>...</translation>
+        <translation type="obsolete">...</translation>
     </message>
     <message>
-        <location filename="../swedigarch_export_dialog_base.ui" line="418"/>
+        <location filename="." line="6357100"/>
         <source>{0} databases found</source>
         <translation type="obsolete">{0} databases found</translation>
     </message>
     <message>
-        <location filename="../swedigarch_export_dialog_base.ui" line="420"/>
+        <location filename="." line="6357100"/>
         <source>databases match filter</source>
         <translation type="obsolete">databases match filter</translation>
     </message>
@@ -1008,115 +988,127 @@ Otherwice the GeoPackage will not be exported.</translation>
     <message>
         <location filename="../swedigarch_export_dialog_base.ui" line="390"/>
         <source>Filter by SubClass</source>
-        <translation></translation>
+        <translation>Filter by SubClass</translation>
     </message>
 </context>
 <context>
     <name>SwedigarchGeotools</name>
     <message>
-        <location filename="../swedigarch_geotools.py" line="236"/>
+        <location filename="../swedigarch_geotools.py" line="239"/>
         <source>&amp;Swedigarch Geotools</source>
         <translation>&amp;Swedigarch Geotools</translation>
     </message>
     <message>
-        <location filename="../swedigarch_geotools.py" line="181"/>
+        <location filename="." line="6357100"/>
         <source>Swedigarch Geotools</source>
         <translation type="obsolete">Swedigarch Geotools</translation>
     </message>
     <message>
-        <location filename="../swedigarch_geotools.py" line="207"/>
+        <location filename="../swedigarch_geotools.py" line="210"/>
         <source>Intrasis Relationship Browser</source>
         <translation>Intrasis Relationship Browser</translation>
     </message>
     <message>
-        <location filename="../swedigarch_geotools.py" line="200"/>
+        <location filename="../swedigarch_geotools.py" line="203"/>
         <source>Intrasis Class/Subclass Browser</source>
         <translation>Intrasis Class/Subclass Browser</translation>
     </message>
     <message>
-        <location filename="../swedigarch_geotools.py" line="202"/>
+        <location filename="." line="6357100"/>
         <source>Intrasis GeoPackage CSV-Export</source>
         <translation type="obsolete">Intrasis GeoPackage CSV-Export</translation>
     </message>
     <message>
-        <location filename="../swedigarch_geotools.py" line="381"/>
+        <location filename="." line="6357100"/>
         <source>Select GeoPackage to export as zipped CSV files</source>
         <translation type="obsolete">Select GeoPackage to export as zipped CSV files</translation>
     </message>
     <message>
-        <location filename="../swedigarch_geotools.py" line="358"/>
+        <location filename="." line="6357100"/>
         <source>GeoPackge (*.gpkg);;All files (*.*)</source>
         <translation type="obsolete">GeoPackge (*.gpkg);;All files (*.*)</translation>
     </message>
     <message>
-        <location filename="../swedigarch_geotools.py" line="404"/>
+        <location filename="." line="6357100"/>
         <source>exported to CSV files in file {output_filename}</source>
         <translation type="obsolete">exported to CSV files in file {output_filename}</translation>
     </message>
     <message>
-        <location filename="../swedigarch_geotools.py" line="405"/>
+        <location filename="." line="6357100"/>
         <source>CSV Export done!</source>
         <translation type="obsolete">CSV Export done!</translation>
     </message>
     <message>
-        <location filename="../swedigarch_geotools.py" line="407"/>
+        <location filename="." line="6357100"/>
         <source>CSV Export Error</source>
         <translation type="obsolete">CSV Export Error</translation>
     </message>
     <message>
-        <location filename="../swedigarch_geotools.py" line="408"/>
+        <location filename="." line="6357100"/>
         <source>Error in CSV export: </source>
         <translation type="obsolete">Error in CSV export: </translation>
     </message>
     <message>
-        <location filename="../swedigarch_geotools.py" line="387"/>
+        <location filename="." line="6357100"/>
         <source>No Intrasis GeoPackage</source>
         <translation type="obsolete">No Intrasis GeoPackage</translation>
     </message>
     <message>
-        <location filename="../swedigarch_geotools.py" line="388"/>
+        <location filename="." line="6357100"/>
         <source>No intrasis geopackage(s) loaded</source>
         <translation type="obsolete">No intrasis geopackage(s) loaded</translation>
     </message>
     <message>
-        <location filename="../swedigarch_geotools.py" line="193"/>
+        <location filename="../swedigarch_geotools.py" line="196"/>
         <source>Intrasis DB Manager</source>
         <translation>Intrasis DB Manager</translation>
     </message>
     <message>
-        <location filename="../swedigarch_geotools.py" line="221"/>
+        <location filename="../swedigarch_geotools.py" line="224"/>
         <source>About</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../swedigarch_geotools.py" line="475"/>
+        <location filename="../swedigarch_geotools.py" line="480"/>
         <source>About {0}</source>
-        <translation></translation>
+        <translation>About {0}</translation>
     </message>
     <message>
-        <location filename="../swedigarch_geotools.py" line="111"/>
+        <location filename="../swedigarch_geotools.py" line="369"/>
+        <source>Start export of _COUNT_ Intrasis GeoPackages to CSV-zip files.
+In directory _FOLDER_</source>
+        <translation>Start export of _COUNT_ Intrasis GeoPackages to CSV-zip files.
+In directory _FOLDER_</translation>
+    </message>
+    <message>
+        <location filename="../swedigarch_geotools.py" line="114"/>
         <source>Export GPKG to CSV</source>
-        <translation type="unfinished"></translation>
+        <translation>Export GPKG to CSV</translation>
     </message>
     <message>
-        <location filename="../swedigarch_geotools.py" line="342"/>
+        <location filename="../swedigarch_geotools.py" line="345"/>
         <source>Select folder to convert GPKG to CSV in</source>
-        <translation type="unfinished"></translation>
+        <translation>Select folder to convert GPKG to CSV in</translation>
     </message>
     <message>
-        <location filename="../swedigarch_geotools.py" line="433"/>
+        <location filename="../swedigarch_geotools.py" line="438"/>
         <source>Result from: {self.title_export_gpkg_to_csv}</source>
-        <translation type="unfinished"></translation>
+        <translation>Result from: {self.title_export_gpkg_to_csv}</translation>
     </message>
     <message>
-        <location filename="../swedigarch_geotools.py" line="442"/>
-        <source>Sucessfully converted all _COUNT_ GeoPackages to CSV.</source>
-        <translation type="unfinished"></translation>
+        <location filename="../swedigarch_geotools.py" line="364"/>
+        <source>Selected folder does not contain any Intrasis GeoPackages</source>
+        <translation>Selected folder does not contain any Intrasis GeoPackages</translation>
     </message>
     <message>
-        <location filename="../swedigarch_geotools.py" line="446"/>
-        <source>Have tried to convert _COUNT_ALL_ GeoPackages to CSV, _COUNT_ failed.</source>
-        <translation type="unfinished"></translation>
+        <location filename="../swedigarch_geotools.py" line="447"/>
+        <source>Sucessfully converted all _COUNT_ Intrasis GeoPackages to CSV.</source>
+        <translation>Sucessfully converted all _COUNT_ Intrasis GeoPackages to CSV.</translation>
+    </message>
+    <message>
+        <location filename="../swedigarch_geotools.py" line="451"/>
+        <source>Have tried to convert _COUNT_ALL_ Intrasis GeoPackages to CSV, _COUNT_ failed.</source>
+        <translation>Have tried to convert _COUNT_ALL_ Intrasis GeoPackages to CSV, _COUNT_ failed.</translation>
     </message>
 </context>
 </TS>

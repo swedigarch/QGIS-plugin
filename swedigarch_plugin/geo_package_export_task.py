@@ -92,7 +92,7 @@ class GeoPackageExportTask(QgsTask):
             bulk_log_filename = os.path.join(self.export_folder, f'export_{date_tag}.log')
             self.log_file = open(bulk_log_filename, "w", encoding='utf-8')
             date_time = now.strftime('%Y-%m-%d %H:%M:%S')
-            self.log_file.write(f'Export of {len(self.databases)} database to directory \"{self.export_folder}\" started: ({date_time})\n\n')           
+            self.log_file.write(f'Export of {len(self.databases)} database to directory \"{self.export_folder}\" started: ({date_time})\n\n')
 
             if self.detailed_print_outs:
                 print("GeoPackageExportTask.run()")
