@@ -91,65 +91,75 @@ class GeoPackageExportTask(QgsTask):
             now = datetime.now()
             date_tag = now.strftime('%Y-%m-%d_%H-%M-%S')
             bulk_log_filename = os.path.join(self.export_folder, f'export_{date_tag}.log')
-            self.log_file = open(bulk_log_filename, "w", encoding='utf-8')
-            date_time = now.strftime('%Y-%m-%d %H:%M:%S')
-            self.log_file.write(f'Export of {len(self.databases)} database to directory \"{self.export_folder}\" started: ({date_time})\n\n')
 
-            if self.detailed_print_outs:
-                print("GeoPackageExportTask.run()")
-            QgsMessageLog.logMessage("GeoPackage Export Task Started", MESSAGE_CATEGORY, Qgis.Info)
-            ret, export_ok_count, log_excluded_subclasses = export_to_geopackage(self.host, self.port, self.user_name, self.password, self.databases, self.export_folder, self.overwrite, self.csv, self.callback, self.detailed_print_outs, self.log_file, self.subclasses_to_exclude)  
-            QgsMessageLog.logMessage(f"GeoPackage export done, ret : {ret}", MESSAGE_CATEGORY, Qgis.Info)
-            if self.csv:
+            with open(bulk_log_filename, "w", encoding='utf-8') as log_file:
+                date_time = now.strftime('%Y-%m-%d %H:%M:%S')
+                log_file.write(f'Export of {len(self.databases)} database to directory \"{self.export_folder}\" started: ({date_time})\n\n')
+
+                if self.detailed_print_outs:
+                    print("GeoPackageExportTask.run()")
+                QgsMessageLog.logMessage("GeoPackage Export Task Started", MESSAGE_CATEGORY, Qgis.Info)
+                ret, export_ok_count, log_excluded_subclasses = export_to_geopackage(self.host, self.port, self.user_name, self.password, self.databases, self.export_folder, self.overwrite, self.csv, self.simplified,
+                                                                                    self.callback, self.detailed_print_outs, log_file, self.subclasses_to_exclude)
+                QgsMessageLog.logMessage(f"GeoPackage export done, ret : {ret}", MESSAGE_CATEGORY, Qgis.Info)
                 max_length = len(max(self.databases, key=len))
-                print('Starting CSV export')
-                self.callback(95, "Starting CSV export")
-                for database in self.databases:
-                    geo_package_file = os.path.join(self.export_folder, f"{database.lower()}.gpkg")
-                    output_filename = os.path.join(self.export_folder, f"{database.lower()}.zip")
-                    need_csv_export = not QFile(output_filename).exists()
-                    csv_export_old = False
-                    if not need_csv_export:
-                        gpkg_stat_info = os.stat(geo_package_file)
-                        csv_stat_info = os.stat(output_filename)
-                        gpkg_mod_time = datetime.fromtimestamp(gpkg_stat_info.st_mtime)
-                        csv_mod_time = datetime.fromtimestamp(csv_stat_info.st_mtime)
-                        csv_export_old = gpkg_mod_time > csv_mod_time # Only overwrite CSV export if GeoPackage is newer
+                if self.csv:
+                    print('Starting CSV export')
+                    self.callback(90, "Starting CSV export")
+                    for database in self.databases:
+                        geo_package_file = os.path.join(self.export_folder, f"{database.lower()}.gpkg")
+                        output_filename = os.path.join(self.export_folder, f"{database.lower()}.zip")
+                        need_csv_export = not QFile(output_filename).exists()
+                        csv_export_old = False
+                        if not need_csv_export:
+                            gpkg_stat_info = os.stat(geo_package_file)
+                            csv_stat_info = os.stat(output_filename)
+                            gpkg_mod_time = datetime.fromtimestamp(gpkg_stat_info.st_mtime)
+                            csv_mod_time = datetime.fromtimestamp(csv_stat_info.st_mtime)
+                            csv_export_old = gpkg_mod_time > csv_mod_time # Only overwrite CSV export if GeoPackage is newer
 
-                    padded_db_name = database.ljust(max_length + 2)
-                    if need_csv_export or csv_export_old:
-                        ret_code, error_msg, output_filename = export_geopackage_to_csv(geo_package_file)
-                        if ret_code == RetCode.EXPORT_OK:
-                            self.log_file.write(f'\n{padded_db_name} CSV export OK  ({output_filename})\n')
-                            #self.log_file.write(f'SubClass(es) that were excluded: {self.subclasses_to_exclude}\n{padded_db_name} CSV export OK  ({output_filename})\n')
+                        padded_db_name = database.ljust(max_length + 2)
+                        if need_csv_export or csv_export_old:
+                            ret_code, error_msg, output_filename = export_geopackage_to_csv(geo_package_file)
+                            if ret_code == RetCode.EXPORT_OK:
+                                log_file.write(f'\n{padded_db_name} CSV export OK  ({output_filename})\n')
+                                #log_file.write(f'SubClass(es) that were excluded: {self.subclasses_to_exclude}\n{padded_db_name} CSV export OK  ({output_filename})\n')
+                            else:
+                                log_file.write(f'{padded_db_name} Error during CSV export: {error_msg}\n')
+                        elif not csv_export_old:
+                            message = f'{padded_db_name} Skipping CSV export, because existing CSV export is newer than the GeoPackage.\n'
+                            QgsMessageLog.logMessage(message, MESSAGE_CATEGORY, Qgis.Info)
+                            log_file.write(message)
+
+                    if not self.simplified:
+                        self.callback(100, "CSV Export done")
+                    else:
+                        self.callback(95, "CSV Export done")
+
+                if self.simplified:
+                    self.callback(95, "Starting Simplified export")
+                    for database in self.databases:
+                        padded_db_name = database.ljust(max_length + 2)
+                        gpkg_path = os.path.join(self.export_folder, f"{database.lower()}.gpkg")
+                        ok, error_msg = export_simplified_gpkg(gpkg_path)
+                        if ok:
+                            log_file.write(f'{padded_db_name} Simplified GPKG export OK)\n')
                         else:
-                            self.log_file.write(f'{padded_db_name} Error during CSV export: {error_msg}\n')
-                    elif not csv_export_old:
-                        message = f'{padded_db_name} Skipping CSV export, because existing CSV export is newer than the GeoPackage.\n'
-                        QgsMessageLog.logMessage(message, MESSAGE_CATEGORY, Qgis.Info)
-                        self.log_file.write(message)
+                            log_file.write(f'{padded_db_name} Error during simplified GPKG export: {error_msg}\n')
+                    self.callback(100, "Simplified Export done")
 
-                self.callback(100, "CSV Export done")
-                if self.csv: # CSV export enabled, then we need to log the final result here
+                if self.csv or self.simplified: # CSV or simplified export enabled, then we need to log the final result here
                     now = datetime.now()
                     total_number_of_databases = len(self.databases)
                     date_time = now.strftime('%Y-%m-%d %H:%M:%S')
                     if export_ok_count == total_number_of_databases:
-                        self.log_file.write(f'\nBulk export done: {date_time}\n{total_number_of_databases} Databases Exported {export_ok_count }')
+                        log_file.write(f'\nExport done: {date_time}\n{total_number_of_databases} Databases Exported, with no error')
                     else:
-                        self.log_file.write(f'\nBulk export done: {date_time}\nSucceeded with exporting {export_ok_count} of {total_number_of_databases} Databases.')
+                        log_file.write(f'\nExport done: {date_time}\nSucceeded with exporting {export_ok_count} of {total_number_of_databases} Databases.')
 
-                if self.simplified:
-                    output_file = os.path.join(self.export_folder, f"{self.database.lower()}.gpkg")
-                    ok, error_msg = export_simplified_gpkg(output_file)
-                    if ok:
-                        self.write_log_line(f'{padded_db_name} simplified GPKG export OK  ({output_filename})\n')
-                    else:
-                        self.write_log_line(f'{padded_db_name} Error during simplified GPKG export: {error_msg}\n')
-
-                self.log_file.close()
             return ret == RetCode.EXPORT_OK
         except Exception as err:
+            traceback.print_exc()
             print(f"Exception from export_to_geopackage() Exception: {err}")
             QgsMessageLog.logMessage(f"Exception from export_to_geopackage() Exception: {err}", MESSAGE_CATEGORY, Qgis.Info)
             return False

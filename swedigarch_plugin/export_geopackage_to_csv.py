@@ -24,25 +24,20 @@
 
 ***************************************************************************/
 """
-"""export_geopackage_to_csv"""
-from .tempfile import TemporaryDirectory
 import sqlite3
 from contextlib import closing
-import psycopg2
-import pandas as pd
 import os
 import csv
 import zipfile
-import shutil
+#from time import sleep
 from pathlib import Path
-from osgeo import gdal
-from osgeo import ogr
 import traceback
-from time import sleep
-from PyQt5.QtCore import QDir, QFile
-from qgis.core import QgsProject, QgsVectorLayer, QgsRasterLayer, QgsRasterPipe, QgsDataSourceUri, QgsWkbTypes, QgsVectorFileWriter, QgsRasterFileWriter, QgsLayerMetadata, QgsCoordinateReferenceSystem, QgsCoordinateTransformContext
+import pandas as pd
+from osgeo import ogr
+from PyQt5.QtCore import QFile
+from .tempfile import TemporaryDirectory
 from . import utils as Utils
-from .constant import Intrasis, RetCode, WriterError
+from .constant import RetCode
 
 def export_geopackage_to_csv(gpkg_file:str) -> tuple[RetCode, str, str]:
     """Export given GeoPackage to CSV files, packed in .zip file"""

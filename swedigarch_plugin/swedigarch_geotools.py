@@ -31,31 +31,29 @@ import configparser
 from pathlib import Path
 import os.path
 import glob
-from datetime import datetime
 import traceback
 from typing import Callable
 #import numpy as np
 # Import the code for the dialog
+from qgis.utils import iface
 from qgis.core import QgsApplication, QgsProject, QgsTask, Qgis, QgsSettings, QgsMessageLog, QgsVectorLayer, QgsWkbTypes, QgsVectorFileWriter, QgsLayerMetadata
 from qgis.PyQt.QtCore import QSettings, QTranslator, QCoreApplication
 from qgis.PyQt.QtGui import QIcon
-from PyQt5 import QtWidgets
 from qgis.PyQt.QtWidgets import QAction, QMessageBox, QStyle, QWidget
+from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QFileDialog
-from qgis.utils import iface
-from PyQt5.QtCore import QDir, QFile, QSettings
+from PyQt5.QtCore import QDir, QSettings
 from osgeo import ogr
 from swedigarch_plugin import export_utils
 from .swedigarch_export_dialog import SwedigarchExportDialog
 from .intrasis_analysis_browse_relations import IntrasisAnalysisBrowseRelationsDialog
 from .intrasis_analysis_browse_tables import IntrasisAnalysisBrowseTablesDialog
-from .select_geo_package_dalog import SelectGeoPackageDialog
 from .export_geopackage_to_csv import export_geopackage_to_csv
 from .resources import * # This row is needed for the ToolBar button to get its icon.
 from . import utils as Utils
 from .constant import RetCode
-from .export_geopackage_to_csv import export_geopackage_to_csv
 from .geopackage_export import export_simplified_gpkg
+
 class SwedigarchGeotools:
     """QGIS Plugin Implementation."""
 
@@ -249,6 +247,7 @@ class SwedigarchGeotools:
                 self.tr('&Swedigarch Geotools'),
                 action)
             self.iface.removeToolBarIcon(action)
+        self.iface.mainWindow().removeToolBar(self.toolbar)
 
     def run_export_dialog(self) -> None:
         """Run method that performs all the real work (Intrasis DB Manager)"""
@@ -476,9 +475,10 @@ class SwedigarchGeotools:
             print(f'start export_folder: {export_folder}')
 
             options = QtWidgets.QFileDialog.Options()
-            gpkg_path, filter = QtWidgets.QFileDialog.getOpenFileName(None, self.tr('Select Intrasis GPKG to export to simplified version'),
-                                                                      export_folder, self.tr('GeoPackge (*.gpkg);;All files (*.*)'), '*.gpkg', options)
-            print(f'Selected gpkg_path: {gpkg_path}')
+            gpkg_path = QtWidgets.QFileDialog.getOpenFileName(None, self.tr('Select Intrasis GPKG to export to simplified version'),
+                                                              export_folder, self.tr('GeoPackge (*.gpkg);;All files (*.*)'), '*.gpkg', options)[0]
+            if gpkg_path == '':
+                return # Canceled
 
             export_simplified_gpkg(gpkg_path)
 
