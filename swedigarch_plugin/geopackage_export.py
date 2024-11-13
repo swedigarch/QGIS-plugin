@@ -638,6 +638,7 @@ def export_class_attributes(conn:psycopg2.extensions.connection, cur:sqlite3.Cur
             sql =  sql.replace("__CLASS__", f" {class_id} AND o.\"SubClassId\" is NULL")
             sql = sql.replace("__CLS_IDS__", f"{class_id}")
             sql = sql.replace("__ORDERING__", "")
+            sql = sql.replace("__ATTRIBUTE_VALUE__","av.\"Value\"")
             if detailed_print_outs:
                 print(f"Attribute export for ClassId: {class_id}, SubClassId: NULL")
         else:
@@ -645,12 +646,15 @@ def export_class_attributes(conn:psycopg2.extensions.connection, cur:sqlite3.Cur
                 sql = sql.replace("__CLASS__", f" {class_id} AND o.\"SubClassId\" = {sub_class_id}")
                 sql = sql.replace("__CLS_IDS__", f"{class_id}")
                 sql = sql.replace("__ORDERING__", "")
+                sql = sql.replace("__ATTRIBUTE_VALUE__","NULL as \"Value\"")
+                print(f'sql: {sql}')
                 if detailed_print_outs:
-                    print(f"Attribute export for ClassId: {class_id}, SubClassId: {sub_class_id} (SubClass attributes excluded)")
+                    print(f"Attribute export for ClassId: {class_id}, SubClassId: {sub_class_id} (SubClass attributes excluded, Class attribute values removed)")
             else:
                 sql = sql.replace("__CLASS__", f" {class_id} AND o.\"SubClassId\" = {sub_class_id}")
                 sql = sql.replace("__CLS_IDS__", f"{class_id}, {sub_class_id}")
                 sql = sql.replace("__ORDERING__", f", am.\"ObjectDefId\" = {sub_class_id}")
+                sql = sql.replace("__ATTRIBUTE_VALUE__","av.\"Value\"")
                 if detailed_print_outs:
                     print(f"Attribute export for ClassId: {class_id}, SubClassId: {sub_class_id}")
         
