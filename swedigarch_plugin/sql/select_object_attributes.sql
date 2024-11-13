@@ -6,7 +6,7 @@ SELECT
     ad."DataType", 
     (o."ClassId" = am."ObjectDefId") as "Class", 
     COALESCE(ft."AttributeId" > 0, false) as "LongText", 
-    ft."Text", 
+    __FREE_TEXT_VALUE__,
     am."AttributeOrder" 
 FROM "Object" o
     JOIN "Attribute" a ON o."ObjectId" = a."ObjectId" AND o."ClassId" = __CLASS__
