@@ -228,7 +228,7 @@
     <message>
         <location filename="." line="1869641829"/>
         <source>To view data in the BrowseRelations dialog one or more objects must be selected either from the geometry layers or the &apos;objects&apos; table.</source>
-        <translation type="obsolete">För att kunna titta på data i BrowseRelations-dialogen behöver ett eller flera objekt väljas antingen från något av geometrilagren eller från &apos;objects&apos;-tabellen.</translation>
+        <translation type="obsolete">För att kunna titta på data i BrowseRelations-dialogen behöver ett eller flera objekt väljas antingen från något av geometrilagren eller från 'objects'-tabellen.</translation>
     </message>
     <message>
         <location filename="../intrasis_analysis_browse_relations.py" line="405"/>
@@ -313,7 +313,7 @@
     <message>
         <location filename="../intrasis_analysis_browse_relations.py" line="317"/>
         <source>To view data in the Intrasis relationship browser one or more objects must be selected either from the geometry layers or the &apos;objects&apos; table.</source>
-        <translation>För att kunna titta på data i Intrasis relationship browser måste ett eller flera objekt väljas antingen från något av geometrilagren eller från &apos;objects&apos;-tabellen.</translation>
+        <translation>För att kunna titta på data i Intrasis relationship browser måste ett eller flera objekt väljas antingen från något av geometrilagren eller från 'objects'-tabellen.</translation>
     </message>
     <message>
         <location filename="../intrasis_analysis_browse_relations.py" line="325"/>
@@ -1170,7 +1170,7 @@ I katalog _FOLDER_</translation>
     <message>
         <location filename="../swedigarch_geotools.py" line="438"/>
         <source>Result from: {self.title_export_gpkg_to_csv}</source>
-        <translation>Resultat från: {self.title_export_gpkg_to_csv}</translation>
+        <translation type="obsolete">Resultat från: {self.title_export_gpkg_to_csv}</translation>
     </message>
     <message>
         <location filename="../swedigarch_geotools.py" line="364"/>
@@ -1186,6 +1186,11 @@ I katalog _FOLDER_</translation>
         <location filename="../swedigarch_geotools.py" line="451"/>
         <source>Have tried to convert _COUNT_ALL_ Intrasis GeoPackages to CSV, _COUNT_ failed.</source>
         <translation>Har försökt konvertera _COUNT_ALL_ Intrasis GeoPackages till CSV, _COUNT_ misslyckades.</translation>
+    </message>
+    <message>
+        <location filename="../swedigarch_geotools.py" line="438"/>
+        <source>Result from:</source>
+        <translation>Resultat från:</translation>
     </message>
 </context>
 </TS>

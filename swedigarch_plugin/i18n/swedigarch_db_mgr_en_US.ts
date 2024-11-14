@@ -195,7 +195,7 @@
     <message>
         <location filename="." line="6357100"/>
         <source>To view data in the BrowseRelations dialog one or more objects must be selected either from the geometry layers or the &apos;objects&apos; table.</source>
-        <translation type="obsolete">To view data in the BrowseRelations dialog one or more objects must be selected either from the geometry layers or the &apos;objects&apos; table.</translation>
+        <translation type="obsolete">To view data in the BrowseRelations dialog one or more objects must be selected either from the geometry layers or the 'objects' table.</translation>
     </message>
     <message>
         <location filename="../intrasis_analysis_browse_relations.py" line="405"/>
@@ -275,7 +275,7 @@
     <message>
         <location filename="../intrasis_analysis_browse_relations.py" line="317"/>
         <source>To view data in the Intrasis relationship browser one or more objects must be selected either from the geometry layers or the &apos;objects&apos; table.</source>
-        <translation>To view data in the Intrasis relationship browser one or more objects must be selected either from the geometry layers or the &apos;objects&apos; table.</translation>
+        <translation>To view data in the Intrasis relationship browser one or more objects must be selected either from the geometry layers or the 'objects' table.</translation>
     </message>
     <message>
         <location filename="../intrasis_analysis_browse_relations.py" line="325"/>
@@ -1093,7 +1093,7 @@ In directory _FOLDER_</translation>
     <message>
         <location filename="../swedigarch_geotools.py" line="438"/>
         <source>Result from: {self.title_export_gpkg_to_csv}</source>
-        <translation>Result from: {self.title_export_gpkg_to_csv}</translation>
+        <translation type="obsolete">Result from: {self.title_export_gpkg_to_csv}</translation>
     </message>
     <message>
         <location filename="../swedigarch_geotools.py" line="364"/>
@@ -1109,6 +1109,11 @@ In directory _FOLDER_</translation>
         <location filename="../swedigarch_geotools.py" line="451"/>
         <source>Have tried to convert _COUNT_ALL_ Intrasis GeoPackages to CSV, _COUNT_ failed.</source>
         <translation>Have tried to convert _COUNT_ALL_ Intrasis GeoPackages to CSV, _COUNT_ failed.</translation>
+    </message>
+    <message>
+        <location filename="../swedigarch_geotools.py" line="438"/>
+        <source>Result from:</source>
+        <translation>Result from:</translation>
     </message>
 </context>
 </TS>
