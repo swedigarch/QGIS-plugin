@@ -4,27 +4,27 @@
 <context>
     <name>ConnectToDbDialog</name>
     <message>
-        <location filename="../connect_to_db_dialog.py" line="116"/>
+        <location filename="../connect_to_db_dialog.py" line="115"/>
         <source>Connect</source>
         <translation>Connect</translation>
     </message>
     <message>
-        <location filename="../connect_to_db_dialog.py" line="161"/>
+        <location filename="../connect_to_db_dialog.py" line="160"/>
         <source>Empty error, may be login error</source>
         <translation>Empty error, may be login error</translation>
     </message>
     <message>
-        <location filename="../connect_to_db_dialog.py" line="135"/>
+        <location filename="../connect_to_db_dialog.py" line="134"/>
         <source>Trying to connect to the server</source>
         <translation>Trying to connect to the server</translation>
     </message>
     <message>
-        <location filename="../connect_to_db_dialog.py" line="117"/>
+        <location filename="../connect_to_db_dialog.py" line="116"/>
         <source>Cancel</source>
         <translation>Cancel</translation>
     </message>
     <message>
-        <location filename="../connect_to_db_dialog.py" line="120"/>
+        <location filename="../connect_to_db_dialog.py" line="119"/>
         <source>Help</source>
         <translation>Help</translation>
     </message>
@@ -1009,7 +1009,7 @@ Otherwice the GeoPackage will not be exported.</translation>
 <context>
     <name>SwedigarchGeotools</name>
     <message>
-        <location filename="../swedigarch_geotools.py" line="248"/>
+        <location filename="../swedigarch_geotools.py" line="246"/>
         <source>&amp;Swedigarch Geotools</source>
         <translation>&amp;Swedigarch Geotools</translation>
     </message>
@@ -1019,12 +1019,12 @@ Otherwice the GeoPackage will not be exported.</translation>
         <translation type="obsolete">Swedigarch Geotools</translation>
     </message>
     <message>
-        <location filename="../swedigarch_geotools.py" line="211"/>
+        <location filename="../swedigarch_geotools.py" line="209"/>
         <source>Intrasis Relationship Browser</source>
         <translation>Intrasis Relationship Browser</translation>
     </message>
     <message>
-        <location filename="../swedigarch_geotools.py" line="204"/>
+        <location filename="../swedigarch_geotools.py" line="202"/>
         <source>Intrasis Class/Subclass Browser</source>
         <translation>Intrasis Class/Subclass Browser</translation>
     </message>
@@ -1039,7 +1039,7 @@ Otherwice the GeoPackage will not be exported.</translation>
         <translation type="obsolete">Select GeoPackage to export as zipped CSV files</translation>
     </message>
     <message>
-        <location filename="../swedigarch_geotools.py" line="479"/>
+        <location filename="../swedigarch_geotools.py" line="478"/>
         <source>GeoPackge (*.gpkg);;All files (*.*)</source>
         <translation>GeoPackge (*.gpkg);;All files (*.*)</translation>
     </message>
@@ -1074,66 +1074,81 @@ Otherwice the GeoPackage will not be exported.</translation>
         <translation type="obsolete">No intrasis geopackage(s) loaded</translation>
     </message>
     <message>
-        <location filename="../swedigarch_geotools.py" line="197"/>
+        <location filename="../swedigarch_geotools.py" line="195"/>
         <source>Intrasis DB Manager</source>
         <translation>Intrasis DB Manager</translation>
     </message>
     <message>
-        <location filename="../swedigarch_geotools.py" line="233"/>
+        <location filename="../swedigarch_geotools.py" line="231"/>
         <source>About</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../swedigarch_geotools.py" line="506"/>
+        <location filename="../swedigarch_geotools.py" line="517"/>
         <source>About {0}</source>
         <translation>About {0}</translation>
     </message>
     <message>
-        <location filename="../swedigarch_geotools.py" line="378"/>
+        <location filename="../swedigarch_geotools.py" line="377"/>
         <source>Start export of _COUNT_ Intrasis GeoPackages to CSV-zip files.
 In directory _FOLDER_</source>
         <translation>Start export of _COUNT_ Intrasis GeoPackages to CSV-zip files.
 In directory _FOLDER_</translation>
     </message>
     <message>
-        <location filename="../swedigarch_geotools.py" line="114"/>
+        <location filename="../swedigarch_geotools.py" line="112"/>
         <source>Export GPKG to CSV</source>
         <translation>Export GPKG to CSV</translation>
     </message>
     <message>
-        <location filename="../swedigarch_geotools.py" line="354"/>
+        <location filename="../swedigarch_geotools.py" line="353"/>
         <source>Select folder to convert GPKG to CSV in</source>
         <translation>Select folder to convert GPKG to CSV in</translation>
     </message>
     <message>
-        <location filename="../swedigarch_geotools.py" line="447"/>
+        <location filename="../swedigarch_geotools.py" line="446"/>
         <source>Result from: {self.title_export_gpkg_to_csv}</source>
         <translation>Result from: {self.title_export_gpkg_to_csv}</translation>
     </message>
     <message>
-        <location filename="../swedigarch_geotools.py" line="373"/>
+        <location filename="../swedigarch_geotools.py" line="372"/>
         <source>Selected folder does not contain any Intrasis GeoPackages</source>
         <translation>Selected folder does not contain any Intrasis GeoPackages</translation>
     </message>
     <message>
         <location filename="../swedigarch_geotools.py" line="456"/>
         <source>Sucessfully converted all _COUNT_ Intrasis GeoPackages to CSV.</source>
-        <translation>Sucessfully converted all _COUNT_ Intrasis GeoPackages to CSV.</translation>
+        <translation type="obsolete">Sucessfully converted all _COUNT_ Intrasis GeoPackages to CSV.</translation>
     </message>
     <message>
-        <location filename="../swedigarch_geotools.py" line="460"/>
+        <location filename="../swedigarch_geotools.py" line="459"/>
         <source>Have tried to convert _COUNT_ALL_ Intrasis GeoPackages to CSV, _COUNT_ failed.</source>
         <translation>Have tried to convert _COUNT_ALL_ Intrasis GeoPackages to CSV, _COUNT_ failed.</translation>
     </message>
     <message>
-        <location filename="../swedigarch_geotools.py" line="115"/>
+        <location filename="../swedigarch_geotools.py" line="113"/>
         <source>Export simplified version of GPKG</source>
         <translation>Export simplified version of GPKG</translation>
     </message>
     <message>
-        <location filename="../swedigarch_geotools.py" line="479"/>
+        <location filename="../swedigarch_geotools.py" line="478"/>
         <source>Select Intrasis GPKG to export to simplified version</source>
         <translation></translation>
+    </message>
+    <message>
+        <location filename="../swedigarch_geotools.py" line="455"/>
+        <source>Successfully converted all _COUNT_ Intrasis GeoPackages to CSV.</source>
+        <translation>Successfully converted all _COUNT_ Intrasis GeoPackages to CSV.</translation>
+    </message>
+    <message>
+        <location filename="../swedigarch_geotools.py" line="485"/>
+        <source>Result from:</source>
+        <translation>Result from:</translation>
+    </message>
+    <message>
+        <location filename="../swedigarch_geotools.py" line="488"/>
+        <source>Successfully converted Intrasis GeoPackage to simplified version</source>
+        <translation>Successfully converted Intrasis GeoPackage to simplified version</translation>
     </message>
 </context>
 </TS>

@@ -452,7 +452,7 @@ class SwedigarchGeotools:
             else:
                 total_count, failed = result
                 if failed == 0:
-                    text = self.tr("Sucessfully converted all _COUNT_ Intrasis GeoPackages to CSV.")
+                    text = self.tr("Successfully converted all _COUNT_ Intrasis GeoPackages to CSV.")
                     text = text.replace('_COUNT_', f'{total_count}')
                     msg_box.setIcon(QMessageBox.Information)
                 elif failed > 0:
@@ -480,7 +480,18 @@ class SwedigarchGeotools:
             if gpkg_path == '':
                 return # Canceled
 
-            export_simplified_gpkg(gpkg_path)
+            ok, error_msg = export_simplified_gpkg(gpkg_path)
+            msg_box = QMessageBox()
+            msg_box.setWindowTitle(self.tr(f'Result from:') + ' ' + self.title_export_simplified_gpkg)
+            msg_box.setStandardButtons(QMessageBox.Ok)
+            if ok:
+                text = self.tr('Successfully converted Intrasis GeoPackage to simplified version')
+                msg_box.setIcon(QMessageBox.Information)
+            else:
+                text = f'Error during runnig of "{self.title_export_simplified_gpkg}" Error: {error_msg}'
+                msg_box.setIcon(QMessageBox.Critical)    
+            msg_box.setText(text)
+            msg_box.exec()
 
         except Exception as err:
             print(f'export_gpkg_to_csv() Exception: {err}')

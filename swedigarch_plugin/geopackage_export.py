@@ -804,12 +804,12 @@ def export_simplified_gpkg(gpkg_path:str) -> tuple[bool, str]:
                 gp_conn.commit()
                 print('objects table copied')
 
-                # layer_styles table
+                """ # layer_styles table
                 data_frame = pd.read_sql('SELECT * FROM layer_styles', srcGp_conn)
                 #Utils.get_data_frame_from_gpkg()
                 data_frame.to_sql(name='layer_styles', con = gp_conn, if_exists='append', index=False)
                 gp_conn.commit()
-                print('layer_styles table copied')
+                print('layer_styles table copied') """
 
         # Fix field names with space in them, ESRI can't handle them
         columns_to_fix = []
