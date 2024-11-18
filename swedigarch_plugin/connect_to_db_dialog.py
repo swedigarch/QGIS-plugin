@@ -34,8 +34,7 @@ import pandas as pd
 from . import utils as Utils
 from .help_dialog import HelpDialog
 from qgis.PyQt import (uic, QtWidgets)
-from qgis.core import QgsDataSourceUri
-from PyQt5.QtCore import (QCoreApplication, QObject, QRunnable, QThread, QThreadPool, pyqtSignal, Qt, pyqtSlot)
+from PyQt5.QtCore import (QObject, QRunnable, QThreadPool, pyqtSignal, Qt, pyqtSlot)
 
 # This loads your .ui file so that PyQt can populate your plugin with the elements from Qt Designer
 FORM_CLASS, _ = uic.loadUiType(os.path.join(

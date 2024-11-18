@@ -31,30 +31,28 @@ import configparser
 from pathlib import Path
 import os.path
 import glob
-from datetime import datetime
 import traceback
 from typing import Callable
 #import numpy as np
 # Import the code for the dialog
-from qgis.core import QgsApplication, QgsTask, Qgis, QgsSettings, QgsMessageLog
+from qgis.utils import iface
+from qgis.core import QgsApplication, QgsProject, QgsTask, Qgis, QgsSettings, QgsMessageLog, QgsVectorLayer, QgsWkbTypes, QgsVectorFileWriter, QgsLayerMetadata
 from qgis.PyQt.QtCore import QSettings, QTranslator, QCoreApplication
 from qgis.PyQt.QtGui import QIcon
-from PyQt5 import QtWidgets
 from qgis.PyQt.QtWidgets import QAction, QMessageBox, QStyle, QWidget
+from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QFileDialog
-from qgis.utils import iface
-from PyQt5.QtCore import QDir, QFile, QSettings
+from PyQt5.QtCore import QDir, QSettings
 from osgeo import ogr
 from swedigarch_plugin import export_utils
 from .swedigarch_export_dialog import SwedigarchExportDialog
 from .intrasis_analysis_browse_relations import IntrasisAnalysisBrowseRelationsDialog
 from .intrasis_analysis_browse_tables import IntrasisAnalysisBrowseTablesDialog
-from .select_geo_package_dalog import SelectGeoPackageDialog
 from .export_geopackage_to_csv import export_geopackage_to_csv
 from .resources import * # This row is needed for the ToolBar button to get its icon.
 from . import utils as Utils
 from .constant import RetCode
-from .export_geopackage_to_csv import export_geopackage_to_csv
+from .geopackage_export import export_simplified_gpkg
 
 class SwedigarchGeotools:
     """QGIS Plugin Implementation."""
@@ -112,6 +110,7 @@ class SwedigarchGeotools:
         self.dlg = None
         self.dlg_browse_tables = None
         self.title_export_gpkg_to_csv = self.tr('Export GPKG to CSV')
+        self.title_export_simplified_gpkg = self.tr('Export simplified version of GPKG')
 
         # Explicitly signal using exceptions to silence warning
         ogr.UseExceptions()
@@ -221,6 +220,14 @@ class SwedigarchGeotools:
             parent=self.iface.mainWindow(),
             add_to_toolbar=False)
 
+        icon_path = ':/plugins/swedigarch_plugin/assets/simplified_export.svg'
+        self.add_action(
+            icon_path,
+            text=self.title_export_simplified_gpkg,
+            callback=self.on_export_simplified_gpkg,
+            parent=self.iface.mainWindow(),
+            add_to_toolbar=False)
+
         self.add_action(
             self.menu.style().standardIcon(QStyle.SP_MessageBoxInformation),
             text=self.tr("About"),
@@ -240,6 +247,7 @@ class SwedigarchGeotools:
                 self.tr('&Swedigarch Geotools'),
                 action)
             self.iface.removeToolBarIcon(action)
+        self.iface.mainWindow().removeToolBar(self.toolbar)
 
     def run_export_dialog(self) -> None:
         """Run method that performs all the real work (Intrasis DB Manager)"""
@@ -444,7 +452,7 @@ class SwedigarchGeotools:
             else:
                 total_count, failed = result
                 if failed == 0:
-                    text = self.tr("Sucessfully converted all _COUNT_ Intrasis GeoPackages to CSV.")
+                    text = self.tr("Successfully converted all _COUNT_ Intrasis GeoPackages to CSV.")
                     text = text.replace('_COUNT_', f'{total_count}')
                     msg_box.setIcon(QMessageBox.Information)
                 elif failed > 0:
@@ -458,6 +466,35 @@ class SwedigarchGeotools:
         except Exception as err:
             traceback.print_exc()
             print(f'export_gpkg_to_csv_done() Exception: {err}')
+
+    def on_export_simplified_gpkg(self) -> None:
+        """Export simplified version of GPKG"""
+        try:
+            s = QgsSettings()
+            export_folder = s.value("SwedigarchGeotools/exportFolder", "")
+            print(f'start export_folder: {export_folder}')
+
+            options = QtWidgets.QFileDialog.Options()
+            gpkg_path = QtWidgets.QFileDialog.getOpenFileName(None, self.tr('Select Intrasis GPKG to export to simplified version'),
+                                                              export_folder, self.tr('GeoPackge (*.gpkg);;All files (*.*)'), '*.gpkg', options)[0]
+            if gpkg_path == '':
+                return # Canceled
+
+            ok, error_msg = export_simplified_gpkg(gpkg_path)
+            msg_box = QMessageBox()
+            msg_box.setWindowTitle(self.tr(f'Result from:') + ' ' + self.title_export_simplified_gpkg)
+            msg_box.setStandardButtons(QMessageBox.Ok)
+            if ok:
+                text = self.tr('Successfully converted Intrasis GeoPackage to simplified version')
+                msg_box.setIcon(QMessageBox.Information)
+            else:
+                text = f'Error during runnig of "{self.title_export_simplified_gpkg}" Error: {error_msg}'
+                msg_box.setIcon(QMessageBox.Critical)    
+            msg_box.setText(text)
+            msg_box.exec()
+
+        except Exception as err:
+            print(f'export_gpkg_to_csv() Exception: {err}')
 
     def show_about(self) -> None:
         """Display the about message box"""

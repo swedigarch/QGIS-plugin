@@ -31,6 +31,7 @@ import os
 import io
 import gc
 import sqlite3
+from osgeo import ogr
 from contextlib import closing
 from datetime import datetime
 import traceback
@@ -46,7 +47,7 @@ from .symbol_builder import SymbolBuilder
 from . import utils as Utils
 from .constant import Intrasis, RetCode, WriterError
 
-def export_to_geopackage(host:int, port:int, user_name:str, password:str, databases:list[str], export_folder:str, overwrite:bool, csv:bool, callback:Callable = None, detailed_print_outs:bool = True, log_file:io.TextIOWrapper = None, subclasses_to_exclude:list=None) -> tuple[int, int, str]:
+def export_to_geopackage(host:int, port:int, user_name:str, password:str, databases:list[str], export_folder:str, overwrite:bool, csv:bool, simplified:bool, callback:Callable = None, detailed_print_outs:bool = True, log_file:io.TextIOWrapper = None, subclasses_to_exclude:list=None) -> tuple[int, int, str]:
     """Main GeoPackage export function, also can run CSV export if csv is True"""
     export_ok_count = 0
     if callback is None:
@@ -117,7 +118,7 @@ def export_to_geopackage(host:int, port:int, user_name:str, password:str, databa
                     if error_msg == 'Skipped because GeoPackage file already exist':
                         log_message = error_msg
                     else:
-                        log_message = f'Error during export: {error_msg}'                    
+                        log_message = f'Error during export: {error_msg}'
                     log_file.write(f'{padded_db_name} {log_message}\n')
                 else:
                     log_file.write(f'{padded_db_name} Unknown error during export!\n')
@@ -136,14 +137,14 @@ def export_to_geopackage(host:int, port:int, user_name:str, password:str, databa
                 conn.close() # Clean up and exit
                 return RetCode.TERMINATED_BY_QGIS, export_ok_count, None
 
-        if log_file is not None and len(databases) > 1 and not csv:
+        if log_file is not None and len(databases) > 1 and not csv and not simplified:
             now = datetime.now()
             date_time = now.strftime('%Y-%m-%d %H:%M:%S')
             if export_ok_count == len(databases):
-                log_file.write(f'\nExport done ({date_time}), {len(databases)} Databases Exported {export_ok_count }')
+                log_file.write(f'\nExport done ({date_time}), {len(databases)} Databases Exported {export_ok_count }\n')
             else:
-                log_file.write(f'\nExport done ({date_time}),\nSucceeded with exporting {export_ok_count} of {len(databases)} Databases.')
-            log_file.close()
+                log_file.write(f'\nExport done ({date_time}),\nSucceeded with exporting {export_ok_count} of {len(databases)} Databases.\n')
+            log_file.flush()
         print(f'export_database() db_ret: {db_ret}, rights_error: {rights_error}')
         if db_ret is False and len(databases) == 1:
             if rights_error:
@@ -165,7 +166,7 @@ def export_database(conn:psycopg2.extensions.connection, host:str, port:int, use
     ret = callback(curr_progress - 5, f"Starting export of {database}")
     if ret is False: # export have been canceled
         return False, None, False, None
-    
+
     try:
         output_file = os.path.join(export_folder, f"{database.lower()}.gpkg")
         print(f'export_database() output_file {output_file} exist: {QFile(output_file).exists()} overwrite: {overwrite}\n')
@@ -258,7 +259,8 @@ def export_database(conn:psycopg2.extensions.connection, host:str, port:int, use
             # update geometry type after layer export, to allow QGIS to se the separate layer types in features.
             # Make table features not be seen as a layer, so QGIS will only add view layers.
 
-            print(f'wkb_types.count: {len(wkb_types)}')
+            if detailed_print_outs:
+                print(f'wkb_types.count: {len(wkb_types)}')
             if len(wkb_types) > 0: # Only if database has geometries
                 # To make symbols auto loaded in QGIS we need to delete features from gpkg_contents
                 Utils.execute_sql_in_gpkg(output_file, "DELETE FROM gpkg_contents WHERE table_name = 'features'")
@@ -315,23 +317,23 @@ def export_database(conn:psycopg2.extensions.connection, host:str, port:int, use
             cur.execute("SELECT load_extension(\"mod_spatialite\");")
             # Do update inside a transaction to speed up
             cur.execute("BEGIN TRANSACTION;")
-            
+
             subclasses_to_exclude_tuple_set = set()
             log_string_excluded_subclasses = ''
             log_string_excluded_subclasses_header = ''
             if subclasses_to_exclude is not None:
                 subclasses_to_exclude_tuple_set = set(subclasses_to_exclude)
                 log_string_excluded_subclasses_header = f'Excluded SubClasses for {database}:'
-                 
+
             for row in data_frame.itertuples(index=False):
                 exclude_subclass_attributes = True
                 if (row.Class, row.SubClass) not in subclasses_to_exclude_tuple_set:
                     exclude_subclass_attributes = False
-                
+
                 number_excluded = export_class_attributes(conn, cur, row.ClassId, row.SubClassId, callback, detailed_print_outs, exclude_subclass_attributes)
                 if exclude_subclass_attributes and number_excluded > 0:
                     log_string_excluded_subclasses += '\n"' + row.Class +' \ '+ row.SubClass + f'", number of excluded objects: {number_excluded}'
-                    
+
                 layers_done = layers_done + attr_inc
                 db_progress = (layers_done / layer_export_steps) * 100
                 curr_progress = progress + db_progress / db_count
@@ -371,7 +373,7 @@ def export_database(conn:psycopg2.extensions.connection, host:str, port:int, use
     if len(log_string_excluded_subclasses) > 0:
         log_string_excluded_subclasses = log_string_excluded_subclasses_header + log_string_excluded_subclasses
         return True, False, False, log_string_excluded_subclasses
-    
+
     return True, False, False, None
 
 def export_postgis_layer_to_gpkg(host:str, port:int, user_name:str, password:str, database:str, output_file:str, wkb_type, srid:int, combine_layers:bool, callback:Callable, detailed_print_outs:bool=True) -> tuple[str,str,QgsRectangle]:
@@ -577,7 +579,6 @@ def export_none_geometry_objects(host:str, port:int, user_name:str, password:str
 
 def export_project_information(host:str, port:int, user_name:str, password:str, database:str, site:Site, output_file:str, srid:int, callback:Callable) -> None:
     """Export project_information as point feature in new layer 'project_information'"""
-    print('export_project_information(...)')
     uri = QgsDataSourceUri()
     uri.setConnection(host, port, database, user_name, password)
     uri.disableSelectAtId(True)
@@ -668,7 +669,7 @@ def export_class_attributes(conn:psycopg2.extensions.connection, cur:sqlite3.Cur
                 sql = sql.replace("__FREE_TEXT_VALUE__","ft.\"Text\"")
                 if detailed_print_outs:
                     print(f"Attribute export for ClassId: {class_id}, SubClassId: {sub_class_id}")
-        
+
         data_frame = pd.read_sql(sql, conn)
         count_num_of_affected_objects = data_frame['object_id'].nunique()
         export_utils.store_attributes(cur, data_frame)
@@ -753,3 +754,97 @@ def list_geom_types_to_export(conn, callback:Callable) -> tuple[list[QgsWkbTypes
         traceback.print_exc()
         callback(None, "Error in list_geom_types_to_export()", err)
         return [], f'{str(err).rstrip()}', False
+
+def export_simplified_gpkg(gpkg_path:str) -> tuple[bool, str]:
+    """Export given GPKG to simplified format"""
+    try:
+        path, ext = os.path.splitext(gpkg_path)
+        path += '_simplified'
+        output_file = f'{path}{ext}'
+        print(f'export_simplified_gpkg() output_file: {output_file}')
+
+        if not QFile(gpkg_path).exists():
+            return False, f'GeoPackage: "{gpkg_path}" does not exist'
+
+        layer_names = []
+        gpkg_ds = ogr.Open(gpkg_path)
+        gpkg_layers = [l.GetName() for l in gpkg_ds]
+        for name in gpkg_layers:
+            layer = gpkg_ds.GetLayerByName(name)
+            layer_defn = layer.GetLayerDefn()
+            geom_type = layer_defn.GetGeomType()
+            if geom_type == 100:
+                continue # Is not layer
+            print(f'Layer: {name} geom_type: {geom_type}')
+            layer_names.append(name)
+        gpkg_ds = None
+
+        metadata = QgsLayerMetadata()
+        metadata.setTitle('Intrasis GeoPackage export')
+        metadata.setAbstract('Intrasis database export')
+        metadata.setLicenses(['l1', 'l2'])
+        metadata.setKeywords({'Intrasis Export': ['GeoPackage export'],
+                              'gmd:topicCategory': ['Intrasis']})
+
+        # Copy layers
+        for layer_name in layer_names:
+            layer_src = gpkg_path + f'|layername={layer_name}'
+            #print(f'layer_src: {layer_src}')
+            layer = QgsVectorLayer(layer_src, layer_name, "ogr")
+            if layer.isValid():
+                print(f'Layer: {layer_name} is valid')
+            else:
+                print(f'Layer: {layer_name} is NOT valid')
+
+            options = QgsVectorFileWriter.SaveVectorOptions()
+            options.driverName = 'GPKG'
+            options.fileEncoding = "UTF-8"
+            options.includeZ = True
+            options.layerName = layer_name
+            options.saveMetadata = True
+            options.layerMetadata = metadata
+            if QFile(output_file).exists(): # If exist set to create layer or merge in existing gpkg file.
+                options.actionOnExistingFile = QgsVectorFileWriter.CreateOrOverwriteLayer
+            #write_result, error_message, new_file, new_layer = 
+            QgsVectorFileWriter.writeAsVectorFormatV3(layer, output_file, QgsProject.instance().transformContext(), options)
+            #print(f'write_result: {write_result}  error_message: {error_message}')
+
+        # Copy tables objects and layer_styles
+        with closing(sqlite3.connect(gpkg_path)) as srcGp_conn:
+            with closing(sqlite3.connect(output_file)) as gp_conn:
+                # objects table
+                data_frame = pd.read_sql('SELECT * FROM objects', srcGp_conn)
+                #Utils.get_data_frame_from_gpkg()
+                data_frame.to_sql(name='objects', con = gp_conn, if_exists='append', index=False)
+                gp_conn.commit()
+                print('objects table copied')
+
+                """ # layer_styles table
+                data_frame = pd.read_sql('SELECT * FROM layer_styles', srcGp_conn)
+                #Utils.get_data_frame_from_gpkg()
+                data_frame.to_sql(name='layer_styles', con = gp_conn, if_exists='append', index=False)
+                gp_conn.commit()
+                print('layer_styles table copied') """
+
+        # Fix field names with space in them, ESRI can't handle them
+        columns_to_fix = []
+        with closing(sqlite3.connect(output_file)) as gp_conn:
+            sql = "pragma table_info('project_information')"
+            data_frame = pd.read_sql(sql, gp_conn)
+            for row in data_frame.values:
+                name = row[1]
+                if ' ' in name:
+                    #print(f'name: {name}')
+                    columns_to_fix.append(name)
+            data_frame = None
+
+            for column in columns_to_fix:
+                fixed_name = column.replace(' ', '_')
+                sql = f'ALTER TABLE project_information RENAME "{column}" TO "{fixed_name}"'
+                gp_conn.execute(sql)
+                gp_conn.commit()
+        return True, None
+    except Exception as ex:
+        traceback.print_exc()
+        print(f"Error in export_simplified_gpkg() {ex}")
+        return False, f"Error in export_simplified_gpkg() {ex}"

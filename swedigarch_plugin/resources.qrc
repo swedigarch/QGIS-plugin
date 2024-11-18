@@ -4,10 +4,11 @@
         <file>assets/arrow_refresh.png</file>
         <file>assets/arrow_undo.png</file>
         <file>assets/arrow_up.png</file>
-        <file>assets/cs.svg</file>
         <file>assets/compressed-csv.svg</file>
+        <file>assets/cs.svg</file>
         <file>assets/id.svg</file>
         <file>assets/rb.svg</file>
+        <file>assets/simplified_export.svg</file>        
         <file>assets/svedigark.svg</file>
     </qresource>
 </RCC>
