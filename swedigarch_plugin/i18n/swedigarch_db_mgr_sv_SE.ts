@@ -4,27 +4,27 @@
 <context>
     <name>ConnectToDbDialog</name>
     <message>
-        <location filename="../connect_to_db_dialog.py" line="115"/>
+        <location filename="../connect_to_db_dialog.py" line="116"/>
         <source>Connect</source>
         <translation>Anslut</translation>
     </message>
     <message>
-        <location filename="../connect_to_db_dialog.py" line="134"/>
+        <location filename="../connect_to_db_dialog.py" line="135"/>
         <source>Trying to connect to the server</source>
         <translation>Försöker ansluta till server</translation>
     </message>
     <message>
-        <location filename="../connect_to_db_dialog.py" line="160"/>
+        <location filename="../connect_to_db_dialog.py" line="161"/>
         <source>Empty error, may be login error</source>
         <translation>Tommt fel, kan vara inloggnings fel</translation>
     </message>
     <message>
-        <location filename="../connect_to_db_dialog.py" line="116"/>
+        <location filename="../connect_to_db_dialog.py" line="117"/>
         <source>Cancel</source>
         <translation>Avbryt</translation>
     </message>
     <message>
-        <location filename="../connect_to_db_dialog.py" line="119"/>
+        <location filename="../connect_to_db_dialog.py" line="120"/>
         <source>Help</source>
         <translation>Hjälp</translation>
     </message>
@@ -228,7 +228,7 @@
     <message>
         <location filename="." line="1869641829"/>
         <source>To view data in the BrowseRelations dialog one or more objects must be selected either from the geometry layers or the &apos;objects&apos; table.</source>
-        <translation type="obsolete">För att kunna titta på data i BrowseRelations-dialogen behöver ett eller flera objekt väljas antingen från något av geometrilagren eller från &apos;objects&apos;-tabellen.</translation>
+        <translation type="obsolete">För att kunna titta på data i BrowseRelations-dialogen behöver ett eller flera objekt väljas antingen från något av geometrilagren eller från 'objects'-tabellen.</translation>
     </message>
     <message>
         <location filename="../intrasis_analysis_browse_relations.py" line="405"/>
@@ -313,7 +313,7 @@
     <message>
         <location filename="../intrasis_analysis_browse_relations.py" line="317"/>
         <source>To view data in the Intrasis relationship browser one or more objects must be selected either from the geometry layers or the &apos;objects&apos; table.</source>
-        <translation>För att kunna titta på data i Intrasis relationship browser måste ett eller flera objekt väljas antingen från något av geometrilagren eller från &apos;objects&apos;-tabellen.</translation>
+        <translation>För att kunna titta på data i Intrasis relationship browser måste ett eller flera objekt väljas antingen från något av geometrilagren eller från 'objects'-tabellen.</translation>
     </message>
     <message>
         <location filename="../intrasis_analysis_browse_relations.py" line="325"/>
@@ -781,37 +781,37 @@ select which to analyze.</source>
         <translation>Kör export</translation>
     </message>
     <message>
-        <location filename="../swedigarch_export_dialog.py" line="332"/>
+        <location filename="../swedigarch_export_dialog.py" line="330"/>
         <source>Cancel</source>
         <translation>Avbryt</translation>
     </message>
     <message>
-        <location filename="../swedigarch_export_dialog.py" line="335"/>
+        <location filename="../swedigarch_export_dialog.py" line="333"/>
         <source>No connection</source>
         <translation>Ingen anslutning</translation>
     </message>
     <message>
-        <location filename="../swedigarch_export_dialog.py" line="385"/>
+        <location filename="../swedigarch_export_dialog.py" line="383"/>
         <source>Select export folder</source>
         <translation>Välj export katalog</translation>
     </message>
     <message>
-        <location filename="../swedigarch_export_dialog.py" line="329"/>
+        <location filename="../swedigarch_export_dialog.py" line="327"/>
         <source>Disconnect from server?</source>
         <translation>Koppla från servern ?</translation>
     </message>
     <message>
-        <location filename="../swedigarch_export_dialog.py" line="330"/>
+        <location filename="../swedigarch_export_dialog.py" line="328"/>
         <source>Disconnect</source>
         <translation>Koppla från</translation>
     </message>
     <message>
-        <location filename="../swedigarch_export_dialog.py" line="399"/>
+        <location filename="../swedigarch_export_dialog.py" line="397"/>
         <source>Wait for ongoing export to finish</source>
         <translation>Vänta tills pågående export är klar</translation>
     </message>
     <message>
-        <location filename="../swedigarch_export_dialog.py" line="400"/>
+        <location filename="../swedigarch_export_dialog.py" line="398"/>
         <source>Ongoing export</source>
         <translation>Pågående export</translation>
     </message>
@@ -841,37 +841,37 @@ select which to analyze.</source>
         <translation type="obsolete">Är du säker på att du vill exportera </translation>
     </message>
     <message>
-        <location filename="../swedigarch_export_dialog.py" line="314"/>
+        <location filename="../swedigarch_export_dialog.py" line="312"/>
         <source>Connected to</source>
         <translation>Ansluten till</translation>
     </message>
     <message>
-        <location filename="../swedigarch_export_dialog.py" line="357"/>
+        <location filename="../swedigarch_export_dialog.py" line="355"/>
         <source>No databases match search string</source>
         <translation>Inga databaser matchar söksträngen</translation>
     </message>
     <message>
-        <location filename="../swedigarch_export_dialog.py" line="217"/>
+        <location filename="../swedigarch_export_dialog.py" line="215"/>
         <source>Select no databases</source>
         <translation>Välj inga databaser</translation>
     </message>
     <message>
-        <location filename="../swedigarch_export_dialog.py" line="209"/>
+        <location filename="../swedigarch_export_dialog.py" line="207"/>
         <source>Select filtered databases</source>
         <translation>Välj filtrerade databaser</translation>
     </message>
     <message>
-        <location filename="../swedigarch_export_dialog.py" line="214"/>
+        <location filename="../swedigarch_export_dialog.py" line="212"/>
         <source>Select all databases</source>
         <translation>Välj alla databaser</translation>
     </message>
     <message>
-        <location filename="../swedigarch_export_dialog.py" line="353"/>
+        <location filename="../swedigarch_export_dialog.py" line="351"/>
         <source>{0} databases found</source>
         <translation>{0} hittade databaser</translation>
     </message>
     <message>
-        <location filename="../swedigarch_export_dialog.py" line="355"/>
+        <location filename="../swedigarch_export_dialog.py" line="353"/>
         <source>{0} databases match filter</source>
         <translation>{0} databaser matchar filter</translation>
     </message>
@@ -911,17 +911,6 @@ Annars kommer GeoPackage inte att exporteras.</translation>
         <location filename="../swedigarch_export_dialog.py" line="94"/>
         <source>Should we filter by Subclass in every exported database</source>
         <translation>Ska vi filtrera efter SubKlass för varje exporterad databas</translation>
-    </message>
-    <message>
-        <location filename="../swedigarch_export_dialog.py" line="95"/>
-        <source>Simplified Export</source>
-        <translation>Förenklad Export</translation>
-    </message>
-    <message>
-        <location filename="../swedigarch_export_dialog.py" line="96"/>
-        <source>Should simplified GPKG export also be done for every exported database</source>
-        <translation>skall förenklad GPKG export göras för varje exporterad databas
-</translation>
     </message>
 </context>
 <context>
@@ -1059,7 +1048,7 @@ Annars kommer GeoPackage inte att exporteras.</translation>
         <translation>Ersätt befintligt GeoPackage</translation>
     </message>
     <message>
-        <location filename="../swedigarch_export_dialog_base.ui" line="397"/>
+        <location filename="../swedigarch_export_dialog_base.ui" line="380"/>
         <source>Should an CSV export also be done for every exported database</source>
         <translation>Ska en CSV-export också göras för varje exporterad databas</translation>
     </message>
@@ -1069,7 +1058,7 @@ Annars kommer GeoPackage inte att exporteras.</translation>
         <translation>Exportera CSV</translation>
     </message>
     <message>
-        <location filename="../swedigarch_export_dialog_base.ui" line="430"/>
+        <location filename="../swedigarch_export_dialog_base.ui" line="420"/>
         <source>Help</source>
         <translation>Hjälp</translation>
     </message>
@@ -1078,16 +1067,11 @@ Annars kommer GeoPackage inte att exporteras.</translation>
         <source>Filter by SubClass</source>
         <translation>Filtrera på SubKlass</translation>
     </message>
-    <message>
-        <location filename="../swedigarch_export_dialog_base.ui" line="400"/>
-        <source>Simplified Export</source>
-        <translation>Förenklad Export</translation>
-    </message>
 </context>
 <context>
     <name>SwedigarchGeotools</name>
     <message>
-        <location filename="../swedigarch_geotools.py" line="246"/>
+        <location filename="../swedigarch_geotools.py" line="239"/>
         <source>&amp;Swedigarch Geotools</source>
         <translation>&amp;Swedigarch Geotools</translation>
     </message>
@@ -1097,12 +1081,12 @@ Annars kommer GeoPackage inte att exporteras.</translation>
         <translation type="obsolete">Swedigarch Geotools</translation>
     </message>
     <message>
-        <location filename="../swedigarch_geotools.py" line="209"/>
+        <location filename="../swedigarch_geotools.py" line="210"/>
         <source>Intrasis Relationship Browser</source>
         <translation>Intrasis Relationship Browser</translation>
     </message>
     <message>
-        <location filename="../swedigarch_geotools.py" line="202"/>
+        <location filename="../swedigarch_geotools.py" line="203"/>
         <source>Intrasis Class/Subclass Browser</source>
         <translation>Intrasis Class/Subclass Browser</translation>
     </message>
@@ -1117,9 +1101,9 @@ Annars kommer GeoPackage inte att exporteras.</translation>
         <translation type="obsolete">Välj GeoPackage för att exportera som zippade CSV-filer</translation>
     </message>
     <message>
-        <location filename="../swedigarch_geotools.py" line="478"/>
+        <location filename="." line="1869641829"/>
         <source>GeoPackge (*.gpkg);;All files (*.*)</source>
-        <translation>GeoPackge (*.gpkg);;Alla filer (*.*)</translation>
+        <translation type="obsolete">GeoPackge (*.gpkg);;Alla filer (*.*)</translation>
     </message>
     <message>
         <location filename="." line="1869641829"/>
@@ -1152,81 +1136,61 @@ Annars kommer GeoPackage inte att exporteras.</translation>
         <translation type="obsolete">Inga intrasis-GeoPackage laddade</translation>
     </message>
     <message>
-        <location filename="../swedigarch_geotools.py" line="195"/>
+        <location filename="../swedigarch_geotools.py" line="196"/>
         <source>Intrasis DB Manager</source>
         <translation>Intrasis DB Manager</translation>
     </message>
     <message>
-        <location filename="../swedigarch_geotools.py" line="231"/>
+        <location filename="../swedigarch_geotools.py" line="224"/>
         <source>About</source>
         <translation>Om</translation>
     </message>
     <message>
-        <location filename="../swedigarch_geotools.py" line="517"/>
+        <location filename="../swedigarch_geotools.py" line="480"/>
         <source>About {0}</source>
         <translation>Om {0}</translation>
     </message>
     <message>
-        <location filename="../swedigarch_geotools.py" line="112"/>
+        <location filename="../swedigarch_geotools.py" line="114"/>
         <source>Export GPKG to CSV</source>
         <translation>Exportera GPKG till CSV</translation>
     </message>
     <message>
-        <location filename="../swedigarch_geotools.py" line="353"/>
+        <location filename="../swedigarch_geotools.py" line="345"/>
         <source>Select folder to convert GPKG to CSV in</source>
         <translation>Välj katalog att konvertera GPKG filer till CSV i</translation>
     </message>
     <message>
-        <location filename="../swedigarch_geotools.py" line="377"/>
+        <location filename="../swedigarch_geotools.py" line="369"/>
         <source>Start export of _COUNT_ Intrasis GeoPackages to CSV-zip files.
 In directory _FOLDER_</source>
         <translation>Startar export av _COUNT_ Intrasis GeoPackages till CSV-zip filer.
 I katalog _FOLDER_</translation>
     </message>
     <message>
-        <location filename="../swedigarch_geotools.py" line="446"/>
+        <location filename="../swedigarch_geotools.py" line="438"/>
         <source>Result from: {self.title_export_gpkg_to_csv}</source>
-        <translation>Resultat från: {self.title_export_gpkg_to_csv}</translation>
+        <translation type="obsolete">Resultat från: {self.title_export_gpkg_to_csv}</translation>
     </message>
     <message>
-        <location filename="../swedigarch_geotools.py" line="372"/>
+        <location filename="../swedigarch_geotools.py" line="364"/>
         <source>Selected folder does not contain any Intrasis GeoPackages</source>
         <translation>Vald katalog innehåller inga Intrasis GeoPackages</translation>
     </message>
     <message>
-        <location filename="../swedigarch_geotools.py" line="456"/>
+        <location filename="../swedigarch_geotools.py" line="447"/>
         <source>Sucessfully converted all _COUNT_ Intrasis GeoPackages to CSV.</source>
-        <translation type="obsolete">Lyckades konvertera alla _COUNT_ Intrasis GeoPackages till CSV.</translation>
+        <translation>Lyckades konvertera alla _COUNT_ Intrasis GeoPackages till CSV.</translation>
     </message>
     <message>
-        <location filename="../swedigarch_geotools.py" line="459"/>
+        <location filename="../swedigarch_geotools.py" line="451"/>
         <source>Have tried to convert _COUNT_ALL_ Intrasis GeoPackages to CSV, _COUNT_ failed.</source>
         <translation>Har försökt konvertera _COUNT_ALL_ Intrasis GeoPackages till CSV, _COUNT_ misslyckades.</translation>
     </message>
     <message>
-        <location filename="../swedigarch_geotools.py" line="113"/>
-        <source>Export simplified version of GPKG</source>
-        <translation>Exportera förenklad version av GPKG</translation>
-    </message>
-    <message>
-        <location filename="../swedigarch_geotools.py" line="478"/>
-        <source>Select Intrasis GPKG to export to simplified version</source>
-        <translation>Välj Intrasis GPKG att exportera till förenklad version</translation>
-    </message>
-    <message>
-        <location filename="../swedigarch_geotools.py" line="455"/>
-        <source>Successfully converted all _COUNT_ Intrasis GeoPackages to CSV.</source>
-        <translation>Lyckades konvertera alla _COUNT_ Intrasis GeoPackages till CSV.</translation>
-    </message>
-    <message>
-        <location filename="../swedigarch_geotools.py" line="485"/>
+        <location filename="../swedigarch_geotools.py" line="438"/>
         <source>Result from:</source>
         <translation>Resultat från:</translation>
-    </message>
-    <message>
-        <location filename="../swedigarch_geotools.py" line="488"/>
-        <source>Successfully converted Intrasis GeoPackage to simplified version</source>
-        <translation>Lyckades konvertera Intrasis GeoPackage till förenklad version</translation>
     </message>
 </context>
 </TS>

@@ -443,7 +443,7 @@ class SwedigarchGeotools:
         result is the return value of self.task_export_gpkg_to_csv."""
         try:
             msg_box = QMessageBox()
-            msg_box.setWindowTitle(self.tr(f'Result from: {self.title_export_gpkg_to_csv}'))
+            msg_box.setWindowTitle(self.tr('Result from:') + ' ' + f'{self.title_export_gpkg_to_csv}')
             msg_box.setStandardButtons(QMessageBox.Ok)
             if result is None:
                 text = f'Error during runnig of "{self.title_export_gpkg_to_csv}" Exception: {exception}'

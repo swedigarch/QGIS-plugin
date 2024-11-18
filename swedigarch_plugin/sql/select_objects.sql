@@ -1,7 +1,7 @@
 SELECT DISTINCT 
 	o."ObjectId" as object_id, 
 	o."PublicId" as "IntrasisId", 
-	o."Name", 
+	__NAME_SELECT__, 
 	d1."Name" as "Class", 
 	__SUBCLASS_NAME_SELECT__, 
 	od."Color", 

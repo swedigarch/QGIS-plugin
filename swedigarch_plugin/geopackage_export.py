@@ -495,16 +495,24 @@ def export_raster_layer_to_gpkg(conn:psycopg2.extensions.connection, meta_ids:st
         traceback.print_exc()
         callback(None, "Error in export_raster_layer_to_gpkg()", err)
 
-def generate_case_statement_from_subclasses_to_exclude(subclasses_to_exclude):
+def generate_select_subclass_name_case_statement(subclasses_to_exclude:list) -> str:
     """Generate a CASE statement to exclude subclass name from the export based on the list of tuples."""
+    return generate_case_statement(subclasses_to_exclude, 'd2."Name"', 'SubClass', 'NULL')
+    
+def generate_select_object_name_case_statement(subclasses_to_exclude:list) -> str:
+    """Generate a CASE statement to exclude object name from the export based on the list of tuples."""
+    return generate_case_statement(subclasses_to_exclude, 'o."Name"', 'Name', "''")
+
+def generate_case_statement(subclasses_to_exclude:list, default_select_column:str, result_column_name:str, excluded_result_value:str) -> str:
+    """Generate a CASE statement based on the list of tuples, default select column and result column name."""
     if not subclasses_to_exclude:
-        return 'd2."Name" as "SubClass"'
+        return f"{default_select_column} as \"{result_column_name}\""
 
     case_lines = ['CASE']
     for class_name, sub_class_name in subclasses_to_exclude:
-        case_lines.append(f"    WHEN d1.\"Name\" = '{class_name}' AND d2.\"Name\" = '{sub_class_name}' THEN NULL")
-    case_lines.append('    ELSE d2."Name"')
-    case_lines.append('END as "SubClass"')
+        case_lines.append(f"    WHEN d1.\"Name\" = '{class_name}' AND d2.\"Name\" = '{sub_class_name}' THEN {excluded_result_value}")
+    case_lines.append(f'    ELSE {default_select_column}')
+    case_lines.append(f'END as \"{result_column_name}\"')
 
     return '\n'.join(case_lines)
 
@@ -517,8 +525,9 @@ def export_objects(conn:psycopg2.extensions.connection, output_file:str, callbac
             sql = Utils.load_resource('sql/select_objects.sql')
             staf_meta_id = Utils.get_meta_id(conn, Intrasis.CLASS_STAFF_META_ID)
             geo_obj_meta_id = Utils.get_meta_id(conn, Intrasis.CLASS_GEOOBJECT_META_ID)
+            sql = sql.replace("__NAME_SELECT__", generate_select_object_name_case_statement(subclasses_to_exclude))
             sql = sql.replace("__EXCLUDE_META_IDS__", f"{staf_meta_id}, {geo_obj_meta_id}")
-            sql = sql.replace("__SUBCLASS_NAME_SELECT__", generate_case_statement_from_subclasses_to_exclude(subclasses_to_exclude))
+            sql = sql.replace("__SUBCLASS_NAME_SELECT__", generate_select_subclass_name_case_statement(subclasses_to_exclude))
             data_frame = pd.read_sql(sql, conn)
             data_frame.to_sql(name='objects', con = gp_conn, if_exists='append', index=False)
             gp_conn.commit()
@@ -639,6 +648,8 @@ def export_class_attributes(conn:psycopg2.extensions.connection, cur:sqlite3.Cur
             sql =  sql.replace("__CLASS__", f" {class_id} AND o.\"SubClassId\" is NULL")
             sql = sql.replace("__CLS_IDS__", f"{class_id}")
             sql = sql.replace("__ORDERING__", "")
+            sql = sql.replace("__ATTRIBUTE_VALUE__","av.\"Value\"")
+            sql = sql.replace("__FREE_TEXT_VALUE__","ft.\"Text\"")
             if detailed_print_outs:
                 print(f"Attribute export for ClassId: {class_id}, SubClassId: NULL")
         else:
@@ -646,12 +657,16 @@ def export_class_attributes(conn:psycopg2.extensions.connection, cur:sqlite3.Cur
                 sql = sql.replace("__CLASS__", f" {class_id} AND o.\"SubClassId\" = {sub_class_id}")
                 sql = sql.replace("__CLS_IDS__", f"{class_id}")
                 sql = sql.replace("__ORDERING__", "")
+                sql = sql.replace("__ATTRIBUTE_VALUE__","NULL as \"Value\"")
+                sql = sql.replace("__FREE_TEXT_VALUE__","NULL as \"Text\"")
                 if detailed_print_outs:
-                    print(f"Attribute export for ClassId: {class_id}, SubClassId: {sub_class_id} (SubClass attributes excluded)")
+                    print(f"Attribute export for ClassId: {class_id}, SubClassId: {sub_class_id} (SubClass attributes excluded, Class attribute values removed)")
             else:
                 sql = sql.replace("__CLASS__", f" {class_id} AND o.\"SubClassId\" = {sub_class_id}")
                 sql = sql.replace("__CLS_IDS__", f"{class_id}, {sub_class_id}")
                 sql = sql.replace("__ORDERING__", f", am.\"ObjectDefId\" = {sub_class_id}")
+                sql = sql.replace("__ATTRIBUTE_VALUE__","av.\"Value\"")
+                sql = sql.replace("__FREE_TEXT_VALUE__","ft.\"Text\"")
                 if detailed_print_outs:
                     print(f"Attribute export for ClassId: {class_id}, SubClassId: {sub_class_id}")
 

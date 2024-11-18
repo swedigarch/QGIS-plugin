@@ -155,7 +155,7 @@ def store_attributes(cur:sqlite3.Cursor, data_frame:pd.DataFrame):
                     value = row.Value
                 else:
                     value = ""
-                if row.LongText:
+                if row.LongText and row.Text is not None:
                     try:
                         value = rtf_to_text(row.Text)
                     except UnicodeEncodeError as ex:
