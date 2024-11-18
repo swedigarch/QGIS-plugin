@@ -495,20 +495,20 @@ def export_raster_layer_to_gpkg(conn:psycopg2.extensions.connection, meta_ids:st
 
 def generate_select_subclass_name_case_statement(subclasses_to_exclude:list) -> str:
     """Generate a CASE statement to exclude subclass name from the export based on the list of tuples."""
-    return generate_case_statement(subclasses_to_exclude, 'd2."Name"', 'SubClass')
+    return generate_case_statement(subclasses_to_exclude, 'd2."Name"', 'SubClass', 'NULL')
     
 def generate_select_object_name_case_statement(subclasses_to_exclude:list) -> str:
     """Generate a CASE statement to exclude object name from the export based on the list of tuples."""
-    return generate_case_statement(subclasses_to_exclude, 'o."Name"', 'Name')
+    return generate_case_statement(subclasses_to_exclude, 'o."Name"', 'Name', "''")
 
-def generate_case_statement(subclasses_to_exclude:list, default_select_column:str, result_column_name:str) -> str:
+def generate_case_statement(subclasses_to_exclude:list, default_select_column:str, result_column_name:str, excluded_result_value:str) -> str:
     """Generate a CASE statement based on the list of tuples, default select column and result column name."""
     if not subclasses_to_exclude:
         return f"{default_select_column} as \"{result_column_name}\""
 
     case_lines = ['CASE']
     for class_name, sub_class_name in subclasses_to_exclude:
-        case_lines.append(f"    WHEN d1.\"Name\" = '{class_name}' AND d2.\"Name\" = '{sub_class_name}' THEN NULL")
+        case_lines.append(f"    WHEN d1.\"Name\" = '{class_name}' AND d2.\"Name\" = '{sub_class_name}' THEN {excluded_result_value}")
     case_lines.append(f'    ELSE {default_select_column}')
     case_lines.append(f'END as \"{result_column_name}\"')
 
