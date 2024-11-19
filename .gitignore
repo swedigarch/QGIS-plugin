@@ -141,6 +141,9 @@ dmypy.json
 cython_debug/
 /.vs
 
+#Visual Studio Code config files
+/.vscode
+
 # Remove auto generated file that should not be included
 swedigarch_plugin/ui_help_dialog.py
 swedigarch_plugin/ui_intrasis_db_mgr_dialog_base.py

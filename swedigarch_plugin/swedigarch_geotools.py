@@ -369,11 +369,13 @@ class SwedigarchGeotools:
             msg_box.setIcon(QMessageBox.Information)
             if len(gpkg_files) == 0:
                 msg_box.setStandardButtons(QMessageBox.Ok)
+                msg_box.button(QMessageBox.Ok).setText(self.tr("OK"))
                 msg_box.setText(self.tr('Selected folder does not contain any Intrasis GeoPackages'))
                 msg_box.exec()
                 return
 
             msg_box.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
+            msg_box.button(QMessageBox.Cancel).setText(self.tr("Cancel"))
             text = self.tr('Start export of _COUNT_ Intrasis GeoPackages to CSV-zip files.\nIn directory _FOLDER_')
             text = text.replace('_COUNT_', f'{len(gpkg_files)}')
             text = text.replace('_FOLDER_', f'{export_folder}')
@@ -482,14 +484,14 @@ class SwedigarchGeotools:
 
             ok, error_msg = export_simplified_gpkg(gpkg_path)
             msg_box = QMessageBox()
-            msg_box.setWindowTitle(self.tr(f'Result from:') + ' ' + self.title_export_simplified_gpkg)
+            msg_box.setWindowTitle(self.tr('Result from:') + ' ' + self.title_export_simplified_gpkg)
             msg_box.setStandardButtons(QMessageBox.Ok)
             if ok:
                 text = self.tr('Successfully converted Intrasis GeoPackage to simplified version')
                 msg_box.setIcon(QMessageBox.Information)
             else:
                 text = f'Error during runnig of "{self.title_export_simplified_gpkg}" Error: {error_msg}'
-                msg_box.setIcon(QMessageBox.Critical)    
+                msg_box.setIcon(QMessageBox.Critical)
             msg_box.setText(text)
             msg_box.exec()
 
