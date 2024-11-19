@@ -27,25 +27,21 @@
 """
 
 import os
-import copy
-from qgis.core import Qgis, QgsMessageLog
+#import copy
+#from qgis.core import Qgis, QgsMessageLog
 from qgis.PyQt import uic, QtWidgets
-from PyQt5 import QtCore
-from PyQt5.QtWidgets import QDialogButtonBox, QMenu, QAction, QTreeWidgetItem
-from PyQt5.QtCore import QVariant ,QAbstractTableModel, QModelIndex, Qt
-#from . import browse_relations_utils as BrowseRelationsUtils
-#from .browse_relations_utils_classes import IntrasisTreeWidgetItem
-
+#from PyQt5 import QtCore
+#from PyQt5.QtWidgets import QDialogButtonBox, QMenu, QAction, QTreeWidgetItem
+#from PyQt5.QtCore import QVariant ,QAbstractTableModel, QModelIndex, Qt
+from PyQt5.QtCore import Qt
 # This loads your .ui file so that PyQt can populate your plugin with the elements from Qt Designer
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'class_subclass_browser_parent_id_dialog.ui'))
 
 class ClassSubclassBrowserParentIdDialog(QtWidgets.QDialog, FORM_CLASS):
     """ClassSubclassBrowserParentIdDialog dialog. Dialog to generate Parent Id to objects without geometry"""
-    #def __init__(self, parent=None, top_level_intrasis_tree_item:IntrasisTreeWidgetItem=None, gpkg_path:str = None, win_titel:str = ""):
-    def __init__(self, parent_classes, grandparent_classes, greatgrandparent_classes):
+    def __init__(self, parent_dialog_df, child_class_string):
         """ClassSubclassBrowserParentIdDialog Constructor"""
-        #super(ClassSubclassBrowserParentIdDialog, self).__init__(parent)
         super(ClassSubclassBrowserParentIdDialog, self).__init__()
         # Set up the user interface from Designer through FORM_CLASS.
         # After self.setupUi() you can access any designer object by doing
@@ -53,52 +49,20 @@ class ClassSubclassBrowserParentIdDialog(QtWidgets.QDialog, FORM_CLASS):
         # http://qt-project.org/doc/qt-4.8/designer-using-a-ui-file.html
         # #widgets-and-dialogs-with-auto-connect
         self.setupUi(self)
-        self.parent_classes = parent_classes
-        self.grandparent_classes = grandparent_classes
-        self.greatgrandparent_classes = greatgrandparent_classes
-        '''self.top_level_item = top_level_intrasis_tree_item
-        self.final_top_level_item = None
-        self.button_clicked = None
-        self.gpkg_path = gpkg_path
-        self.win_titel = win_titel
-        self.flattened_layers = False
-        self.hierarchical_layers = True
-        self.relations_below_context_menu = self.create_context_menu_remove_tree_node()
-        self.last_removed_nodes = []
-
-        self.tree_widget_intrasis_relations.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
-        self.tree_widget_intrasis_relations.customContextMenuRequested.connect(self.show_context_menu)
-        self.tree_widget_intrasis_relations.itemExpanded.connect(self.on_tree_widget_item_expanded)
-        '''
-
+        self.parent_dialog_df = parent_dialog_df
+        self.child_class_string = child_class_string
         self.button_box_generate_parent_id.button(QtWidgets.QDialogButtonBox.Cancel).setText(self.tr("Cancel"))
-        #self.button_box_generate_parent_id.button(QtWidgets.QDialogButtonBox.Cancel).connect(self.accept)
+        self.button_box_generate_parent_id.button(QtWidgets.QDialogButtonBox.Ok).setText(self.tr("Create ParentId Table"))
         self.button_box_generate_parent_id.accepted.connect(self.on_ok)
-        #self.button_box_generate_parent_id.rejected.connect(self.on_cancel)
-
         self.check_box_activate_grand_parent.stateChanged.connect(self.on_activate_grand_parent)
+        self.check_box_activate_great_parent.stateChanged.connect(self.on_activate_great_parent)
         self.settings = []
         self.layers_chosen = []
-
-        '''self.check_box_hierarchical_layers.stateChanged.connect(self.on_check_box_hierarchical_create_layers_state_changed)
-        self.check_box_flat_layers.stateChanged.connect(self.on_check_box_flat_create_layers_state_changed)
-        '''
-
-        #self.push_button_undo.clicked.connect(self.on_undo_clicked)
+        self.combo_box_parentlayer.currentIndexChanged.connect(self.update_combo_box_grandparentlayer)
+        self.combo_box_grandparentlayer.currentIndexChanged.connect(self.update_combo_box_greatgrandparentlayer)
+        self.check_box_activate_grand_parent.stateChanged.connect(self.update_check_box_activate_great_parent)
         self.init_gui()
 
-    #def showEvent(self, event):
-    #    """DialogShow event"""
-    #    super(ClassSubclassBrowserParentIdDialog, self).showEvent(event)
-        
-    #def closeEvent(self, event):
-    #    """The close dialog event (QCloseEvent)"""
-    #    self.button_clicked = QDialogButtonBox.Cancel
-
-    #def init_data_and_gui(self):
-    #    """Load data and init gui"""
-    #    self.init_gui()
-    #    #self.set_ok_button_enabled_state()
     def on_activate_grand_parent(self, state):
         """When checked create add attributes parent id and grand parent id to objects without geometry"""
         if state == Qt.Checked:
@@ -106,26 +70,45 @@ class ClassSubclassBrowserParentIdDialog(QtWidgets.QDialog, FORM_CLASS):
         else:
             self.combo_box_grandparentlayer.setEnabled(False)
 
+    def on_activate_great_parent(self, state):
+        """When checked create add attributes parent id and grand parent id to objects without geometry"""
+        if state == Qt.Checked:
+            self.combo_box_greatgrandparentlayer.setEnabled(True)
+        else:
+            self.combo_box_greatgrandparentlayer.setEnabled(False)
+
+    def update_check_box_activate_great_parent(self):
+        '''checkbox logics'''
+        if self.check_box_activate_grand_parent.isChecked():
+            self.check_box_activate_great_parent.setEnabled(True)
+        else:
+            self.check_box_activate_great_parent.setChecked(False)
+            self.check_box_activate_great_parent.setEnabled(False)
+
+
     def update_combobox_class(self) -> None:
         '''Update and changes Class(es) in combobox'''
         self.combo_box_parentlayer.clear()
         self.combo_box_grandparentlayer.clear()
         self.combo_box_greatgrandparentlayer.clear()
-        #class_items = self.parent_classes['Class.SubClass'].tolist()
-        class_items = self.parent_classes.tolist()
-        #class_items = ['kalle','anka']#self.archeological_classes[1]
-        class_items.insert(0,'-')
+        class_items = self.parent_dialog_df['parent_class'].unique().tolist()
         self.combo_box_parentlayer.addItems(class_items)
-        # skapa kontroll om inga klasser returneras sätt item att inga finns
-        # Behöver man även göra att det inte går att aktivera då?
-        self.combo_box_grandparentlayer.addItems(self.grandparent_classes.tolist())
-        self.combo_box_greatgrandparentlayer.addItems(self.greatgrandparent_classes.tolist())
+
+    def update_combo_box_grandparentlayer(self):
+        self.combo_box_grandparentlayer.clear()
+        selected_category = self.combo_box_parentlayer.currentText()
+        filtered_df = self.parent_dialog_df[self.parent_dialog_df['parent_class'] == selected_category]
+        self.combo_box_grandparentlayer.addItems(filtered_df['grand_parent_class'].unique())
+        self.update_combo_box_greatgrandparentlayer()  # Reset combo3
+
+    def update_combo_box_greatgrandparentlayer(self):
+        self.combo_box_greatgrandparentlayer.clear()
+        selected_type = self.combo_box_grandparentlayer.currentText()
+        filtered_df = self.parent_dialog_df[self.parent_dialog_df['grand_parent_class'] == selected_type]
+        self.combo_box_greatgrandparentlayer.addItems(filtered_df['great_grand_parent_class'].unique())
 
     def on_ok(self):
         """Selection of parent layers done"""
-        #self.final_top_level_item = copy.deepcopy(self.top_level_item)
-        #self.button_clicked = QDialogButtonBox.Ok
-        #print("Ok clicked")
         self.get_values()
         print(self.settings)
         self.accept()
@@ -135,12 +118,6 @@ class ClassSubclassBrowserParentIdDialog(QtWidgets.QDialog, FORM_CLASS):
         """Handle cancel clicked - close dialog"""
         print("Dialog closed")
         self.close()
-    
-    #def set_ok_button_enabled_state(self):
-        """Disable the Ok button if none of the flattened layers and hierarchical layers checkboxes is checked"""
-        #enable_ok_button = self.check_box_hierarchical_layers.isChecked() or self.check_box_flat_layers.isChecked()
-        #ok_button = self.button_box.button(QDialogButtonBox.Ok)
-    #    ok_button.setEnabled(enable_ok_button)
 
     def init_gui(self):
         """Initialize gui components and load data"""
@@ -148,25 +125,13 @@ class ClassSubclassBrowserParentIdDialog(QtWidgets.QDialog, FORM_CLASS):
         self.update_combobox_class()
         self.combo_box_grandparentlayer.setEnabled(False)
         self.combo_box_greatgrandparentlayer.setEnabled(False)
-    
+        self.check_box_activate_great_parent.setChecked(False)
+        self.check_box_activate_great_parent.setEnabled(False)
+        self.label.setText(f"Select {self.child_class_string} Parent Layer")
+
     def get_values(self):
-        self.settings = [self.combo_box_parentlayer.currentText(), self.combo_box_grandparentlayer.currentText()]
-        #return settings
-
-        '''if self.top_level_item is None:
-            QgsMessageLog.logMessage("Failed to display tree", BrowseRelationsUtils.MESSAGE_CATEGORY, Qgis.Critical)
-            return
-        
-        self.setWindowTitle(f"{self.win_titel} - IntrasisId #{self.top_level_item.intrasis_item.intrasis_id}")
-        
-        self.push_button_undo.setEnabled(False)
-
-        self.check_box_flat_layers.setChecked(self.flattened_layers)
-        self.check_box_hierarchical_layers.setChecked(self.hierarchical_layers)
-        
-        BrowseRelationsUtils.set_tree_widget_header_size_mode(self.tree_widget_intrasis_relations)
-
-        self.tree_widget_intrasis_relations.addTopLevelItem(self.top_level_item)
-        self.set_child_indicator_policy()
-        BrowseRelationsUtils.expand_tree_widget_item(self.tree_widget_intrasis_relations, self.top_level_item)
-        '''
+        self.settings = [self.combo_box_parentlayer.currentText(),'','']
+        if(self.check_box_activate_grand_parent.isChecked() and self.check_box_activate_great_parent.isChecked()==False):
+            self.settings = [self.combo_box_parentlayer.currentText(), self.combo_box_grandparentlayer.currentText(), '']
+        if(self.check_box_activate_grand_parent.isChecked() and self.check_box_activate_great_parent.isChecked()):  
+            self.settings = [self.combo_box_parentlayer.currentText(), self.combo_box_grandparentlayer.currentText(), self.combo_box_greatgrandparentlayer.currentText()]

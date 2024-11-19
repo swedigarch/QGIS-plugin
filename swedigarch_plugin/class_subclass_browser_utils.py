@@ -26,281 +26,107 @@
 
 """
 """Utils functions for Class SubClass Browser"""
+from qgis.core import QgsMessageLog, Qgis
 import sqlite3
 import pandas as pd
 import numpy as np
-#from typing import Union
-from qgis.core import QgsMessageLog, Qgis
-#from PyQt5.QtWidgets import QTreeWidgetItem, QHeaderView, QTreeWidget
-#import traceback
 from . import utils as Utils
-#from . import create_layers_utils as CreateLayersUtils
 from . import browse_relations_utils as BrowseRelationsUtils
-#from .browse_relations_utils_classes import IntrasisItem, IntrasisTreeWidgetItem
 
 MESSAGE_CATEGORY = 'Class_Subclass_Browser'
 
-def get_parent_id_string_string(gpkg:str, object_id:int) -> (str | None | None):
-        parent_object_id_list = BrowseRelationsUtils.get_realated_above(
-                    gpkg, object_id)
-                #print(parent_object_id_list)
-        parent_object_id_string = ''
-        if len(parent_object_id_list) > 0:
-            parent_intrasis_id_list = [Utils.get_objects_data_for_object_id(MESSAGE_CATEGORY
-                                                     , gpkg
-                                                     , int(item))["IntrasisId"].tolist()
-                                                     for item in parent_object_id_list[:,0]]
-                    #print(parent_intrasis_id_list)
-            parent_id_string = ','.join([str(item)
-                                                       for sublist in
-                                                       parent_intrasis_id_list
-                                                       for item in sublist])
-            parent_object_id_string = list(parent_object_id_list[:,0])
-            parent_object_id_string = ','.join(map(str, parent_object_id_string))
-            #print(parent_object_id_string)
-            
-            if len(parent_id_string) > 0:
-                #return parent_intrasis_id_list, parent_id_string, parent_object_id_list, parent_object_id_string
-                return parent_id_string
-            if len(parent_id_string) == 0:
-                parent_id_string = ''
-                parent_object_id_string = ''
-                #return parent_intrasis_id_list, parent_id_string, parent_object_id_list, parent_object_id_string
-                return parent_id_string
-        else:
-            parent_intrasis_id_list = []
-            parent_id_string = ''
-            parent_object_id_string = ''
-            #return parent_intrasis_id_list, parent_id_string, parent_object_id_list, parent_object_id_string
-            return parent_id_string
+def get_relation_dataframe(gpkg, child_object_id):
+    sql_query = f'''WITH Parent AS (
+    SELECT base_id, related_id
+    FROM object_relations
+	WHERE related_id IN ({child_object_id})
+   ),
+GrandParent AS (
+    SELECT base_id, related_id
+    FROM object_relations 
+    WHERE related_id IN (SELECT base_id FROM Parent)
+),GreatGrandParent AS (
+    SELECT base_id, related_id
+    FROM object_relations 
+    WHERE related_id IN (SELECT base_id FROM GrandParent)
+),RelationTable AS(
+SELECT p.related_id as child_id,
+p.base_id as parent_id,
+po.IntrasisId as ParentId,
+po.Class as parent_class,
+gp.base_id as grand_parent_id,
+gpo.IntrasisId as GrandParentId,
+gpo.Class as grand_parent_class,
+ggp.base_id as great_grand_parent_id,
+ggpo.IntrasisId as GreatGrandParentId,
+ggpo.Class as great_grand_parent_class,
+COALESCE(po.class,'NULL')||'_'||COALESCE(gpo.class,'NULL')||'_'||COALESCE(ggpo.class,'NULL') AS parenthierarchy
+FROM Parent p
+left join GrandParent gp on p.base_id = gp.related_id
+left join GreatGrandParent ggp on gp.base_id = ggp.related_id
+left join objects po on p.base_id = po.object_id
+left join objects gpo on gp.base_id = gpo.object_id
+left join objects ggpo on ggp.base_id = ggpo.object_id
+),ParentHierarchyCount AS(
+select parenthierarchy, count(parenthierarchy) as parenthierarchy_count
+from RelationTable
+group by parenthierarchy
+),ParentCount AS (
+    SELECT distinct
+        child_id,parent_class,
+		COUNT(parent_class) OVER (PARTITION BY child_id, parent_class) AS parent_count
+    FROM RelationTable rt
+    GROUP BY child_id, parent_id
+),GrandParentCount AS (
+    SELECT distinct
+        child_id,grand_parent_class,
+		COUNT(grand_parent_class) OVER (PARTITION BY child_id, grand_parent_class) AS grand_parent_count
+    FROM RelationTable rt
+    GROUP BY child_id, grand_parent_id
+),GreatGrandParentCount AS (
+    SELECT distinct
+        child_id,great_grand_parent_class,
+		COUNT(great_grand_parent_class) OVER (PARTITION BY child_id, great_grand_parent_class) AS great_grand_parent_count
+    FROM RelationTable rt
+    GROUP BY child_id, great_grand_parent_id
+),ParentIdString AS (
+    SELECT
+	child_id, parent_class,
+	GROUP_CONCAT(ParentId, ',') OVER (PARTITION BY child_id, parent_class) AS ParentIdString 
+    FROM (select distinct child_id, parent_class, ParentId from RelationTable)
+),GrandParentIdString AS (
+    SELECT
+	child_id, grand_parent_class,
+	GROUP_CONCAT(GrandParentId, ',') OVER (PARTITION BY child_id, grand_parent_class) AS GrandParentIdString 
+    FROM (select distinct child_id, grand_parent_class, GrandParentId from RelationTable)
+),GreatGrandParentIdString AS (
+    SELECT
+	child_id, great_grand_parent_class,
+	GROUP_CONCAT(GreatGrandParentId, ',') OVER (PARTITION BY child_id, great_grand_parent_class) AS GreatGrandParentIdString 
+    FROM (select distinct child_id, great_grand_parent_class, GreatGrandParentId from RelationTable)
+)
 
-def get_parent_id_string(gpkg:str, object_id:int) -> (str | None | None):
-        parent_object_id_list = BrowseRelationsUtils.get_realated_above(
-                    gpkg, object_id)
-                #print(parent_object_id_list)
-        parent_object_id_string = ''
-        if len(parent_object_id_list) > 0:
-            parent_intrasis_id_list = [Utils.get_objects_data_for_object_id(MESSAGE_CATEGORY
-                                                     , gpkg
-                                                     , int(item))["IntrasisId"].tolist()
-                                                     for item in parent_object_id_list[:,0]]
-                    #print(parent_intrasis_id_list)
-            parent_id_string = ','.join([str(item)
-                                                       for sublist in
-                                                       parent_intrasis_id_list
-                                                       for item in sublist])
-            parent_object_id_string = list(parent_object_id_list[:,0])
-            parent_object_id_string = ','.join(map(str, parent_object_id_string))
-            #print(parent_object_id_string)
-            
-            if len(parent_id_string) > 0:
-                return parent_intrasis_id_list, parent_id_string, parent_object_id_list, parent_object_id_string
-            if len(parent_id_string) == 0:
-                parent_id_string = ''
-                parent_object_id_string = ''
-                return parent_intrasis_id_list, parent_id_string, parent_object_id_list, parent_object_id_string
-        else:
-            parent_intrasis_id_list = []
-            parent_id_string = ''
-            parent_object_id_string = ''
-            return parent_intrasis_id_list, parent_id_string, parent_object_id_list, parent_object_id_string
-
-
-def get_related_classes_and_subclasses(gpkg,  object_id_string):
-    '''Returns a Pandas dataframe containing related class and subclass combinations'''
-    #sql_query = f"select Class, SubClass, REPLACE(Class, ' ', '_') || '.' || REPLACE(Subclass, ' ', '_') AS 'Class.SubClass', count() as count from objects where IntrasisId in ({object_id_string}) group by Class, SubClass"
-    sql_query = f"select object_id, IntrasisId, Class, SubClass, REPLACE(Class, ' ', '_') || '.' || REPLACE(Subclass, ' ', '_') AS 'Class.SubClass' from objects where IntrasisId in ({object_id_string})"
-    print(sql_query)
+Select DISTINCT rt.*, phc.parenthierarchy_count, pc.parent_count, gpc.grand_parent_count, ggpc.great_grand_parent_count
+,pis.ParentIdString, gpis.GrandParentIdString, ggpis.GreatGrandParentIdString
+from RelationTable rt
+LEFT join ParentHierarchyCount phc ON rt.parenthierarchy = phc.parenthierarchy
+LEFT JOIN ParentCount pc ON rt.child_id = pc.child_id and rt.parent_class = pc.parent_class
+LEFT JOIN GrandParentCount gpc ON rt.child_id = gpc.child_id and rt.grand_parent_class = gpc.grand_parent_class
+LEFT JOIN GreatGrandParentCount ggpc ON rt.child_id = ggpc.child_id and rt.great_grand_parent_class = ggpc.great_grand_parent_class
+LEFT JOIN ParentIdString pis ON rt.child_id = pis.child_id and rt.parent_class = pis.parent_class
+LEFT JOIN GrandParentIdString gpis ON rt.child_id = gpis.child_id and rt.grand_parent_class = gpis.grand_parent_class
+LEFT JOIN GreatGrandParentIdString ggpis ON rt.child_id = ggpis.child_id and rt.great_grand_parent_class = ggpis.great_grand_parent_class'''
     conn = sqlite3.connect(gpkg)
-    related_classes_subclasses = pd.read_sql_query(sql_query, conn)
-    unique_related_classes_subclasses = related_classes_subclasses['Class.SubClass'].drop_duplicates()
-    print(117)
-    print(unique_related_classes_subclasses)
-    print(related_classes_subclasses)
-    #class_subclass_dataframe = class_subclass_dataframe.set_index(['object_id'])
+    relation_dataframe = pd.read_sql_query(sql_query, conn)
     conn.close()
-    return related_classes_subclasses, unique_related_classes_subclasses
+    #print(sql_query)
+    return relation_dataframe
 
-def get_string_of_unique_ids(object_ids):
-    parent_ids = object_ids #object_id_data_frame['parent_intrasisid']
-    print(f'type(parent_ids): {type(parent_ids)}')
-    all_values = ', '.join(parent_ids)
-    ##print(f'all_values: {all_values}')
-    unique_values = sorted(set(all_values.replace(' ', '').split(',')))
-    #Remove empty strings returned from self.get_parent_id_string_string()
-    unique_values = [value for value in unique_values if value]
-    result = ','.join(unique_values)
-    return result
-
-def convert_numeric_string_to_int(value):
-    if ',' in value:
-        return np.nan
-    if '' in value:
-        return np.nan
-    else:
-        return int(value)
-
-'''def expand_tree_widget_item(tree_widget:QTreeWidget, tree_widget_item:QTreeWidgetItem):
-    """Expand given QTreeWidget tree_widget downwards from start item 'tree_widget_item'"""
-    stack = [tree_widget_item]
-
-    while stack:
-        current_node = stack.pop()
-        if current_node is None:
-            return
-        
-        if current_node.childCount() > 0:
-            tree_widget.expandItem(current_node)
-        
-        for i in range(0, current_node.childCount()):
-            child_node = current_node.child(i)
-            stack.append(child_node)
-
-def add_objects_below(gpkg_path:str, top_item:IntrasisTreeWidgetItem, max_number_of_tree_levels:int):
-    """Add tree items below starting at top_item, and stopping 'max_number_of_tree_levels' levels down from top_item"""
-    top_item.tree_level = 1
-    stack = [top_item]
-
-    while stack:
-        # Get next node to process
-        current_node = stack.pop()
-
-        # Find current node's related directly below
-        object_id = current_node.intrasis_item.object_id
-        related_below = get_realated_below(gpkg_path, object_id)
-
-        # Only add related below nodes if we're not at the max level depth from start node (top_item)
-        if current_node.tree_level + 1 > max_number_of_tree_levels:
-            if current_node.intrasis_item.has_unloaded_related_below:
-                current_node.setChildIndicatorPolicy(QTreeWidgetItem.ChildIndicatorPolicy.ShowIndicator) # To show expand arrow in tree even though this node has no children
-            continue
-
-        # Add related below nodes to the stack for later processing
-        for row in related_below:
-            new_node = get_intrasis_tree_widget_item_for_object_id(gpkg_path, current_node, row[0])
-            
-            # Only add node to stack if it does not already exist as a parent
-            if is_in_parents(new_node):
-                QgsMessageLog.logMessage(f"IntrasisId #{new_node.intrasis_item.intrasis_id} already added at a parent level to node #{current_node.intrasis_item.intrasis_id}. Not added as child node to #{current_node.intrasis_item.intrasis_id}.", MESSAGE_CATEGORY, Qgis.Warning)
-                current_node.removeChild(new_node)
-                continue
-        
-            new_node.intrasis_item.related_text = row[1]
-            new_node.tree_level = current_node.tree_level + 1
-            new_node.intrasis_item.has_unloaded_related_below = has_related_below(gpkg_path, new_node.intrasis_item.object_id)
-            new_node.set_description_text()
-            new_node.setIcon(0, Utils.create_qicon_object(new_node.intrasis_item.color, new_node.intrasis_item.get_icon_type()))
-            stack.append(new_node)
-            
-        current_node.intrasis_item.has_unloaded_related_below = False
-        current_node.set_description_text()
-        current_node.setIcon(0, Utils.create_qicon_object(current_node.intrasis_item.color, current_node.intrasis_item.get_icon_type()))
-        current_node.setChildIndicatorPolicy(QTreeWidgetItem.ChildIndicatorPolicy.DontShowIndicatorWhenChildless)
-
-def set_tree_widget_header_size_mode(tree_widget:QTreeWidget):
-    """Set the tree_widget header to resize to contents"""
-    header = tree_widget.header()
-    header.setSectionResizeMode(0, QHeaderView.ResizeToContents)
-
-def get_intrasis_item_dict_for_features(gpkg_path:str, features:list) -> dict:
-    """Get a dictionary where IntrasisId is the key and IntrasisItem is the value"""
-    object_id_field_name = 'object_id'
-    object_id_list = []
-    intrasis_item_dict = {}
-
-    for feature in features:
-        fields = feature.fields()
-
-        index_object_id = fields.lookupField(object_id_field_name)
-        if index_object_id < 0: #The feature has no object_id attribute, continue to the next feature
-            continue
-        object_id = feature.attribute(object_id_field_name)
-        object_id_list.append(object_id)
-    
-    if len(object_id_list) > 0:
-        for object_id in object_id_list:
-            if not object_id in intrasis_item_dict:
-                intrasis_item = get_intrasis_item_for_object_id(gpkg_path, object_id)
-                if intrasis_item:
-                    intrasis_item_dict[intrasis_item.intrasis_id] = intrasis_item
-    
-    return intrasis_item_dict
-    
-def get_intrasis_item_for_object_id(gpkg_path:str, object_id:int) -> Union[IntrasisItem,None]:
-    """Get an IntrasisItem for given object_id"""
-    data_frame = Utils.get_objects_data_for_object_id(MESSAGE_CATEGORY, gpkg_path, object_id)
-    
-    if data_frame is None:
-        return None
-    
-    try:
-        item = IntrasisItem(int(object_id))
-        item.intrasis_id = int(data_frame["IntrasisId"][0])
-        item.name = str(data_frame["Name"][0])
-        item.classname = str(data_frame["Class"][0])
-        if Utils.is_empty_string_or_none(data_frame["SubClass"][0]):
-            item.subclass = None
-        else:    
-            item.subclass = str(data_frame["SubClass"][0])
-        item.color = int(data_frame["Color"][0])
-
-        return item
-    except Exception as ex:
-        traceback.print_exc()
-        print(f"Error in Browse Relations - get_intrasis_item_for_object_id() {ex}")
-
-def get_intrasis_tree_widget_item_for_object_id(gpkg_path:str, parent:IntrasisTreeWidgetItem, object_id:int) -> Union[IntrasisTreeWidgetItem,None]:
-    """Get IntrasisTreeWidgetItem item for given object_id"""
-    item = IntrasisTreeWidgetItem(parent, IntrasisItem(object_id))
-    item.intrasis_item = get_intrasis_item_for_object_id(gpkg_path, object_id)
-
-    if item.intrasis_item is None:
-        return None
-
-    return item
-
-def get_realated_below(gpkg_path:str, object_id:int) -> list:
-    """Get related_id and related_text from the object_relations table where base_id=object_id, i.e. all relations directly below object_id"""
-    sql = f"SELECT related_id, related_text FROM {Utils.OBJECT_RELATIONS_TABLE_NAME} WHERE base_id = {object_id}"
-    data_frame = Utils.get_data_frame_from_gpkg(gpkg_path, sql)
-    
-    if len(data_frame) <= 0:
-        return []
-    if len(data_frame.columns) != 2:
-        message = f"get_realated_below: Incorrect number of columns for base_id = {object_id}"
-        QgsMessageLog.logMessage(message, MESSAGE_CATEGORY, Qgis.Warning)
-        print(message)
-        return []
-
-    return data_frame.values
-
-def get_realated_above(gpkg_path:str, object_id:int) -> list:
-    """Get base_id and related_text from the object_relations table where related_id=object_id, i.e. all relations directly above object_id"""
-    sql = f"SELECT base_id, base_text FROM {Utils.OBJECT_RELATIONS_TABLE_NAME} WHERE related_id = {object_id}"
-    data_frame = Utils.get_data_frame_from_gpkg(gpkg_path, sql)
-    
-    if len(data_frame) <= 0:
-        return []
-    if len(data_frame.columns) != 2:
-        message = f"get_realated_above: Incorrect number of columns for related_id={object_id}"
-        QgsMessageLog.logMessage(message, MESSAGE_CATEGORY, Qgis.Warning)
-        print(message)
-        return []
-
-    return data_frame.values
-
-def has_related_below(gpkg_path:str, object_id:int) -> int:
-    """Return True/False based on if object_id has any related objects below"""
-    return len(get_realated_below(gpkg_path, object_id)) > 0
-
-def is_in_parents(tree_node:IntrasisTreeWidgetItem) -> bool:
-    """Check if given node 'tree_node' already exitists at a parent level"""
-    current_parent:IntrasisTreeWidgetItem = tree_node.parent()
-    
-    while current_parent is not None:
-        if current_parent.intrasis_item.object_id == tree_node.intrasis_item.object_id:
-            return True # Found the same object_id at parent level
-        current_parent = current_parent.parent()
-    
-    return False # Could not find the same object_id at any parent level
-'''
+def get_child_class(gpkg, child_object_id):
+    sql_query = f'''select distinct class from objects WHERE object_id IN ({child_object_id})'''
+    conn = sqlite3.connect(gpkg)
+    child_class_dataframe = pd.read_sql_query(sql_query, conn)
+    conn.close()
+    #print(sql_query)
+    child_class_string = ', '.join(child_class_dataframe['Class'].astype(str))
+    return child_class_string
