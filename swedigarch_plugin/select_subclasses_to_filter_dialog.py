@@ -27,7 +27,7 @@
 """
 
 import os
-import copy
+import re
 import traceback
 import psycopg2
 import pandas as pd
@@ -71,6 +71,8 @@ class SelectSubClassesToFilterDialog(QtWidgets.QDialog, FORM_CLASS):
         header.setSectionResizeMode(QHeaderView.ResizeToContents)
         header.setStretchLastSection(True)
 
+        self.lwSelectedSubClasses.itemDoubleClicked.connect(self.handle_selected_subclasses_double_click)
+
         self.lbl_filter_info.setText(self.tr("No selection"))
         self.lwSelectedSubClasses.setSortingEnabled(True)
         self.splitter.setSizes([500, 130])
@@ -88,25 +90,28 @@ class SelectSubClassesToFilterDialog(QtWidgets.QDialog, FORM_CLASS):
         """The close dialog event (QCloseEvent)"""
         self.button_clicked = QDialogButtonBox.Cancel
 
-    def keyPressEvent(self, event):
-        """Handle key press event, to be able to delete with delete key"""
-        if event.key() == 16777223: # Delete key
-            current_row = self.lwSelectedSubClasses.currentRow()
-            if current_row >= 0:
-                row_text = self.lwSelectedSubClasses.currentItem().text()
-                parts = row_text.split('\\')
-                class_name = parts[0].strip()
-                sub_class_name = parts[1].strip()
-                ix = sub_class_name.index("(")
-                sub_class_name = sub_class_name[:ix].strip()
-                found_item = self.find_item(class_name)
-                if found_item is None:
-                    return
+    def handle_selected_subclasses_double_click(self, item):
+        """Handle double click on selected subclasses list widget"""
+        if item is None:
+            return
+        
+        self.find_and_select_item(item.text())
 
-                child_item = self.find_item_in_children(found_item, sub_class_name)
-                if child_item is not None:
-                    self.lwSelectedSubClasses.takeItem(current_row)  # Remove the item from the list
-                    child_item.setCheckState(0, QtCore.Qt.Unchecked)
+    def find_and_select_item(self, item_text:str):
+        """Find and select the list widget item with item_text in tree widget"""
+        class_name, subclass_name = self.extract_class_and_subclass_from_string(item_text)
+        found_item = self.find_item(class_name)
+        if found_item is None:
+            return
+        
+        child_item = self.find_item_in_children(found_item, subclass_name)
+        if child_item is None:
+            return
+        
+        self.tree_widget_class_subclass.setCurrentItem(child_item)
+        child_item.setSelected(True)
+        self.tree_widget_class_subclass.scrollToItem(child_item)
+        self.tree_widget_class_subclass.setFocus()
 
     def init_data_and_gui(self):
         """Load data and init gui"""
@@ -122,7 +127,12 @@ class SelectSubClassesToFilterDialog(QtWidgets.QDialog, FORM_CLASS):
                 conn = psycopg2.connect(connection_string)
 
                 sql = Utils.load_resource('sql/select_classes.sql')
-                data_frame = pd.read_sql(sql, conn)
+                try:
+                    data_frame = pd.read_sql(sql, conn)
+                except pd.errors.DatabaseError:
+                    print(f'Database "{database}" is not a valid Intrasis database, skipping')
+                    continue
+
                 classes = {}
                 for row in data_frame.itertuples(index=False):
                     #print(f"ClassId: {row.MetaId}  Class: {row.Name}")
@@ -177,10 +187,21 @@ class SelectSubClassesToFilterDialog(QtWidgets.QDialog, FORM_CLASS):
             traceback.print_exc()
             print(f"Exception in init_data_and_gui(): {err}")
 
-    def get_selected_sub_classes_list_items(self) -> list[str]:
-        """Get selected sub classes list items as a list of strings"""
+    def get_selected_subclasses_as_list_of_strings(self) -> list[str]:
+        """Get selected list items as a list of strings"""
         return [self.lwSelectedSubClasses.item(x).text() for x in range(self.lwSelectedSubClasses.count())]
-    
+
+    def get_selected_subclasses_as_list_of_tuples(self) -> list[tuple[str,str]]:
+        """Get selected SubClasses list items as a list of tuples, each tuple is (className, subClassName)"""
+        item_list = [self.lwSelectedSubClasses.item(x).text() for x in range(self.lwSelectedSubClasses.count())]
+        return [self.extract_class_and_subclass_from_string(s) for s in item_list]
+
+    def extract_class_and_subclass_from_string(self, s):
+        """Extract class_name and subclass_name from a string on the form 'class_name \\ subclass_name (occurrence)'"""
+        class_name, subclass_with_occurrence = s.split(' \\ ')
+        subclass_name = re.sub(r' \(\d+\)', '', subclass_with_occurrence)
+        return (class_name, subclass_name)
+
     def on_ok(self):
         """Selection of tree nodes done"""
         self.button_clicked = QDialogButtonBox.Ok

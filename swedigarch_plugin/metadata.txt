@@ -24,7 +24,7 @@ hasProcessingProvider=no
 # changelog=
 
 # Tags are comma separated with spaces allowed
-tags=Intrasis, PostgreSQL/PostGIS
+tags=Intrasis, PostgreSQL/PostGIS, GeoPackage
 
 homepage=https://github.com/swedigarch/QGIS-plugin/wiki/Swedigarch-QGIS-plugin
 category=Database

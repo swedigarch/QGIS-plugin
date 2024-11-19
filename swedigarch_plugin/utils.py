@@ -411,9 +411,8 @@ def is_intrasis_gpkg_export(gpkg_file:str) -> bool:
             if not table_count == 10:
                 print(f'is_intrasis_gpkg_export() Did not fing the required 10 tables, only found {table_count}')
         return metadata == 1 and table_count == 10
-    except Exception as ex:
-        traceback.print_exc()
-        print(f'is_intrasis_gpkg_export() Exception: {ex}')
+    except Exception:
+        # Any error/Exception means it's not an Intrasis GeoPackage
         return False
 
 def layer_is_in_gpkg(layer:QgsMapLayer) -> tuple[bool,str]:

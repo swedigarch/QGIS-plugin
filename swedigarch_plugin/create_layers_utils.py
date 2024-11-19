@@ -24,14 +24,14 @@
 
 ***************************************************************************/
 """
-"""Utils module for creating qgis layers"""
+#Utils module for creating qgis layers
 from typing import Tuple, Union
-from qgis.core import QgsMessageLog, QgsField, QgsFields, Qgis, QgsExpression, QgsFeatureRequest, QgsVectorLayer, QgsGeometry
-from PyQt5.QtCore import QVariant
 import traceback
 import pandas as pd
+from qgis.core import QgsMessageLog, QgsField, QgsFields, Qgis, QgsExpression, QgsFeatureRequest, QgsVectorLayer, QgsGeometry
+from PyQt5.QtCore import QVariant
 from . import utils as Utils
-    
+
 MESSAGE_CATEGORY = 'CreateLayers'
 
 def get_attribute_fields_and_values(gpkg_path:str, object_id:int, class_name:str, subclass_name:str, class_subclass_attributes:dict) -> Tuple[QgsFields, list]:
@@ -39,7 +39,7 @@ def get_attribute_fields_and_values(gpkg_path:str, object_id:int, class_name:str
     attribute_fields, attribute_names = get_attribute_fields_for_class_subclass_combination(gpkg_path, class_name, subclass_name, class_subclass_attributes)
     attribute_values = get_attribute_values(gpkg_path, object_id)
     matched_attribute_values = match_attribute_values_with_attribute_names(attribute_names, attribute_values)
-    
+
     return attribute_fields, matched_attribute_values
 
 def get_attribute_field_key(attribute_label:str, is_class:str, data_type:str, is_unit:bool) -> str:
@@ -50,20 +50,20 @@ def get_attribute_field_key(attribute_label:str, is_class:str, data_type:str, is
 
     return f"{attribute_label}_{is_class}_{data_type}{unit}"
 
-def get_attribute_list_for_class_subclass_combination(gpkg_path:str, 
-                                                        class_name:str, 
-                                                        subclass_name:str) -> Union[pd.DataFrame, None]:
+def get_attribute_list_for_class_subclass_combination(gpkg_path:str, class_name:str, subclass_name:str) -> Union[pd.DataFrame, None]:
     """Get a pandas data frame of all attributes (attributes columns attribute_label, data_type and class) for a class/sublcass combination"""
     subclass_where_clause = f"= '{subclass_name}'"
     if Utils.is_empty_string_or_none(subclass_name):
         subclass_where_clause = "IS NULL"
-    
-    sql = f"SELECT attribute_label, attribute_unit, class, data_type FROM {Utils.ATTRIBUTES_TABLE_NAME} WHERE object_id IN (SELECT object_id FROM (SELECT object_id, COUNT(*) AS num_attributes FROM attributes WHERE object_id IN (SELECT object_id FROM objects WHERE Class = '{class_name}' AND SubClass {subclass_where_clause}) GROUP BY object_id ORDER BY num_attributes DESC LIMIT 1) t)"
+
+    sql = (f"SELECT attribute_label, attribute_unit, class, data_type FROM {Utils.ATTRIBUTES_TABLE_NAME} "
+            "WHERE object_id IN (SELECT object_id FROM (SELECT object_id, COUNT(*) AS num_attributes FROM attributes "
+            f"WHERE object_id IN (SELECT object_id FROM objects WHERE Class = '{class_name}' AND SubClass {subclass_where_clause}) GROUP BY object_id ORDER BY num_attributes DESC LIMIT 1) t)")
     data_frame_attributes = Utils.get_data_frame_from_gpkg(gpkg_path, sql)
-    
+
     if data_frame_attributes is None or data_frame_attributes.empty:
         return None
-    
+
     return data_frame_attributes
 
 def get_attribute_fields_for_class_subclass_combination(gpkg_path:str, class_name:str, subclass_name:str, class_subclass_attributes:dict) -> Tuple[QgsFields, list]:
@@ -73,11 +73,11 @@ def get_attribute_fields_for_class_subclass_combination(gpkg_path:str, class_nam
     if key_attributes_dict in class_subclass_attributes:
         row = class_subclass_attributes[key_attributes_dict]
         return row[0], row[1]
-    
+
     attribute_fields = QgsFields()
     attribute_names = []
     attributes = get_attribute_list_for_class_subclass_combination(gpkg_path, class_name, subclass_name)
-    
+
     attribute_fields.append(QgsField('IntrasisId', QVariant.Int))
     attribute_names.append('IntrasisId')
     attribute_fields.append(QgsField('object_id', QVariant.Int))
@@ -93,9 +93,9 @@ def get_attribute_fields_for_class_subclass_combination(gpkg_path:str, class_nam
         # Store the attribute fields for this combination of class/subclass in a dictonary for next time it is needed
         class_subclass_attributes[key_attributes_dict] = (attribute_fields, attribute_names)
         return attribute_fields, attribute_names
-    
+
     attributes_sorted = attributes.sort_values(by=['attribute_label','class','data_type'])
-    
+
     for idx, row in attributes_sorted.iterrows():
         attribute_name = row['attribute_label']
         attribute_unit = row['attribute_unit']
@@ -127,7 +127,7 @@ def get_attribute_values(gpkg_path:str, object_id:int) -> Union[list, None]:
     object_attributes = Utils.get_objects_data_for_object_id(MESSAGE_CATEGORY, gpkg_path, object_id)
     if object_attributes is None:
         return None
-    
+
     try:
         attribute_values.append(('IntrasisId', int(object_attributes["IntrasisId"][0])))
         attribute_values.append(('object_id', object_id))
@@ -150,9 +150,9 @@ def get_attribute_values(gpkg_path:str, object_id:int) -> Union[list, None]:
     attributes = Utils.get_attributes_data_for_object_id(MESSAGE_CATEGORY, gpkg_path, object_id)
     if attributes is None: #If there are no rows in the attributes table for current object_id return
         return attribute_values
-    
+
     attributes_sorted = attributes.sort_values(by=['attribute_label','class','data_type'])
-            
+
     for _, row in attributes_sorted.iterrows():
         attribute_name = row['attribute_label']
         attribute_unit = row['attribute_unit']
@@ -182,7 +182,7 @@ def get_attribute_values(gpkg_path:str, object_id:int) -> Union[list, None]:
 
         if not Utils.is_empty_string_or_none(attribute_unit):
             attribute_values.append((get_attribute_field_key(attribute_name, is_class_attribute, data_type, True), attribute_unit))
-            
+
     return attribute_values
 
 def match_attribute_values_with_attribute_names(attribute_names:list, attribute_values:list) -> list:
@@ -191,7 +191,7 @@ def match_attribute_values_with_attribute_names(attribute_names:list, attribute_
     checked_values = []
     idx = 0
     max_idx = len(attribute_values)
-    
+
     for attr_name in attribute_names:
         if idx < max_idx:
             row = attribute_values[idx]
@@ -202,7 +202,7 @@ def match_attribute_values_with_attribute_names(attribute_names:list, attribute_
                 checked_values.append(None)
         else:
             checked_values.append(None)
-    
+
     return checked_values
 
 def object_is_in_layer(layer: QgsVectorLayer, object_id: int, geom:QgsGeometry = None) -> bool:
@@ -211,7 +211,7 @@ def object_is_in_layer(layer: QgsVectorLayer, object_id: int, geom:QgsGeometry =
     # If the layer is None the object is not in the layer
     if layer is None:
         return False
-    
+
     #Get features based on selected object id
     expr = QgsExpression(f"object_id={object_id}")
     features = layer.dataProvider().getFeatures(QgsFeatureRequest(expr))
@@ -222,8 +222,8 @@ def object_is_in_layer(layer: QgsVectorLayer, object_id: int, geom:QgsGeometry =
     # Check the geometries to decide if the found features are equal to object_id and geom
     for feature in features:
         if feature.hasGeometry() and geom is not None:
-                if geom.asWkt() == feature.geometry().asWkt():
-                    return True
+            if geom.asWkt() == feature.geometry().asWkt():
+                return True
         # If there are no geometries to check - return True
         else:
             return True

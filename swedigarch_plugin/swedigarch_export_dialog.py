@@ -71,7 +71,6 @@ class SwedigarchExportDialog(QtWidgets.QDialog, FORM_CLASS):
         self.sslmode_text = ""
         self.export_folder = None
         self.bulk_export_threshold = 8
-        self.subclasses_to_exclude = []
         print(f'cpu_count(): {cpu_count()}')
         if cpu_count() >= 4:
             self.bulk_export_max_number_of_subtasks = cpu_count() - 2 # leave 2 as spare
@@ -93,6 +92,8 @@ class SwedigarchExportDialog(QtWidgets.QDialog, FORM_CLASS):
         self.cbExportCSV.setToolTip(self.tr("Should an CSV export also be done for every exported database"))
         self.cbFilterSubClass.setText(self.tr("Filter by SubClass"))
         self.cbFilterSubClass.setToolTip(self.tr("Should we filter by Subclass in every exported database"))
+        self.cbSimplifiedExport.setText(self.tr("Simplified Export"))
+        self.cbSimplifiedExport.setToolTip(self.tr("Should simplified GPKG export also be done for every exported database"))
 
         self.pbSelectAllDb.setEnabled(False)
         self.lwDatabases.setSortingEnabled(True)
@@ -236,7 +237,6 @@ class SwedigarchExportDialog(QtWidgets.QDialog, FORM_CLASS):
     # pylint: disable=invalid-name
     def closeEvent(self, _):
         """The close dialog event (QCloseEvent)"""
-        self.subclasses_to_exclude = []
         point = self.pos()
         settings = QgsSettings()
         settings.setValue("SwedigarchGeotools/dialog_position", point)
@@ -401,27 +401,26 @@ class SwedigarchExportDialog(QtWidgets.QDialog, FORM_CLASS):
                 msg_box.setStandardButtons(QMessageBox.Ok)
                 msg_box.exec()
             else:
-                self.subclasses_to_exclude = []
+                subclasses_to_exclude = []
+                selected_subclasses_list = []
                 databases = [self.lwSelectedDatabases.item(x).text() for x in range(self.lwSelectedDatabases.count())]
-                
+
                 if self.cbFilterSubClass.isChecked():
                     select_sub_classes_dlg = SelectSubClassesToFilterDialog(databases, self.host, self.user_name, self.password, self.port, self.sslmode_text, parent=self)
                     select_sub_classes_dlg.init_data_and_gui()
                     if not select_sub_classes_dlg.exec_():
                         return
-                    self.subclasses_to_exclude = select_sub_classes_dlg.get_selected_sub_classes_list_items()
-            
+                    subclasses_to_exclude = select_sub_classes_dlg.get_selected_subclasses_as_list_of_tuples()
+                    selected_subclasses_list = select_sub_classes_dlg.get_selected_subclasses_as_list_of_strings()
+
                 number_of_databases = self.lwSelectedDatabases.count()
-                export_confirmed = False
-                if number_of_databases >= self.bulk_export_threshold:
-                    export_confirmed = self.confirm_export_messagebox(number_of_databases)
-                else:
-                    export_confirmed = self.confirm_export_dialog()
+                bulk_export_mode = number_of_databases >= self.bulk_export_threshold
+                export_confirmed = self.confirm_export_dialog(bulk_export_mode, selected_subclasses_list)
+
                 if export_confirmed:
                     export_folder = self.lineEditExportDirectory.text()
                     print(f"export_to_geopackage(db_count: {len(databases)}  export_folder: {export_folder})")
-                    print(f"subclasses_to_exclude: {self.subclasses_to_exclude}")
-                    main_export_task = self.create_export_task(databases, export_folder)
+                    main_export_task = self.create_export_task(databases, export_folder, subclasses_to_exclude)
                     QgsApplication.taskManager().addTask(main_export_task)
                     QgsApplication.processEvents()
                     self.close()
@@ -433,39 +432,29 @@ class SwedigarchExportDialog(QtWidgets.QDialog, FORM_CLASS):
         """Show Help dialog"""
         HelpDialog.show_help("ExportDialog")
 
-    def create_export_task(self, databases:list[str], export_folder:str) -> QgsTask:
+    def create_export_task(self, databases:list[str], export_folder:str, subclasses_to_exclude:list[tuple[str,str]]) -> QgsTask:
         """Create export tasks"""
         bulk_export_mode = len(databases) >= self.bulk_export_threshold
         #bulk_export_mode = False #Bulk mode disabled
         detailed_print_outs = not bulk_export_mode
         overwrite = self.cbOverwriteExistingGeoPackage.isChecked()
         csv = self.cbExportCSV.isChecked()
+        simplified = self.cbSimplifiedExport.isChecked()
         #print(f'overwrite: {overwrite} csv: {csv}')
         if not bulk_export_mode: #If not bulk export: create one main task
-            return GeoPackageExportTask("Exporting GeoPackages", self.host, self.port, self.user_name, self.password, databases, export_folder, overwrite, csv, detailed_print_outs)
+            return GeoPackageExportTask("Exporting GeoPackages", self.host, self.port, self.user_name, self.password, databases, export_folder, overwrite, csv, simplified, detailed_print_outs, subclasses_to_exclude)
 
         # is bulk export: create bulk main task with subtasks
-        main_export_task = GeoPackageBulkExportMainTask("Exporting GeoPackages", self.host, self.port, self.user_name, self.password, export_folder, overwrite, csv, databases)
+        main_export_task = GeoPackageBulkExportMainTask("Exporting GeoPackages", self.host, self.port, self.user_name, self.password, export_folder, overwrite, csv, simplified, databases, subclasses_to_exclude)
         main_export_task.create_subtasks("Exporting GeoPackages", min(len(databases),self.bulk_export_max_number_of_subtasks))
         return main_export_task
 
-    def confirm_export_dialog(self) -> bool:
+    def confirm_export_dialog(self, bulk_export_mode: bool, class_subclass_list: list[str]) -> bool:
         """Dialog to confirm export, used before normal export (one by one)"""
         databases = [self.lwSelectedDatabases.item(x).text() for x in range(self.lwSelectedDatabases.count())]
-        confirm_dlg = ExportConfirmationDialog(databases, self.subclasses_to_exclude)
+        confirm_dlg = ExportConfirmationDialog(databases, class_subclass_list, bulk_export_mode, parent=self)
         return_value = confirm_dlg.exec()
         return return_value == 1
-
-    def confirm_export_messagebox(self, number_of_databases:int) -> bool:
-        """Create messagebox to confirm export, used before bulk export (multiple exports in parallel)"""
-        msg_box = QMessageBox()
-        msg_box.setText(self.tr("Are you sure that you want to export ") + str(number_of_databases) + self.tr(" databases?"))
-        msg_box.setWindowTitle(self.tr("Confirm export"))
-        msg_box.setStandardButtons(QMessageBox.Yes | QMessageBox.Cancel)
-        msg_box.button(QMessageBox.Cancel).setText(self.tr("Cancel"))
-        msg_box.button(QMessageBox.Yes).setText(self.tr("Yes"))
-        return_value = msg_box.exec()
-        return return_value == QMessageBox.Yes
 
     def export_ready_check(self):
         """Check if we are ready for export and then enable export button"""
