@@ -216,6 +216,18 @@ def wkb_type_to_layer(wkb_type:QgsWkbTypes) -> tuple[str,str]:
         raise SymbolException(f"Unknown wkb_type: {wkb_type}")
     return layer_name, filter_string
 
+def get_used_symbol_ids(gpkg_file:str, layer_name:str) -> list:
+    """List all used SymbolId"""
+    symbol_ids = []
+    with closing(sqlite3.connect(gpkg_file)) as conn:
+        cur = conn.cursor()
+        sql = f'SELECT DISTINCT SymbolId FROM {layer_name} ORDER BY SymbolId;'
+        cur.execute(sql)
+        data = cur.fetchall()
+        symbol_ids = [rows[0] for rows in data]
+    print(f'get_used_symbol_ids() symbol_ids: {symbol_ids}')
+    return symbol_ids
+
 def load_resource(file_name:str) -> str:
     """Load local resource file"""
     __location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))

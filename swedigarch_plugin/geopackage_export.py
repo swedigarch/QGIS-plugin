@@ -38,7 +38,7 @@ import traceback
 import psycopg2
 import pandas as pd
 from osgeo import gdal
-from PyQt5.QtCore import QDir, QFile
+from PyQt5.QtCore import QFile
 from typing import Callable
 from qgis.core import QgsProject, QgsVectorLayer, QgsRasterLayer, QgsRasterPipe, QgsRectangle, QgsDataSourceUri, QgsWkbTypes, QgsVectorFileWriter, QgsRasterFileWriter, QgsLayerMetadata, QgsCoordinateReferenceSystem, QgsCoordinateTransformContext
 from swedigarch_plugin.symbol_builder import SymbolBuilder
@@ -271,11 +271,14 @@ def export_database(conn:psycopg2.extensions.connection, host:str, port:int, use
 
                 Utils.execute_sql_in_gpkg(output_file, "DELETE FROM gpkg_geometry_columns WHERE table_name = 'features'")
 
-            qml = sb.build_symbols_for_layer("")
+            qml = sb.build_symbols_for_layer("", [])
             export_utils.save_layer_style(output_file, True, "features", qml, detailed_print_outs)
             for wkb_type in wkb_types:
                 layer_name, filter_string = SymbolBuilder.wkb_type_to_layer(wkb_type)
-                qml = sb.build_symbols_for_layer(filter_string)
+
+                symbol_ids = Utils.get_used_symbol_ids(output_file, layer_name)
+                print(f'Used symbol_ids: {symbol_ids}')
+                qml = sb.build_symbols_for_layer(filter_string, symbol_ids)
                 export_utils.save_layer_style(output_file, False, layer_name, qml, detailed_print_outs)
                 sql = f"INSERT INTO gpkg_extensions VALUES('{layer_name}', 'geom', 'gpkg_rtree_index', 'http://www.geopackage.org/spec120/#extension_rtree', 'write-only')"
                 Utils.execute_sql_in_gpkg(output_file, sql)
@@ -284,7 +287,7 @@ def export_database(conn:psycopg2.extensions.connection, host:str, port:int, use
             first = True
             for wkb_type in wkb_types:
                 layer_name, filter_string = SymbolBuilder.wkb_type_to_layer(wkb_type)
-                qml = sb.build_symbols_for_layer(filter_string)
+                qml = sb.build_symbols_for_layer(filter_string, [])
                 export_utils.save_layer_style(output_file, first, layer_name, qml, detailed_print_outs)
                 sql = f"INSERT INTO gpkg_extensions VALUES('{layer_name}', 'geom', 'gpkg_rtree_index', 'http://www.geopackage.org/spec120/#extension_rtree', 'write-only')"
                 Utils.execute_sql_in_gpkg(output_file, sql)

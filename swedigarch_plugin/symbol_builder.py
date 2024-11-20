@@ -80,26 +80,57 @@ class SimpleFillStyle(Enum):
 
 class SymbolDef:
     """Class to hold symbol definition"""
-    def __init__(self, row):
-        self.sym_id = row.SymbolId
-        self.class_id = row.ClassId
-        self.font = row.Font
-        self.size = row.SymbolSize
-        self.index = row.SymbolIndex
-        self.color = SymbolColor.parse(row.Color)
-        self.sym_type = row.Type
-        if self.sym_type == "SimpleFillSymbol":
-            self.qml_sym_type = "fill"
-        elif self.sym_type == "SimpleLineSymbol":
-            self.qml_sym_type = "line"
-        elif self.sym_type == "SimpleMarkerSymbol" or self.sym_type == "CharacterMarkerSymbol":
-            self.qml_sym_type = "marker"
-        self.border_width = row.BorderWidth
-        self.border_color = SymbolColor.parse(row.BorderColor)
-        self.class_name = row.Class
-        self.name = row.Name
-        self.geo_object_type = GeometryType[row.GeoObjectType]
-        self.label = f"{self.class_name} ({self.name})"
+    def __init__(self, row, sym_id:int, idx:int, geometry_type:GeometryType):
+        if row is not None:
+            self.sym_id = row.SymbolId
+            self.class_id = row.ClassId
+            self.font = row.Font
+            self.size = row.SymbolSize
+            self.index = row.SymbolIndex
+            self.color = SymbolColor.parse(row.Color)
+            self.sym_type = row.Type
+            if self.sym_type == "SimpleFillSymbol":
+                self.qml_sym_type = "fill"
+            elif self.sym_type == "SimpleLineSymbol":
+                self.qml_sym_type = "line"
+            elif self.sym_type == "SimpleMarkerSymbol" or self.sym_type == "CharacterMarkerSymbol":
+                self.qml_sym_type = "marker"
+            self.border_width = row.BorderWidth
+            self.border_color = SymbolColor.parse(row.BorderColor)
+            self.class_name = row.Class
+            self.name = row.Name
+            self.geo_object_type = GeometryType[row.GeoObjectType]
+            self.label = f"{self.class_name} ({self.name})"
+        else: # Create the default symbol
+            self.sym_id = sym_id
+            self.idx = idx
+            self.size = 4
+            self.geo_object_type = geometry_type
+            print(f'SymbolDef geometry_type: {geometry_type}')
+            if geometry_type == GeometryType.Point or geometry_type == GeometryType.Multipoint:
+                print('SimpleMarkerSymbol')
+                self.sym_type = "SimpleMarkerSymbol"
+                self.qml_sym_type = "marker"
+                self.size = 4
+                self.index = 0 # Circle
+                self.color = SymbolColor.parse(0) # Black
+            elif geometry_type ==  GeometryType.Polyline:
+                print('SimpleLineSymbol')
+                self.sym_type = "SimpleLineSymbol"
+                self.qml_sym_type = "line"
+                self.size = 1
+                self.index = 0 # Solid
+                self.color = SymbolColor.parse(0) # Black
+            elif geometry_type ==  GeometryType.Polygon:
+                print('SimpleFillSymbol')
+                self.sym_type = "SimpleFillSymbol"
+                self.qml_sym_type = "fill"
+                self.border_width = 1
+                self.index = 1 # Hollow
+                self.color = SymbolColor.parse(0) # Black,
+                self.border_color = SymbolColor.parse(0) # Black
+            else:
+                print(f'SymbolDef geometry_type: {geometry_type} missmatch!')
 
     def get_class_type(self) -> str:
         """Get layer symbol class"""
@@ -190,13 +221,14 @@ class SymbolBuilder:
         #print(f"keys: {self.class_symbols.keys()}")
         #print(f"class_symbols: {len(self.class_symbols)}")
 
-    def build_symbols_for_layer(self, filter_string:str) -> str:
+    def build_symbols_for_layer(self, filter_string:str, symbol_ids:list) -> str:
         """Function that build the QGIS qml symbol definition file"""
         try:
             symbol_defs = self.load_symbols_defs_for_layer(filter_string)
             if len(symbol_defs) == 0:
                 return None
 
+            default_symbol_defs = {}
             geometry_type = SymbolBuilder.filter_string_to_gometry_type(filter_string)
             if geometry_type != GeometryType.NotSet:
                 class_ids = self.geometry_classes[geometry_type]
@@ -261,6 +293,8 @@ class SymbolBuilder:
             categories = doc.createElement("categories")
             idx = 0
             for sym in symbol_defs:
+                if sym.sym_id in symbol_ids:
+                    symbol_ids.remove(sym.sym_id)
                 category = doc.createElement("category")
                 category.setAttribute("symbol", str(idx))
                 category.setAttribute("type", "long")
@@ -268,9 +302,23 @@ class SymbolBuilder:
                 category.setAttribute("render", "true")
                 category.setAttribute("value", str(sym.sym_id))
                 categories.appendChild(category)
-                #sym.symbol.setAttribute("type", sym.qml_sym_type)
                 sym.idx = str(idx)
                 idx += 1
+
+            if len(symbol_ids) > 0:
+                print(f'SymbolIds without SymbolDef {symbol_ids}')
+                for sym_id in symbol_ids:
+                    category = doc.createElement("category")
+                    category.setAttribute("symbol", str(idx))
+                    category.setAttribute("type", "long")
+                    category.setAttribute("label", str('Default Symbol'))
+                    category.setAttribute("render", "true")
+                    category.setAttribute("value", str(sym_id))
+                    categories.appendChild(category)
+                    default_symbol = SymbolDef(None, sym_id, idx, geometry_type)
+                    default_symbol_defs[sym_id] = default_symbol
+                    idx += 1
+
             renderer.appendChild(categories)
             #endregion
 
@@ -308,6 +356,12 @@ class SymbolBuilder:
                 layer.appendChild(option)
                 symbol.appendChild(layer)
                 symbols.appendChild(symbol)
+
+            # Add missing symbols
+            for sym in default_symbol_defs.values():
+                symbol = self.create_default_symbol(doc, sym)
+                symbols.appendChild(symbol)
+
             renderer.appendChild(symbols)
             #endregion
 
@@ -327,7 +381,7 @@ class SymbolBuilder:
             #endregion
 
             doc.appendChild(qgis)
-            return doc.toprettyxml(indent =" ")
+            return doc.toprettyxml(indent = " ")
 
         # pylint: disable=broad-except
         except Exception as err:
@@ -473,6 +527,39 @@ class SymbolBuilder:
             self.create_option_value_tag(doc, option, "style", "solid")
         return option
 
+    def create_default_symbol(self, doc:minidom.Document, sym:SymbolDef) -> minidom.Element:
+        """Create default symbol"""
+        # tuple[minidom.Element, minidom.Element, minidom.Element]:
+        symbol = doc.createElement("symbol")
+        symbol.setAttribute("force_rhr", "0")
+        symbol.setAttribute("frame_rate", "10")
+        symbol.setAttribute("type", sym.qml_sym_type)
+        symbol.setAttribute("name", str(sym.idx))
+        symbol.setAttribute("alpha", "1")
+        symbol.setAttribute("clip_to_extent", "1")
+        symbol.setAttribute("is_animated", "0")
+
+        layer = doc.createElement("layer")
+        layer.setAttribute("locked", "0")
+        layer.setAttribute("class", sym.get_class_type())
+        layer.setAttribute("pass", "0")
+        layer.setAttribute("enabled", "1")
+
+        if sym.get_class_type() == "SimpleMarker":
+            option = self.create_simplemarker_option_tag(doc, sym)
+        elif sym.get_class_type() == "FontMarker":
+            option = self.create_fontmarker_option_tag(doc, sym)
+        elif sym.get_class_type() == "SimpleLine":
+            option = self.create_line_option_tag(doc, sym)
+        elif sym.get_class_type() == "SimpleFill":
+            option = self.create_fill_option_tag(doc, sym)
+        else:
+            option = self.create_simplemarker_option_tag(doc, sym)
+
+        layer.appendChild(option)
+        symbol.appendChild(layer)
+        return symbol
+
     def create_option_value_tag(self, doc:minidom.Document, parent:minidom.Element, name:str, value:str = "3x:0,0,0,0,0,0", op_type:str = "QString") -> None:
         """Create single Option tag with attributes"""
         opt = doc.createElement("Option")
@@ -549,7 +636,7 @@ class SymbolBuilder:
         data_frame = pd.read_sql(sql, self.conn)
         self.class_symbols = {}
         for row in data_frame.itertuples(index=False):
-            symbol = SymbolDef(row)
+            symbol = SymbolDef(row, 0, 0, None)
             self.all_symbols[symbol.sym_id] = symbol
             if row.ClassId in self.class_symbols:
                 self.class_symbols[row.ClassId].append(symbol)
@@ -566,7 +653,7 @@ class SymbolBuilder:
         data_frame = pd.read_sql(sql, self.conn)
         symbol_defs = []
         for row in data_frame.itertuples(index=False):
-            symbol_defs.append(SymbolDef(row))
+            symbol_defs.append(SymbolDef(row, 0, 0, None))
         return symbol_defs
 
     @staticmethod
