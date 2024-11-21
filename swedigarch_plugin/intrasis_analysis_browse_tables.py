@@ -305,6 +305,7 @@ class IntrasisAnalysisBrowseTablesDialog(QtWidgets.QDialog, FORM_CLASS):
         self.pb_open_parent_id_dialog.setEnabled(False)
         self.pushButton_load_to_map.setEnabled(False)
         self.pushButton_export_as_chart.setEnabled(False)
+        self.label_num_loaded_objects_info.setText('')
         try:
             self.class_subclass_attributes.clear_qtablewidget()
             print(self.tr("analysis dialog closed"))
