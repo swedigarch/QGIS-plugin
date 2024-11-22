@@ -14,7 +14,7 @@
         <translation>Försöker ansluta till server</translation>
     </message>
     <message>
-        <location filename="../connect_to_db_dialog.py" line="160"/>
+        <location filename="../connect_to_db_dialog.py" line="164"/>
         <source>Empty error, may be login error</source>
         <translation>Tommt fel, kan vara inloggnings fel</translation>
     </message>
@@ -27,6 +27,11 @@
         <location filename="../connect_to_db_dialog.py" line="119"/>
         <source>Help</source>
         <translation>Hjälp</translation>
+    </message>
+    <message>
+        <location filename="../connect_to_db_dialog.py" line="152"/>
+        <source>Unknown Login error has occurred</source>
+        <translation>Okänt inloggningsfel har inträffat</translation>
     </message>
 </context>
 <context>
@@ -414,12 +419,12 @@
         <translation>Spara tabell som...</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="1246"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="1247"/>
         <source>Intrasis Analysis Class/SubClass Browser, Save File</source>
         <translation>Intrasis Class/Subclass Browser, Spara tabell som</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="1247"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="1248"/>
         <source>Text Files (*.csv);;Excel xlsx (*.xlsx)</source>
         <translation>Text Fil (*.csv);;Excel xlsx (*.xlsx)</translation>
     </message>
@@ -439,27 +444,27 @@
         <translation>Alla objekt</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="319"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="320"/>
         <source>No intrasis geopackage loaded</source>
         <translation>För att kunna titta på data i Class/Subclass browser måste ett eller flera Intrasis-GeoPackages vara laddade</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="312"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="313"/>
         <source>analysis dialog closed</source>
         <translation>Klass subklass browsern stängdes</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="320"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="321"/>
         <source>To view data in the Class/Subclass browser one or more Intrasis Geopackages must be loaded</source>
         <translation>För att kunna titta på data i Klass subklass browsern måste ett eller flera Intrasis-GeoPackages vara laddade</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="365"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="366"/>
         <source>No intrasis geopackage(s) loaded</source>
         <translation>Inga intrasis-GeoPackage laddade</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="1117"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="1118"/>
         <source>Completed with no exception and no result (probably manually canceled by the user)</source>
         <translation>Inget undantag inträffade och inget resultat skapades (avbrutet av användaren?)</translation>
     </message>
@@ -474,37 +479,37 @@
         <translation type="obsolete">Lager kunder inte skapas</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="1090"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="1091"/>
         <source>Could not write (all) features</source>
         <translation>Kunde inte skriva (alla) geoobjekt</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="1067"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="1068"/>
         <source>something went wrong: {ex}, perhaps Invalid join fields?</source>
         <translation>Något gick fel: {ex}, kanske ogiltiga kopplingsfält?</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="1087"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="1088"/>
         <source>could not create layer {ex}</source>
         <translation>Lager kunder inte skapas</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="1138"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="1139"/>
         <source>rows</source>
         <translation>rader</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="1138"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="1139"/>
         <source>row</source>
         <translation>rad</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="1139"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="1140"/>
         <source>with geometry</source>
         <translation>med geometri</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="1140"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="1141"/>
         <source>without geometry</source>
         <translation>utan geometri</translation>
     </message>

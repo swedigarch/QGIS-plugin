@@ -9,7 +9,7 @@
         <translation>Connect</translation>
     </message>
     <message>
-        <location filename="../connect_to_db_dialog.py" line="160"/>
+        <location filename="../connect_to_db_dialog.py" line="164"/>
         <source>Empty error, may be login error</source>
         <translation>Empty error, may be login error</translation>
     </message>
@@ -27,6 +27,11 @@
         <location filename="../connect_to_db_dialog.py" line="119"/>
         <source>Help</source>
         <translation>Help</translation>
+    </message>
+    <message>
+        <location filename="../connect_to_db_dialog.py" line="152"/>
+        <source>Unknown Login error has occurred</source>
+        <translation>Unknown Login error has occurred</translation>
     </message>
 </context>
 <context>
@@ -376,12 +381,12 @@
         <translation>Save Table As...</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="1246"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="1247"/>
         <source>Intrasis Analysis Class/SubClass Browser, Save File</source>
         <translation>Intrasis Class/Subclass Browser, Save File</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="1247"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="1248"/>
         <source>Text Files (*.csv);;Excel xlsx (*.xlsx)</source>
         <translation>Text Files (*.csv);;Excel xlsx (*.xlsx)</translation>
     </message>
@@ -396,27 +401,27 @@
         <translation>All Objects</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="319"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="320"/>
         <source>No intrasis geopackage loaded</source>
         <translation>To view data in the Class/Subclass browser on or more Intrasis Geopackages must be loaded</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="312"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="313"/>
         <source>analysis dialog closed</source>
         <translation>Analysis dialog closed</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="320"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="321"/>
         <source>To view data in the Class/Subclass browser one or more Intrasis Geopackages must be loaded</source>
         <translation>To view data in the Class/Subclass browser one or more Intrasis Geopackages must be loaded</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="365"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="366"/>
         <source>No intrasis geopackage(s) loaded</source>
         <translation>No intrasis geopackage(s) loaded</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="1117"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="1118"/>
         <source>Completed with no exception and no result (probably manually canceled by the user)</source>
         <translation>Completed with no exception and no result (probably manually canceled by the user)</translation>
     </message>
@@ -431,27 +436,27 @@
         <translation type="obsolete">Could not create layer</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="1090"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="1091"/>
         <source>Could not write (all) features</source>
         <translation>Could not write (all) features</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="1138"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="1139"/>
         <source>rows</source>
         <translation>rows</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="1138"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="1139"/>
         <source>row</source>
         <translation>row</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="1139"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="1140"/>
         <source>with geometry</source>
         <translation>with geometry</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="1140"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="1141"/>
         <source>without geometry</source>
         <translation>without geometry</translation>
     </message>
@@ -466,12 +471,12 @@
         <translation>All SubClasses</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="1067"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="1068"/>
         <source>something went wrong: {ex}, perhaps Invalid join fields?</source>
         <translation>something went wrong: {ex}, perhaps Invalid join fields?</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="1087"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="1088"/>
         <source>could not create layer {ex}</source>
         <translation>could not create layer {ex}</translation>
     </message>
