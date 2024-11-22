@@ -122,6 +122,46 @@ LEFT JOIN GreatGrandParentIdString ggpis ON rt.child_id = ggpis.child_id and rt.
     #print(sql_query)
     return relation_dataframe
 
+def get_relation_dataframeX(gpkg, child_object_id):
+    sql_query = f'''WITH Parent AS (
+    SELECT base_id, related_id
+    FROM object_relations
+    WHERE related_id IN ({child_object_id})
+	),
+GrandParent AS (
+    SELECT base_id, related_id
+    FROM object_relations 
+    WHERE related_id IN (SELECT base_id FROM Parent)
+),GreatGrandParent AS (
+    SELECT base_id, related_id
+    FROM object_relations 
+    WHERE related_id IN (SELECT base_id FROM GrandParent)
+),RelationTable AS(
+SELECT p.related_id as child_id,
+p.base_id as parent_id,
+po.IntrasisId as ParentId,
+po.Class as parent_class,
+gp.base_id as grand_parent_id,
+gpo.IntrasisId as GrandParentId,
+gpo.Class as grand_parent_class,
+ggp.base_id as great_grand_parent_id,
+ggpo.IntrasisId as GreatGrandParentId,
+ggpo.Class as great_grand_parent_class,
+COALESCE(po.class,'NULL')||'_'||COALESCE(gpo.class,'NULL')||'_'||COALESCE(ggpo.class,'NULL') AS parenthierarchy
+FROM Parent p
+left join GrandParent gp on p.base_id = gp.related_id
+left join GreatGrandParent ggp on gp.base_id = ggp.related_id
+left join objects po on p.base_id = po.object_id
+left join objects gpo on gp.base_id = gpo.object_id
+left join objects ggpo on ggp.base_id = ggpo.object_id
+)select * from RelationTable rt'''
+    conn = sqlite3.connect(gpkg)
+    relation_dataframe = pd.read_sql_query(sql_query, conn)
+    conn.close()
+    #print(sql_query)
+    return relation_dataframe
+
+
 def get_child_class(gpkg, child_object_id):
     sql_query = f'''select distinct class from objects WHERE object_id IN ({child_object_id})'''
     conn = sqlite3.connect(gpkg)
@@ -130,3 +170,12 @@ def get_child_class(gpkg, child_object_id):
     #print(sql_query)
     child_class_string = ', '.join(child_class_dataframe['Class'].astype(str))
     return child_class_string
+
+def get_unique_id_string(relation_df, child_id, relation_class, relation_id):
+    #unique_df = relation_df[['child_id', 'parent_class', 'ParentId']].drop_duplicates()
+    unique_df = relation_df[[f"{child_id}", f"{relation_class}", f"{relation_id}"]].drop_duplicates()
+    #result = unique_df.groupby([f"{child_id}", f"{relation_class}"])[f"{relation_id}"].agg(','.join).reset_index()
+    result = unique_df.groupby([f"{child_id}", f"{relation_class}"])[f"{relation_id}"].agg(lambda x: ','.join(x.astype(str))).reset_index()
+    #result = unique_df.groupby([f"{child_id}", f"{relation_class}"])[f"{relation_id}"].agg(lambda x: ','.join(x)).reset_index()
+    result.rename(columns={f"{relation_id}": f"{relation_id}String"}, inplace=True)
+    return result

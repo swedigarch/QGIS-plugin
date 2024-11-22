@@ -138,12 +138,36 @@ class IntrasisAnalysisBrowseTablesDialog(QtWidgets.QDialog, FORM_CLASS):
 
     def generate_parent_id(self, task:QgsTask):
         """Show dialog for generating parent id to objects without geometry"""
+        task.setProgress(1)
         object_id_data_frame = self.class_subclass_attributes.objects_dataframe.copy()
         child_id_string = object_id_data_frame['object_id'].tolist()
         child_id_string = ', '.join(map(str, child_id_string))
-        relation_table = ClassSubclassBrowserUtils.get_relation_dataframe(self.current_gpkg, child_id_string)
+        #relation_table = ClassSubclassBrowserUtils.get_relation_dataframe(self.current_gpkg, child_id_string)
+        relation_tableX = ClassSubclassBrowserUtils.get_relation_dataframeX(self.current_gpkg, child_id_string)
+        task.setProgress(33)
+
+        parent_id_string_df = ClassSubclassBrowserUtils.get_unique_id_string(relation_tableX, 'child_id','parent_class','ParentId')
+        #print(parent_id_string_df.head(2))
+        relation_tableX = pd.merge(relation_tableX, parent_id_string_df[['child_id', 'parent_class', 'ParentIdString']], how='left', on=['child_id', 'parent_class'])
+
+        grand_parent_id_string_df = ClassSubclassBrowserUtils.get_unique_id_string(relation_tableX, 'child_id','grand_parent_class','GrandParentId')
+        relation_tableX = pd.merge(relation_tableX, grand_parent_id_string_df[['child_id', 'grand_parent_class', 'GrandParentIdString']], how='left', on=['child_id', 'grand_parent_class'])
+
+        great_grand_parent_id_string_df = ClassSubclassBrowserUtils.get_unique_id_string(relation_tableX, 'child_id','great_grand_parent_class','GreatGrandParentId')
+        relation_tableX = pd.merge(relation_tableX, great_grand_parent_id_string_df[['child_id', 'great_grand_parent_class', 'GreatGrandParentIdString']], how='left', on=['child_id', 'great_grand_parent_class'])
+        task.setProgress(66)
+        relation_tableX['parent_count'] = relation_tableX.groupby(['child_id', 'parent_class'])['parent_class'].transform('count')
+        relation_tableX['grand_parent_count'] = relation_tableX.groupby(['child_id', 'grand_parent_class'])['grand_parent_class'].transform('count')
+        relation_tableX['great_grand_parent_count'] = relation_tableX.groupby(['child_id', 'great_grand_parent_class'])['great_grand_parent_class'].transform('count')
+        #relation_tableX['parenthierarchycount'] = relation_tableX.groupby(['parenthierarchy']).transform('count')
+        relation_tableX['parenthierarchy_count'] = relation_tableX.groupby('parenthierarchy')['parenthierarchy'].transform('size')
+        #print(relation_tableX.columns.tolist())
+        #print(relation_table.columns.tolist())
+        #relation_tableX = relation_tableX.drop_duplicates(subset=['parent_class','grand_parent_class','great_grand_parent_class'])[['parent_class','grand_parent_class','great_grand_parent_class','parenthierarchy','parenthierarchy_count']]
+
         child_class_string = ClassSubclassBrowserUtils.get_child_class(self.current_gpkg, child_id_string)
-        parent_dialog_df = relation_table.drop_duplicates(subset=['parent_class','grand_parent_class','great_grand_parent_class'])[['parent_class','grand_parent_class','great_grand_parent_class','parenthierarchy','parenthierarchy_count']]
+        #parent_dialog_df = relation_table.drop_duplicates(subset=['parent_class','grand_parent_class','great_grand_parent_class'])[['parent_class','grand_parent_class','great_grand_parent_class','parenthierarchy','parenthierarchy_count']]
+        parent_dialog_df = relation_tableX.drop_duplicates(subset=['parent_class','grand_parent_class','great_grand_parent_class'])[['parent_class','grand_parent_class','great_grand_parent_class','parenthierarchy','parenthierarchy_count']]
 
         QgsMessageLog.logMessage(
             f'Creating Relation Table {task.description()}'
@@ -152,7 +176,8 @@ class IntrasisAnalysisBrowseTablesDialog(QtWidgets.QDialog, FORM_CLASS):
         task.setProgress(100)
         QgsMessageLog.logMessage(f'Finished {task.description()}: {task.progress()}'
                                  ,MESSAGE_CATEGORY, Qgis.Info)
-        return [relation_table, child_class_string, parent_dialog_df]
+        #return [relation_table, child_class_string, parent_dialog_df]
+        return [relation_tableX, child_class_string, parent_dialog_df]
 
     def handle_result_generate_parent_id(self, exception, result):
         if exception is None:
@@ -1337,13 +1362,17 @@ class populateTableFromGpkg:
             object_id_filter = list(objects_dataframe['object_id'])
             object_id_filter = str(object_id_filter).replace('[', '(').replace(']', ')')
             Query_2 = f"SELECT class as klass, attribute_id, attribute_unit, attribute_value, object_id, attribute_label, data_type, CASE WHEN attribute_count > 1 THEN attribute_label_numbered ELSE attribute_label END AS attribute_label_final FROM (SELECT class, attribute_id, attribute_unit, attribute_value, object_id, attribute_label, data_type,ROW_NUMBER() OVER (PARTITION BY object_id, attribute_label ORDER BY attribute_id) AS attribute_count,attribute_label || '_' || ROW_NUMBER() OVER (PARTITION BY object_id, attribute_label ORDER BY attribute_id) AS attribute_label_numbered FROM attributes WHERE object_id IN {object_id_filter} ) AS A"
+            print(f"Query_2: {Query_2}")
             objects_dataframe2 = pd.read_sql_query(Query_2, conn)
             result = objects_dataframe2.groupby('attribute_label_final')['attribute_label_final'].count()
             common_class_attributes = objects_dataframe2.query('klass == 1')['attribute_label_final'].copy().drop_duplicates()
             a=pd.DataFrame(result)
             a['namn']=list(a.index.values.tolist())
+            print(f"a: {a}")
             mostcommon = a['attribute_label_final'].max()
-            common_attributes = a.query('attribute_label_final == @mostcommon')['namn']
+            print(f"mostcommon: {mostcommon}")
+            #common_attributes = a.query('attribute_label_final == @mostcommon')['namn']
+            common_attributes = a.query('attribute_label_final > 1')['namn']
             common_attributes = list(common_attributes)
             common_class_attributes = list(common_class_attributes)
             common_attributes = list(set(common_attributes+common_class_attributes))
@@ -1354,6 +1383,7 @@ class populateTableFromGpkg:
             self.objects_dataframe = self.objects_dataframe.rename(columns={'attribute_label_final': 'attribute_label'})
             #################################################################
             attrib = list(self.objects_dataframe ['attribute_label'])
+            print(f"attrib: {attrib}")
             attrib_dtype = list(self.objects_dataframe ['data_type'])
             self.attributes_datatypes_dict = dict(zip(attrib,attrib_dtype))
             self.objects_dataframe.loc[self.objects_dataframe['data_type'].isin(['Decimal']),'attribute_value'] = self.objects_dataframe.loc[self.objects_dataframe['data_type'].isin(['Decimal']),'attribute_value'].str.replace(',','.')
@@ -1394,6 +1424,7 @@ class populateTableFromGpkg:
                 attribute_subclass_dataframe = attribute_subclass_dataframe.set_index('object_id')
 
             attribute_unit_dataframe = pd.read_sql_query(sql_query_string_object_id_and_attribute_data, conn)
+            print(f"sql_query_string_object_id_and_attribute_data: {sql_query_string_object_id_and_attribute_data}")
 
             attribute_unit_dataframe = attribute_unit_dataframe.set_index(['object_id'])
 
@@ -1468,6 +1499,7 @@ class populateTableFromGpkg:
 
         #Arrange columns ("attributes") in correct order
         objects_dataframe_colnames = list(self.objects_dataframe.columns.values.tolist())
+        print(f"objects_dataframe_colnames: {objects_dataframe_colnames}")
         if number_of_attributes['antal_attribut_id'].iloc[0] == 0:
             attribute_label_order = []
         attribute_label_order.insert(0,'IntrasisId')
@@ -1482,6 +1514,7 @@ class populateTableFromGpkg:
         self.objects_dataframe = self.objects_dataframe.fillna('').copy(deep=True)
         self.nRows = len(self.objects_dataframe.index)
         self.nCols = len(self.objects_dataframe.columns)
+        print(f"attribute_label_order: {attribute_label_order}")
 
         task.setProgress(100)
         return
@@ -1691,6 +1724,12 @@ class TableModel(QAbstractTableModel):
         """Returns table data header"""
         if orientation == Qt.Horizontal and role == Qt.DisplayRole:
             return str(self.table_data.columns[section])
+
+    def sort(self, column, order):
+        # Sortera DataFrame baserat på kolumn och ordning
+        column_name = self.table_data.columns[column]
+        self.table_data = self.table_data.sort_values(by=column_name, ascending=(order == Qt.AscendingOrder))
+        self.layoutChanged.emit()  # Meddela vyn att datamodellen har ändrats
 
 class TableModelParenID(QAbstractTableModel):
     """Class representing QAbstractTableModel"""
