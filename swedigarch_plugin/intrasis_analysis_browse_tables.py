@@ -123,7 +123,7 @@ class IntrasisAnalysisBrowseTablesDialog(QtWidgets.QDialog, FORM_CLASS):
         HelpDialog.show_help("ClassSubclassDialog")
 
     def generate_parent_id_task(self) -> bool:
-
+        self.pb_open_parent_id_dialog.setEnabled(False)
         globals()['Create Relations Table'] = QgsTask.fromFunction('Create_Relations_Table_Task'
                                                           , self.generate_parent_id
                                                           , on_finished=self.handle_result_generate_parent_id
@@ -186,6 +186,7 @@ class IntrasisAnalysisBrowseTablesDialog(QtWidgets.QDialog, FORM_CLASS):
                 QgsMessageLog.logMessage(
                     message_text,
                     MESSAGE_CATEGORY, Qgis.Warning)
+                self.pb_open_parent_id_dialog.setEnabled(True)
             else:
                 relation_table = result[0]
                 child_class_string = result[1]
@@ -194,12 +195,14 @@ class IntrasisAnalysisBrowseTablesDialog(QtWidgets.QDialog, FORM_CLASS):
                 parent_id_dlg.tableView_parent.setModel(TableModelParenID(table_data=parent_dialog_df))
                 parent_id_dlg.tableView_parent.setSortingEnabled(True)
                 parent_id_dlg.tableView_parent.resizeColumnsToContents()
+                self.pb_open_parent_id_dialog.setEnabled(True)
                 if parent_id_dlg.exec_() == QDialog.Accepted:
                     values = parent_id_dlg.settings
                     self.create_parent_id_based_on_chosen_relation(values, relation_table)
         else:
             QgsMessageLog.logMessage(f"Exception: {exception}",
                                  MESSAGE_CATEGORY, Qgis.Critical)
+            self.pb_open_parent_id_dialog.setEnabled(True)
             raise exception
     
     def create_parent_id_based_on_chosen_relation(self, values, relation_table):
@@ -277,10 +280,12 @@ class IntrasisAnalysisBrowseTablesDialog(QtWidgets.QDialog, FORM_CLASS):
             # Skapa meddelanderutan
             msg = QMessageBox()
             msg.setIcon(QMessageBox.Warning)
-            msg.setText("Observera!")
-            msg.setInformativeText(f"För minst ett objekt detekterades {multiple_parents}{multiple_grandparents}{multiple_greatgrandparents}")
+            #msg.setText("Observera!")
+            msg.setText(f"Observera! För minst ett objekt detekterades {multiple_parents}\n{multiple_grandparents}\n{multiple_greatgrandparents}")
+            #msg.setInformativeText(f"Observera! För minst ett objekt detekterades {multiple_parents}{multiple_grandparents}{multiple_greatgrandparents}")
             msg.setWindowTitle("Varning")
             msg.setStandardButtons(QMessageBox.Ok)
+            msg.adjustSize()
             # Visa meddelanderutan och vänta på att användaren klickar OK
             msg.exec_()
 
