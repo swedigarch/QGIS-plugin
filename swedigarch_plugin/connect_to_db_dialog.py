@@ -73,7 +73,7 @@ class ConnectToDbWorker(QRunnable):
             print(f"run() {exctype}  {value}")
             self.signals.error.emit(value)
         except Exception:
-            traceback.print_exc()
+            #traceback.print_exc()
             exctype, value = sys.exc_info()[:2]
             self.signals.error.emit((exctype, value, traceback.format_exc()))
         finally:
@@ -147,6 +147,10 @@ class ConnectToDbDialog(QtWidgets.QDialog, FORM_CLASS):
 
     def connection_error(self, error:str) -> None:
         """Connection error, called from background thread"""
+        if isinstance(error, tuple):
+            if 'UnicodeDecodeError' in str(error[0]):
+                error = self.tr("Unknown Login error has occurred")
+
         print(f"connection_error() {error}")
         self.is_running = False
         self.button_box.button(QtWidgets.QDialogButtonBox.Ok).setEnabled(True)
