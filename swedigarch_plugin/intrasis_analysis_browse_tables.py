@@ -156,9 +156,13 @@ class IntrasisAnalysisBrowseTablesDialog(QtWidgets.QDialog, FORM_CLASS):
         great_grand_parent_id_string_df = ClassSubclassBrowserUtils.get_unique_id_string(relation_tableX, 'child_id','great_grand_parent_class','GreatGrandParentId')
         relation_tableX = pd.merge(relation_tableX, great_grand_parent_id_string_df[['child_id', 'great_grand_parent_class', 'GreatGrandParentIdString']], how='left', on=['child_id', 'great_grand_parent_class'])
         task.setProgress(66)
-        relation_tableX['parent_count'] = relation_tableX.groupby(['child_id', 'parent_class'])['parent_class'].transform('count')
-        relation_tableX['grand_parent_count'] = relation_tableX.groupby(['child_id', 'grand_parent_class'])['grand_parent_class'].transform('count')
-        relation_tableX['great_grand_parent_count'] = relation_tableX.groupby(['child_id', 'great_grand_parent_class'])['great_grand_parent_class'].transform('count')
+        relation_tableX['parent_count'] = relation_tableX.groupby(['child_id', 'parent_class'])['parent_id'].transform('nunique')
+        relation_tableX['grand_parent_count'] = relation_tableX.groupby(['child_id', 'grand_parent_class'])['grand_parent_id'].transform('nunique')
+        relation_tableX['great_grand_parent_count'] = relation_tableX.groupby(['child_id', 'great_grand_parent_class'])['great_grand_parent_id'].transform('nunique')
+        #relation_tableX['parent_count'] = relation_tableX.groupby(['child_id', 'parent_class'])['parent_class'].transform('count')
+        #relation_tableX['grand_parent_count'] = relation_tableX.groupby(['child_id', 'grand_parent_class'])['grand_parent_class'].transform('count')
+        #relation_tableX['great_grand_parent_count'] = relation_tableX.groupby(['child_id', 'great_grand_parent_class'])['great_grand_parent_class'].transform('count')
+        
         #relation_tableX['parenthierarchycount'] = relation_tableX.groupby(['parenthierarchy']).transform('count')
         relation_tableX['parenthierarchy_count'] = relation_tableX.groupby('parenthierarchy')['parenthierarchy'].transform('size')
         #print(relation_tableX.columns.tolist())
@@ -225,6 +229,7 @@ class IntrasisAnalysisBrowseTablesDialog(QtWidgets.QDialog, FORM_CLASS):
             resultat.loc[resultat['parent_count'] > 1, ['parent_id','ParentId']] = pd.NA
             if (resultat['parent_count'] != 1).any():
                 multiple_parents = 'flera parents'
+            #resultat.drop(columns=['parent_id','parent_count'], inplace=True)
         if(len(values[0])>0 and len(values[1])>0 and len(values[2])==0):
             chosen_parentid = 'filtrering på parent och grandparent'
             #resultat = relation_table.query(f"parent_class == '{values[0]}' and grand_parent_class =='{values[1]}'")[['child_id','parent_id','grand_parent_id', 'ParentId','GrandParentId', 'parent_count','grand_parent_count', 'parenthierarchy','ParentIdString','GrandParentIdString']]
@@ -245,6 +250,7 @@ class IntrasisAnalysisBrowseTablesDialog(QtWidgets.QDialog, FORM_CLASS):
                 multiple_parents = 'flera parents, '
             if (resultat['grand_parent_count'] != 1).any():
                 multiple_grandparents = 'flera grand parents'
+            #resultat.drop(columns=['parent_id','parent_count','grand_parent_id','grand_parent_count'], inplace=True)
         
         if(len(values[0])>0 and len(values[1])>0 and len(values[2])>0):
             chosen_parentid = 'filtrering på parent, grandparent och greatgrandparent'
@@ -261,9 +267,9 @@ class IntrasisAnalysisBrowseTablesDialog(QtWidgets.QDialog, FORM_CLASS):
             resultat['parent_id'] = resultat['parent_id'].astype('int64')
             resultat['ParentId'] = resultat['ParentId'].astype('Int64')
             resultat['grand_parent_id'] = resultat['grand_parent_id'].astype('int64')
-            resultat['GrandParentId'] = resultat['GrandParentId'].astype('int64')
+            resultat['GrandParentId'] = resultat['GrandParentId'].astype('Int64')
             resultat['great_grand_parent_id'] = resultat['great_grand_parent_id'].astype('int64')
-            resultat['GreatGrandParentId'] = resultat['GreatGrandParentId'].astype('int64')
+            resultat['GreatGrandParentId'] = resultat['GreatGrandParentId'].astype('Int64')
             resultat.loc[resultat['parent_count'] > 1, ['parent_id','ParentId','grand_parent_id','GrandParentId','great_grand_parent_id','GreatGrandParentId']] = pd.NA
             resultat.loc[resultat['grand_parent_count'] > 1, ['grand_parent_id','GrandParentId','great_grand_parent_id','GreatGrandParentId']] = pd.NA
             resultat.loc[resultat['great_grand_parent_count'] > 1, ['great_grand_parent_id','GreatGrandParentId']] = pd.NA
@@ -273,8 +279,10 @@ class IntrasisAnalysisBrowseTablesDialog(QtWidgets.QDialog, FORM_CLASS):
                 multiple_grandparents = 'flera grand parents, '
             if (resultat['great_grand_parent_count'] != 1).any():
                 multiple_greatgrandparents = 'flera great grand parents'
-        print(chosen_parentid)
+            #resultat.drop(columns=['parent_id','parent_count','grand_parent_id','grand_parent_count','great_grand_parent_id','great_grand_parent_count'], inplace=True)
+        #print(chosen_parentid)
         resultat.drop_duplicates(inplace=True)
+        #print(resultat)
 
         if (len(multiple_parents) > 0 or len(multiple_grandparents) > 0 or len(multiple_greatgrandparents) > 0):
             # Skapa meddelanderutan
@@ -288,6 +296,12 @@ class IntrasisAnalysisBrowseTablesDialog(QtWidgets.QDialog, FORM_CLASS):
             msg.adjustSize()
             # Visa meddelanderutan och vänta på att användaren klickar OK
             msg.exec_()
+
+        #Remove columns not necessary to layer attributes table:
+        columns_to_remove=['parent_id','parent_count','grand_parent_id','grand_parent_count','great_grand_parent_id','great_grand_parent_count']
+        resultat.drop(columns=[col for col in columns_to_remove if col in resultat.columns], inplace=True)
+        #resultat.drop(columns=['parent_id','parent_count','grand_parent_id','grand_parent_count','great_grand_parent_id','great_grand_parent_count'], inplace=True)
+        #resultat.drop(columns=['parent_id','parent_count'], inplace=True)
 
         self.load_layer_with_parent_id_to_qgis_layer(resultat)
 
@@ -421,6 +435,9 @@ class IntrasisAnalysisBrowseTablesDialog(QtWidgets.QDialog, FORM_CLASS):
         objects_dataframe_ = pd.merge(objects_dataframe_, resultat, left_on='object_id', right_on='child_id', how='left')
         objects_dataframe_.set_index('object_id')
         objects_dataframe_.drop_duplicates(inplace=True)
+
+        #Remove columns not necessary to layer attributes table:
+        objects_dataframe_.drop(columns=['child_id'], inplace=True)
 
         #Create layer groups QGIS Table of contents "TOC"
         selected_gpkg_name = self.current_gpkg.split('/')[-1]
@@ -574,6 +591,7 @@ class IntrasisAnalysisBrowseTablesDialog(QtWidgets.QDialog, FORM_CLASS):
         #Get datatypes attribute from self.class_subclass_attributes object, note .copy()
         #If not copied the attributes_datatypes_dict will not be a separate object and will cause problems
         attributes_datatypes_dict = self.class_subclass_attributes.attributes_datatypes_dict.copy()
+
         if len(attributes_datatypes_dict) != 0:
             for attrib in attributes_datatypes_dict:
                 if attrib is not None:
@@ -604,6 +622,8 @@ class IntrasisAnalysisBrowseTablesDialog(QtWidgets.QDialog, FORM_CLASS):
                 try:
                     objects_dataframe[col] = pd.to_numeric(objects_dataframe[col], errors='coerce')
                 except Exception as ex:
+                    print('int')
+                    #objects_dataframe[col] = objects_dataframe[col].astype('Int64')
                     objects_dataframe.astype({col: 'Int64'}).dtypes
                     QgsMessageLog.logMessage(f'Numeric conversion failed, attribute {col} {ex} NaN introduced'
                                              ,MESSAGE_CATEGORY, Qgis.Info)
@@ -612,7 +632,9 @@ class IntrasisAnalysisBrowseTablesDialog(QtWidgets.QDialog, FORM_CLASS):
                 try:
                     objects_dataframe[col] =  objects_dataframe[col].apply(float)
                 except Exception as ex:
+                    #print(f'double {col}')
                     objects_dataframe[col] = pd.to_numeric(objects_dataframe[col], errors='coerce')
+                    #print('double')
                     QgsMessageLog.logMessage(f'Numeric conversion failed attribute, {col} {ex} NaN introduced'
                                              ,MESSAGE_CATEGORY, Qgis.Info)
 
@@ -620,6 +642,7 @@ class IntrasisAnalysisBrowseTablesDialog(QtWidgets.QDialog, FORM_CLASS):
                 try:
                     objects_dataframe[col] = pd.to_datetime(objects_dataframe[col],errors='coerce')
                 except Exception as ex:
+                    print('date')
                     QgsMessageLog.logMessage(f'Date/time conversion failed attribute, {col} {ex} NaN introduced'
                                              ,MESSAGE_CATEGORY, Qgis.Info)
 
@@ -628,8 +651,10 @@ class IntrasisAnalysisBrowseTablesDialog(QtWidgets.QDialog, FORM_CLASS):
                 try:
                     objects_dataframe[col] = objects_dataframe[col].astype(bool,errors='ignore')
                 except Exception as ex:
+                    print('bool')
                     QgsMessageLog.logMessage(f'Boolean conversion failed attribute, {col} {ex} NaN introduced'
                                              ,MESSAGE_CATEGORY, Qgis.Info)
+
         #Create attribute fields for the QGS layer
         col_dict = dict(zip(objects_dataframe.columns, objects_dataframe.dtypes.apply(lambda x: x.name)))
 
@@ -753,8 +778,10 @@ class IntrasisAnalysisBrowseTablesDialog(QtWidgets.QDialog, FORM_CLASS):
 
             if attribute_datatypes[col] in [QVariant.Double]:
                 try:
+                    #objects_dataframe[col] = objects_dataframe[col].astype('Float64')
                     objects_dataframe[col] =  objects_dataframe[col].apply(float)
                 except Exception as ex:
+                    #print(f'double: {col}')
                     objects_dataframe[col] = pd.to_numeric(objects_dataframe[col], errors='coerce')
                     QgsMessageLog.logMessage(f'Numeric conversion failed attribute, {col} {ex} NaN introduced'
                                              ,MESSAGE_CATEGORY, Qgis.Info)
@@ -855,7 +882,7 @@ class IntrasisAnalysisBrowseTablesDialog(QtWidgets.QDialog, FORM_CLASS):
                 temp_layername = "".join(c if c in safechars
                                          else defaultchar
                                          for c in temp_layername)
-                print(temp_layername)
+                #print(temp_layername)
                 group_name = result[1]
                 root = QgsProject.instance().layerTreeRoot()
                 current_group = root.findGroup(group_name)
@@ -1367,15 +1394,15 @@ class populateTableFromGpkg:
             object_id_filter = list(objects_dataframe['object_id'])
             object_id_filter = str(object_id_filter).replace('[', '(').replace(']', ')')
             Query_2 = f"SELECT class as klass, attribute_id, attribute_unit, attribute_value, object_id, attribute_label, data_type, CASE WHEN attribute_count > 1 THEN attribute_label_numbered ELSE attribute_label END AS attribute_label_final FROM (SELECT class, attribute_id, attribute_unit, attribute_value, object_id, attribute_label, data_type,ROW_NUMBER() OVER (PARTITION BY object_id, attribute_label ORDER BY attribute_id) AS attribute_count,attribute_label || '_' || ROW_NUMBER() OVER (PARTITION BY object_id, attribute_label ORDER BY attribute_id) AS attribute_label_numbered FROM attributes WHERE object_id IN {object_id_filter} ) AS A"
-            print(f"Query_2: {Query_2}")
+            #print(f"Query_2: {Query_2}")
             objects_dataframe2 = pd.read_sql_query(Query_2, conn)
             result = objects_dataframe2.groupby('attribute_label_final')['attribute_label_final'].count()
             common_class_attributes = objects_dataframe2.query('klass == 1')['attribute_label_final'].copy().drop_duplicates()
             a=pd.DataFrame(result)
             a['namn']=list(a.index.values.tolist())
-            print(f"a: {a}")
+            #print(f"a: {a}")
             mostcommon = a['attribute_label_final'].max()
-            print(f"mostcommon: {mostcommon}")
+            #print(f"mostcommon: {mostcommon}")
             #common_attributes = a.query('attribute_label_final == @mostcommon')['namn']
             common_attributes = a.query('attribute_label_final > 1')['namn']
             common_attributes = list(common_attributes)
@@ -1388,7 +1415,7 @@ class populateTableFromGpkg:
             self.objects_dataframe = self.objects_dataframe.rename(columns={'attribute_label_final': 'attribute_label'})
             #################################################################
             attrib = list(self.objects_dataframe ['attribute_label'])
-            print(f"attrib: {attrib}")
+            #print(f"attrib: {attrib}")
             attrib_dtype = list(self.objects_dataframe ['data_type'])
             self.attributes_datatypes_dict = dict(zip(attrib,attrib_dtype))
             self.objects_dataframe.loc[self.objects_dataframe['data_type'].isin(['Decimal']),'attribute_value'] = self.objects_dataframe.loc[self.objects_dataframe['data_type'].isin(['Decimal']),'attribute_value'].str.replace(',','.')
@@ -1429,7 +1456,7 @@ class populateTableFromGpkg:
                 attribute_subclass_dataframe = attribute_subclass_dataframe.set_index('object_id')
 
             attribute_unit_dataframe = pd.read_sql_query(sql_query_string_object_id_and_attribute_data, conn)
-            print(f"sql_query_string_object_id_and_attribute_data: {sql_query_string_object_id_and_attribute_data}")
+            #print(f"sql_query_string_object_id_and_attribute_data: {sql_query_string_object_id_and_attribute_data}")
 
             attribute_unit_dataframe = attribute_unit_dataframe.set_index(['object_id'])
 
@@ -1481,7 +1508,7 @@ class populateTableFromGpkg:
                 self.objects_dataframe = self.objects_dataframe.join(attribute_enhetskolumn_dataframe, how='left')
 
         if number_of_attributes['antal_attribut_id'].iloc[0] == 0:
-            print('Koppla på class subclass, antal attribut == 0')
+            #print('Koppla på class subclass, antal attribut == 0')
             conn = sqlite3.connect(self.selected_gpkg)
             self.objects_dataframe = pd.read_sql_query('select object_id, IntrasisId, Name, Class, SubClass from objects where attributes IS NULL AND object_id IN' +sql_query_string_object_ids, conn)
             conn.close()
@@ -1504,7 +1531,7 @@ class populateTableFromGpkg:
 
         #Arrange columns ("attributes") in correct order
         objects_dataframe_colnames = list(self.objects_dataframe.columns.values.tolist())
-        print(f"objects_dataframe_colnames: {objects_dataframe_colnames}")
+        #print(f"objects_dataframe_colnames: {objects_dataframe_colnames}")
         if number_of_attributes['antal_attribut_id'].iloc[0] == 0:
             attribute_label_order = []
         attribute_label_order.insert(0,'IntrasisId')
@@ -1519,7 +1546,7 @@ class populateTableFromGpkg:
         self.objects_dataframe = self.objects_dataframe.fillna('').copy(deep=True)
         self.nRows = len(self.objects_dataframe.index)
         self.nCols = len(self.objects_dataframe.columns)
-        print(f"attribute_label_order: {attribute_label_order}")
+        #print(f"attribute_label_order: {attribute_label_order}")
 
         task.setProgress(100)
         return

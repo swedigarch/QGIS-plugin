@@ -172,10 +172,9 @@ def get_child_class(gpkg, child_object_id):
     return child_class_string
 
 def get_unique_id_string(relation_df, child_id, relation_class, relation_id):
-    #unique_df = relation_df[['child_id', 'parent_class', 'ParentId']].drop_duplicates()
+
     unique_df = relation_df[[f"{child_id}", f"{relation_class}", f"{relation_id}"]].drop_duplicates()
-    #result = unique_df.groupby([f"{child_id}", f"{relation_class}"])[f"{relation_id}"].agg(','.join).reset_index()
-    result = unique_df.groupby([f"{child_id}", f"{relation_class}"])[f"{relation_id}"].agg(lambda x: ','.join(x.astype(str))).reset_index()
-    #result = unique_df.groupby([f"{child_id}", f"{relation_class}"])[f"{relation_id}"].agg(lambda x: ','.join(x)).reset_index()
+    unique_df[f"{relation_id}"] = unique_df[f"{relation_id}"].astype('Int64')
+    result = unique_df.groupby([f"{child_id}", f"{relation_class}"])[f"{relation_id}"].agg(lambda x: ','.join(x.dropna().astype(str))).reset_index()
     result.rename(columns={f"{relation_id}": f"{relation_id}String"}, inplace=True)
     return result

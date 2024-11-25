@@ -110,7 +110,7 @@ class ClassSubclassBrowserParentIdDialog(QtWidgets.QDialog, FORM_CLASS):
     def on_ok(self):
         """Selection of parent layers done"""
         self.get_values()
-        print(self.settings)
+        #print(self.settings)
         self.accept()
         self.close()
 
