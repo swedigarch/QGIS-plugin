@@ -115,6 +115,7 @@ class IntrasisAnalysisBrowseTablesDialog(QtWidgets.QDialog, FORM_CLASS):
         self.pushButton_load_to_map.setEnabled(False)
         self.pushButton_load_to_map.clicked.connect(self.load_to_qgis_layer)
         self.buttonBox_close_help.rejected.connect(self.closed)
+        self.rejected.connect(self.closed)
         self.buttonBox_close_help.helpRequested.connect(self.on_help_clicked)
         self.label_num_loaded_objects_info.setText('')
 
@@ -327,6 +328,7 @@ class IntrasisAnalysisBrowseTablesDialog(QtWidgets.QDialog, FORM_CLASS):
         self.selected_gpkg_name = None
         self.selected_gpkg = None
         self.current_gpkg = None
+        self.label_num_loaded_objects_info.setText('')
         if self.class_subclass_attributes is not None:
             try:
                 self.class_subclass_attributes.clear_qtablewidget()
@@ -1666,7 +1668,8 @@ class populateTableFromGpkg:
 
     def clear_qtablewidget(self) -> None:
         '''Clears data from class subclass browser'''
-        table_data = pd.DataFrame(data={'': []})
+        #table_data = pd.DataFrame(data={'': []})
+        table_data = pd.DataFrame()
         self.tableV.setModel(TableModel(table_data=table_data))
 
     def update_qtablewidget(self, task:QgsTask) -> pd.DataFrame:
@@ -1795,8 +1798,9 @@ class TableModel(QAbstractTableModel):
     def headerData(self, section: int, orientation: Qt.Orientation
                    , role: int = ...) -> typing.Any:
         """Returns table data header"""
-        if orientation == Qt.Horizontal and role == Qt.DisplayRole:
-            return str(self.table_data.columns[section])
+        if not self.table_data.empty:
+            if orientation == Qt.Horizontal and role == Qt.DisplayRole:
+                return str(self.table_data.columns[section])
 
     def sort(self, column, order):
         # Sortera DataFrame baserat på kolumn och ordning
