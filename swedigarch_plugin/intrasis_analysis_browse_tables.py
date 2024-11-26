@@ -622,7 +622,7 @@ class IntrasisAnalysisBrowseTablesDialog(QtWidgets.QDialog, FORM_CLASS):
                 try:
                     objects_dataframe[col] = pd.to_numeric(objects_dataframe[col], errors='coerce')
                 except Exception as ex:
-                    print('int')
+                    #print('int')
                     #objects_dataframe[col] = objects_dataframe[col].astype('Int64')
                     objects_dataframe.astype({col: 'Int64'}).dtypes
                     QgsMessageLog.logMessage(f'Numeric conversion failed, attribute {col} {ex} NaN introduced'
@@ -642,7 +642,7 @@ class IntrasisAnalysisBrowseTablesDialog(QtWidgets.QDialog, FORM_CLASS):
                 try:
                     objects_dataframe[col] = pd.to_datetime(objects_dataframe[col],errors='coerce')
                 except Exception as ex:
-                    print('date')
+                    #print('date')
                     QgsMessageLog.logMessage(f'Date/time conversion failed attribute, {col} {ex} NaN introduced'
                                              ,MESSAGE_CATEGORY, Qgis.Info)
 
@@ -651,7 +651,7 @@ class IntrasisAnalysisBrowseTablesDialog(QtWidgets.QDialog, FORM_CLASS):
                 try:
                     objects_dataframe[col] = objects_dataframe[col].astype(bool,errors='ignore')
                 except Exception as ex:
-                    print('bool')
+                    #print('bool')
                     QgsMessageLog.logMessage(f'Boolean conversion failed attribute, {col} {ex} NaN introduced'
                                              ,MESSAGE_CATEGORY, Qgis.Info)
 
@@ -1395,7 +1395,7 @@ class populateTableFromGpkg:
             object_id_filter = list(objects_dataframe['object_id'])
             object_id_filter = str(object_id_filter).replace('[', '(').replace(']', ')')
             Query_2 = f"SELECT class as klass, attribute_id, attribute_unit, attribute_value, object_id, attribute_label, data_type, CASE WHEN attribute_count > 1 THEN attribute_label_numbered ELSE attribute_label END AS attribute_label_final FROM (SELECT class, attribute_id, attribute_unit, attribute_value, object_id, attribute_label, data_type,ROW_NUMBER() OVER (PARTITION BY object_id, attribute_label ORDER BY attribute_id) AS attribute_count,attribute_label || '_' || ROW_NUMBER() OVER (PARTITION BY object_id, attribute_label ORDER BY attribute_id) AS attribute_label_numbered FROM attributes WHERE object_id IN {object_id_filter} ) AS A"
-            print(f"Query_2: {Query_2}")
+            #print(f"Query_2: {Query_2}")
             objects_dataframe2 = pd.read_sql_query(Query_2, conn)
             result = objects_dataframe2.groupby('attribute_label_final')['attribute_label_final'].count()
             #common_class_attributes = objects_dataframe2.query('klass == 1')['attribute_label_final'].copy().drop_duplicates()
@@ -1432,8 +1432,8 @@ class populateTableFromGpkg:
                 common_class_attributes = objects_dataframe2.query('klass == 1')['attribute_label_final'].copy().drop_duplicates()
                 common_attributes = list(set(common_class_attributes))
                 #b = b.query('attribute_label_final in @common_attributes').copy()
-            print(f"subclass_attributes: {subclass_attributes}")
-            print(f"common_attributes: {common_attributes}")
+            #print(f"subclass_attributes: {subclass_attributes}")
+            #print(f"common_attributes: {common_attributes}")
             b = b.query('attribute_label_final in @common_attributes').copy()
             b['object_id']=list(b.index.values.tolist())
             #print(b)
@@ -1450,7 +1450,7 @@ class populateTableFromGpkg:
         task.setProgress(20)
         if number_of_attributes['antal_attribut_id'].iloc[0] > 0:
             sql_query_string_attribute_order = 'select group_concat(test||enhetskolumn, \'|\') as attribute_order from( select distinct case when attribute_count>1 then attribute_label_numbered else attribute_label end test, case when attribute_unit !=\'\' AND attribute_count>1  then \'|\'||attribute_label_numbered||\' (enhet)\' when attribute_unit !=\'\' then \'|\'||attribute_label ||\' (enhet)\' else \'\' end enhetskolumn from( select attribute_id, attribute_unit, attribute_value,object_id, attribute_label, row_number() OVER(partition BY object_id,attribute_label order by attribute_id) as attribute_count,attribute_label||\'_\'||row_number() OVER(partition BY object_id,attribute_label order by attribute_id) as attribute_label_numbered from attributes where object_id IN '+sql_query_string_object_ids+') AS attribute_order order by attribute_id)'
-            print(sql_query_string_attribute_order)
+            #print(sql_query_string_attribute_order)
             attribute_label_order = pd.read_sql_query(sql_query_string_attribute_order, conn)
             if attribute_label_order.isnull().values.any() is not True :
                 attribute_label_order = attribute_label_order['attribute_order'].values.tolist() #.toString().split('|')
