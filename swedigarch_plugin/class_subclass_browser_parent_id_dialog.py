@@ -31,7 +31,7 @@ import os
 #from qgis.core import Qgis, QgsMessageLog
 from qgis.PyQt import uic, QtWidgets
 #from PyQt5 import QtCore
-#from PyQt5.QtWidgets import QDialogButtonBox, QMenu, QAction, QTreeWidgetItem
+from PyQt5.QtWidgets import QComboBox # QDialogButtonBox, QMenu, QAction, QTreeWidgetItem
 #from PyQt5.QtCore import QVariant ,QAbstractTableModel, QModelIndex, Qt
 from PyQt5.QtCore import Qt
 # This loads your .ui file so that PyQt can populate your plugin with the elements from Qt Designer
@@ -93,12 +93,14 @@ class ClassSubclassBrowserParentIdDialog(QtWidgets.QDialog, FORM_CLASS):
         self.combo_box_greatgrandparentlayer.clear()
         class_items = self.parent_dialog_df['parent_class'].unique().tolist()
         self.combo_box_parentlayer.addItems(class_items)
+        self.combo_box_parentlayer.setSizeAdjustPolicy(QComboBox.AdjustToContents)
 
     def update_combo_box_grandparentlayer(self):
         self.combo_box_grandparentlayer.clear()
         selected_category = self.combo_box_parentlayer.currentText()
         filtered_df = self.parent_dialog_df[self.parent_dialog_df['parent_class'] == selected_category]
         self.combo_box_grandparentlayer.addItems(filtered_df['grand_parent_class'].unique())
+        self.combo_box_grandparentlayer.setSizeAdjustPolicy(QComboBox.AdjustToContents)
         self.update_combo_box_greatgrandparentlayer()  # Reset combo3
 
     def update_combo_box_greatgrandparentlayer(self):
@@ -106,6 +108,7 @@ class ClassSubclassBrowserParentIdDialog(QtWidgets.QDialog, FORM_CLASS):
         selected_type = self.combo_box_grandparentlayer.currentText()
         filtered_df = self.parent_dialog_df[self.parent_dialog_df['grand_parent_class'] == selected_type]
         self.combo_box_greatgrandparentlayer.addItems(filtered_df['great_grand_parent_class'].unique())
+        self.combo_box_greatgrandparentlayer.setSizeAdjustPolicy(QComboBox.AdjustToContents)
 
     def on_ok(self):
         """Selection of parent layers done"""
