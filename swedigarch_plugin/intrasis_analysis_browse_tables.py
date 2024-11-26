@@ -782,7 +782,7 @@ class IntrasisAnalysisBrowseTablesDialog(QtWidgets.QDialog, FORM_CLASS):
                     #objects_dataframe[col] = objects_dataframe[col].astype('Float64')
                     objects_dataframe[col] =  objects_dataframe[col].apply(float)
                 except Exception as ex:
-                    print(f'double: {col}')
+                    #print(f'double: {col}')
                     objects_dataframe[col] = pd.to_numeric(objects_dataframe[col], errors='coerce')
                     QgsMessageLog.logMessage(f'Numeric conversion failed attribute, {col} {ex} NaN introduced'
                                              ,MESSAGE_CATEGORY, Qgis.Info)
@@ -1391,6 +1391,7 @@ class populateTableFromGpkg:
             self.attributes_datatypes_dict = []
         if number_of_attributes['antal_attribut_id'].iloc[0] > 0:
 
+            #print(sql_query_string_step1_object_id_class)
             objects_dataframe = pd.read_sql_query(sql_query_string_step1_object_id_class, conn)
             object_id_filter = list(objects_dataframe['object_id'])
             object_id_filter = str(object_id_filter).replace('[', '(').replace(']', ')')
@@ -1417,6 +1418,8 @@ class populateTableFromGpkg:
             common_attributes = list(set(common_attributes+common_class_attributes))
             print(f"common_attributes: {common_attributes} ")'''
             subclass_attributes = objects_dataframe2.query('klass == 0')['attribute_label_final'].copy().drop_duplicates()
+            subclass_attributes = list(set(subclass_attributes))
+            #print(subclass_attributes)
             #common_attributes = list(set(common_class_attributes+subclass_attributes))
             #common_attributes = list(set(common_class_attributes))
             b = objects_dataframe.set_index('object_id').join(objects_dataframe2.set_index('object_id'))
@@ -1434,10 +1437,13 @@ class populateTableFromGpkg:
                 #b = b.query('attribute_label_final in @common_attributes').copy()
             #print(f"subclass_attributes: {subclass_attributes}")
             #print(f"common_attributes: {common_attributes}")
-            b = b.query('attribute_label_final in @common_attributes').copy()
+            #print(f"len(b.index): {len(b.index)}")
+            #####b = b.query('attribute_label_final in @common_attributes').copy()
             b['object_id']=list(b.index.values.tolist())
+            #print(b.columns)
             #print(b)
             self.objects_dataframe = b[['object_id', 'attribute_value', 'attribute_unit', 'attribute_label_final', 'data_type']].copy()
+            #print(len(self.objects_dataframe.index))
             self.objects_dataframe = self.objects_dataframe.rename(columns={'attribute_label_final': 'attribute_label'})
             #################################################################
             attrib = list(self.objects_dataframe ['attribute_label'])
@@ -1445,6 +1451,8 @@ class populateTableFromGpkg:
             attrib_dtype = list(self.objects_dataframe ['data_type'])
             self.attributes_datatypes_dict = dict(zip(attrib,attrib_dtype))
             self.objects_dataframe.loc[self.objects_dataframe['data_type'].isin(['Decimal']),'attribute_value'] = self.objects_dataframe.loc[self.objects_dataframe['data_type'].isin(['Decimal']),'attribute_value'].str.replace(',','.')
+            
+            
 
 
         task.setProgress(20)
@@ -1465,6 +1473,7 @@ class populateTableFromGpkg:
                 sql_query_string_subclass = 'SELECT object_id FROM objects WHERE Class IN (\''+ self.class_item + '\') '
                 attribute_subclass_dataframe = pd.read_sql_query(sql_query_string_subclass, conn)
                 attribute_subclass_dataframe = attribute_subclass_dataframe.set_index('object_id')
+                #print(len(attribute_subclass_dataframe.index))
 
             if self.subclass_item == self.subclass_items_dict['Every SubClass']:
 
@@ -1512,13 +1521,18 @@ class populateTableFromGpkg:
                     attribute_unit_dataframe = attribute_unit_dataframe.set_index(['object_id','attribute_id'])
                     self.objects_dataframe = self.objects_dataframe.pivot(index=['object_id'], columns='attribute_label', values='attribute_value')
 
+            #print(len(self.objects_dataframe.index))
             self.objects_dataframe = self.objects_dataframe.join(attribute_unit_dataframe, how='left')
+            #print(len(self.objects_dataframe.index))
 
             if self.subclass_item == self.subclass_items_dict['Every SubClass']:
                 self.objects_dataframe = self.objects_dataframe.join(attribute_subclass_dataframe, how='left')
 
             if self.subclass_item == self.subclass_items_dict['All Objects']:
+                #print(len(self.objects_dataframe.index))
                 self.objects_dataframe = self.objects_dataframe.join(attribute_subclass_dataframe, how='left')
+                self.objects_dataframe.drop(columns=subclass_attributes, inplace=True)
+                #print(len(self.objects_dataframe.index))
 
         #Join Class and Subclass
         if number_of_attributes['antal_attribut_id'].iloc[0] > 0:
