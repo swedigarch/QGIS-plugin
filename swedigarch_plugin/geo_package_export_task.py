@@ -30,6 +30,7 @@
 import os
 import traceback
 from datetime import datetime
+from qgis.utils import iface
 from qgis.gui import QgsMessageBar
 from qgis.core import QgsTask, QgsMessageLog, Qgis
 from PyQt5.QtCore import QFile
