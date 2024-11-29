@@ -158,9 +158,68 @@ left join objects ggpo on ggp.base_id = ggpo.object_id
     conn = sqlite3.connect(gpkg)
     relation_dataframe = pd.read_sql_query(sql_query, conn)
     conn.close()
-    #print(sql_query)
+    print(sql_query)
     return relation_dataframe
 
+def get_relation_dataframeZ(gpkg, child_object_id, task):
+    num_child_objects = len(child_object_id)
+    sql_query = f'''WITH Parent AS (
+    SELECT base_id, related_id
+    FROM object_relations
+    WHERE related_id IN ({child_object_id})
+	),
+GrandParent AS (
+    SELECT base_id, related_id
+    FROM object_relations 
+    WHERE related_id IN (SELECT base_id FROM Parent)
+),GreatGrandParent AS (
+    SELECT base_id, related_id
+    FROM object_relations 
+    WHERE related_id IN (SELECT base_id FROM GrandParent)
+),RelationTable AS(
+SELECT p.related_id as child_id,
+p.base_id as parent_id,
+po.IntrasisId as ParentId,
+po.Class as parent_class,
+gp.base_id as grand_parent_id,
+gpo.IntrasisId as GrandParentId,
+gpo.Class as grand_parent_class,
+ggp.base_id as great_grand_parent_id,
+ggpo.IntrasisId as GreatGrandParentId,
+ggpo.Class as great_grand_parent_class,
+COALESCE(po.class,'NULL')||'_'||COALESCE(gpo.class,'NULL')||'_'||COALESCE(ggpo.class,'NULL') AS parenthierarchy
+FROM Parent p
+left join GrandParent gp on p.base_id = gp.related_id
+left join GreatGrandParent ggp on gp.base_id = ggp.related_id
+left join objects po on p.base_id = po.object_id
+left join objects gpo on gp.base_id = gpo.object_id
+left join objects ggpo on ggp.base_id = ggpo.object_id
+)select * from RelationTable rt'''
+    conn = sqlite3.connect(gpkg)
+    #relation_dataframe = pd.read_sql_query(sql_query, conn)
+    num_of_steps = num_child_objects/10000
+    progress_step = int((33/num_of_steps))
+    #print(progress_step)
+    chunks = []
+    current_progress = 1
+    try:
+        for chunk in pd.read_sql_query(sql_query, conn, chunksize=10000):
+            # Bearbeta chunk om nödvändigt
+            #print(f"Läser in chunk med {len(chunk)} rader")
+            chunks.append(chunk)
+            current_progress += progress_step
+            #print(progress_step)
+            #print(f"current_progress: {current_progress}")
+            task.setProgress(current_progress)
+    except Exception as e:
+        print(f"Fel: {e}")
+        return None
+    conn.close()
+    relation_dataframe = pd.concat(chunks, ignore_index=True)
+    #print(sql_query)
+    if task.isCanceled():
+            return None
+    return relation_dataframe
 
 def get_child_class(gpkg, child_object_id):
     sql_query = f'''select distinct class from objects WHERE object_id IN ({child_object_id})'''

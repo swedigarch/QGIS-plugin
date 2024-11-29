@@ -144,21 +144,26 @@ class IntrasisAnalysisBrowseTablesDialog(QtWidgets.QDialog, FORM_CLASS):
         child_id_string = object_id_data_frame['object_id'].tolist()
         child_id_string = ', '.join(map(str, child_id_string))
         #relation_table = ClassSubclassBrowserUtils.get_relation_dataframe(self.current_gpkg, child_id_string)
-        relation_tableX = ClassSubclassBrowserUtils.get_relation_dataframeX(self.current_gpkg, child_id_string)
-        task.setProgress(33)
+        #relation_tableX = ClassSubclassBrowserUtils.get_relation_dataframeX(self.current_gpkg, child_id_string)
+        relation_tableX = ClassSubclassBrowserUtils.get_relation_dataframeZ(self.current_gpkg, child_id_string, task)
+        #task.setProgress(33)
 
         parent_id_string_df = ClassSubclassBrowserUtils.get_unique_id_string(relation_tableX, 'child_id','parent_class','ParentId')
         #print(parent_id_string_df.head(2))
         relation_tableX = pd.merge(relation_tableX, parent_id_string_df[['child_id', 'parent_class', 'ParentIdString']], how='left', on=['child_id', 'parent_class'])
+        task.setProgress(75)
 
         grand_parent_id_string_df = ClassSubclassBrowserUtils.get_unique_id_string(relation_tableX, 'child_id','grand_parent_class','GrandParentId')
         relation_tableX = pd.merge(relation_tableX, grand_parent_id_string_df[['child_id', 'grand_parent_class', 'GrandParentIdString']], how='left', on=['child_id', 'grand_parent_class'])
+        task.setProgress(77)
 
         great_grand_parent_id_string_df = ClassSubclassBrowserUtils.get_unique_id_string(relation_tableX, 'child_id','great_grand_parent_class','GreatGrandParentId')
         relation_tableX = pd.merge(relation_tableX, great_grand_parent_id_string_df[['child_id', 'great_grand_parent_class', 'GreatGrandParentIdString']], how='left', on=['child_id', 'great_grand_parent_class'])
-        task.setProgress(66)
+        task.setProgress(80)
         relation_tableX['parent_count'] = relation_tableX.groupby(['child_id', 'parent_class'])['parent_id'].transform('nunique')
+        task.setProgress(85)
         relation_tableX['grand_parent_count'] = relation_tableX.groupby(['child_id', 'grand_parent_class'])['grand_parent_id'].transform('nunique')
+        task.setProgress(90)
         relation_tableX['great_grand_parent_count'] = relation_tableX.groupby(['child_id', 'great_grand_parent_class'])['great_grand_parent_id'].transform('nunique')
         #relation_tableX['parent_count'] = relation_tableX.groupby(['child_id', 'parent_class'])['parent_class'].transform('count')
         #relation_tableX['grand_parent_count'] = relation_tableX.groupby(['child_id', 'grand_parent_class'])['grand_parent_class'].transform('count')
@@ -169,6 +174,7 @@ class IntrasisAnalysisBrowseTablesDialog(QtWidgets.QDialog, FORM_CLASS):
         #print(relation_tableX.columns.tolist())
         #print(relation_table.columns.tolist())
         #relation_tableX = relation_tableX.drop_duplicates(subset=['parent_class','grand_parent_class','great_grand_parent_class'])[['parent_class','grand_parent_class','great_grand_parent_class','parenthierarchy','parenthierarchy_count']]
+        task.setProgress(95)
 
         child_class_string = ClassSubclassBrowserUtils.get_child_class(self.current_gpkg, child_id_string)
         #parent_dialog_df = relation_table.drop_duplicates(subset=['parent_class','grand_parent_class','great_grand_parent_class'])[['parent_class','grand_parent_class','great_grand_parent_class','parenthierarchy','parenthierarchy_count']]
@@ -182,8 +188,16 @@ class IntrasisAnalysisBrowseTablesDialog(QtWidgets.QDialog, FORM_CLASS):
         QgsMessageLog.logMessage(f'Finished {task.description()}: {task.progress()}'
                                  ,MESSAGE_CATEGORY, Qgis.Info)
         #return [relation_table, child_class_string, parent_dialog_df]
+        if task.isCanceled():
+            self.stopped(task)
+            return None
         return [relation_tableX, child_class_string, parent_dialog_df]
 
+    def stopped(self, task):
+        QgsMessageLog.logMessage(
+        'Task "{name}" was cancelled'.format(name=task.description()),
+        MESSAGE_CATEGORY, Qgis.Info)
+    
     def handle_result_generate_parent_id(self, exception, result):
         if exception is None:
             if result is None:
@@ -397,7 +411,8 @@ class IntrasisAnalysisBrowseTablesDialog(QtWidgets.QDialog, FORM_CLASS):
         if self.selected_gpkg_name is None or len(gpgk_files_intrasis) > 1:
             selected_gpkg_path_and_name = ''
         #get selected gpkg, activate selected
-            if len(gpgk_files_intrasis) > 1:
+            #if len(gpgk_files_intrasis) > 1
+            if len(gpgk_files_intrasis) > 1 and self.selected_gpkg is None :
                 sel_dlg = SelectGeoPackageDialog()
                 if sel_dlg.exec_():
                     selected_gpkg_path_and_name = sel_dlg.selected_geo_package
@@ -715,7 +730,7 @@ class IntrasisAnalysisBrowseTablesDialog(QtWidgets.QDialog, FORM_CLASS):
         #to on_finished=self.add_geo_layer
         return [temp, group_name, temp_layername]
 
-    def create_non_spatial_layer(self, task:QgsTask, objects:pd.DataFrame
+    def create_non_spatial_layerOLD(self, task:QgsTask, objects:pd.DataFrame
                                  , group:str, layer_name:str) -> list[QgsVectorLayer,str,str]: #används fields?
         '''Create layer that contain no geometries'''
         QgsMessageLog.logMessage(f'Started task {task.description()}'
@@ -863,6 +878,173 @@ class IntrasisAnalysisBrowseTablesDialog(QtWidgets.QDialog, FORM_CLASS):
         #to on_finished=self.add_geo_layer
         return [temp, group_name, temp_layername]
 
+    def create_non_spatial_layer(self, task:QgsTask, objects:pd.DataFrame
+                                 , group:str, layer_name:str) -> list[QgsVectorLayer,str,str]: #används fields?
+        '''Create layer that contain no geometries'''
+        QgsMessageLog.logMessage(f'Started task {task.description()}'
+                                 ,MESSAGE_CATEGORY, Qgis.Info)
+        task.setProgress(1)
+        objects_dataframe = objects
+        #objects_dataframe.drop(columns=['Djup'], inplace=True)
+        group_name = group
+        #Create layer name
+        temp_layername = layer_name
+        #Create a memory layer without geometry ("table")
+        #Important that QgsVectorLayer is not yet in the QGIS table of contents or QGIS will chrash
+        temp = None
+        temp = QgsVectorLayer("none","nongeo","memory")
+        temp_data = None
+        temp_data = temp.dataProvider()
+
+        #Enter layer editing mode so that the layer can be filled with data
+        temp.startEditing()
+        objects_dataframe_colnames = list(objects_dataframe.columns.values.tolist())
+        attribute_datatypes = dict(zip(objects_dataframe_colnames, [QVariant.String]*len(objects_dataframe_colnames)))
+        object_id_filter = list(objects_dataframe['object_id'])
+        object_id_filter = str(object_id_filter).replace('[', '(').replace(']', ')')
+        conn = sqlite3.connect(self.current_gpkg)
+        conn.close()
+        #Get datatypes attribute from self.class_subclass_attributes object, note .copy()
+        #If not copied the attributes_datatypes_dict will not be a separate object and will cause problems
+        attributes_datatypes_dict = self.class_subclass_attributes.attributes_datatypes_dict.copy()
+        #print(f"len(attributes_datatypes_dict): {len(attributes_datatypes_dict)}")
+        if len(attributes_datatypes_dict) != 0:
+            for attrib in attributes_datatypes_dict:
+                #print(f"attrib: {attrib} type(attrib): {type(attrib)}")
+                #print(f"attrib == attrib: {attrib==attrib}")
+                #if attrib is not None:
+                #    attributes_datatypes_dict[attrib] = Utils.get_qvariant_type_from_attribute_data_type(attributes_datatypes_dict[attrib])
+                if attrib == attrib:
+                    if attrib is not None:
+                        attributes_datatypes_dict[attrib] = Utils.get_qvariant_type_from_attribute_data_type(attributes_datatypes_dict[attrib])
+                if attrib != attrib:
+                    attributes_datatypes_dict[attrib] = QVariant.String
+                if attrib is None:
+                    attributes_datatypes_dict[attrib] = QVariant.String
+
+        #Because not all datatypes exist in self.class_subclass_attributes.attributes_datatypes_dict
+        #only datatypes from attributes.datatypes the rest of the datatypes is set here 
+        attribute_datatypes['IntrasisId'] = QVariant.Int
+        attribute_datatypes['object_id'] = QVariant.Int
+        attribute_datatypes['Name'] = QVariant.String
+        attribute_datatypes['Class'] = QVariant.String
+        attribute_datatypes['SubClass'] = QVariant.String
+
+        #Update the dictionary of datatypes
+        for attrib in attributes_datatypes_dict:
+            try:
+                attribute_datatypes[attrib] = attributes_datatypes_dict[attrib]
+            except Exception as ex:
+                QgsMessageLog.logMessage(f'Failed to set datatype of {attrib} from attributes.data_type defaulting to string {ex}'
+                                         ,MESSAGE_CATEGORY, Qgis.Info)
+
+
+        #Set datatypes of objects_dataframe according to the datatypes in attribute_datatypes
+        #If setting of datatype fails, datatype is not changed. A common problem is handling
+        #of missing values. For instance not all numpy datatypes that is used in a Pandas dataframe
+        #can handle missing values if datatype is integer and contains missing values it must be converted
+        #to Int64 or float64 to be able to hold missing values as NaN
+        for col in objects_dataframe.columns:
+            if attribute_datatypes[col] in [QVariant.Int]:
+                try:
+                    objects_dataframe[col] = pd.to_numeric(objects_dataframe[col], errors='coerce')
+                except Exception as ex:
+                    objects_dataframe.astype({col: 'Int64'}).dtypes
+                    QgsMessageLog.logMessage(f'Numeric conversion failed, attribute {col} {ex} NaN introduced'
+                                             ,MESSAGE_CATEGORY, Qgis.Info)
+
+            if attribute_datatypes[col] in [QVariant.Double]:
+                try:
+                    #objects_dataframe[col] = objects_dataframe[col].astype('Float64')
+                    objects_dataframe[col] =  objects_dataframe[col].apply(float)
+                except Exception as ex:
+                    #print(f'double: {col}')
+                    objects_dataframe[col] = pd.to_numeric(objects_dataframe[col], errors='coerce')
+                    QgsMessageLog.logMessage(f'Numeric conversion failed attribute, {col} {ex} NaN introduced'
+                                             ,MESSAGE_CATEGORY, Qgis.Info)
+
+            if attribute_datatypes[col] in [QVariant.Date]:
+                try:
+                    objects_dataframe[col] = pd.to_datetime(objects_dataframe[col],errors='coerce')
+                except Exception as ex:
+                    QgsMessageLog.logMessage(f'Date/time conversion failed attribute, {col} {ex} NaN introduced'
+                                             ,MESSAGE_CATEGORY, Qgis.Info)
+
+
+            if attribute_datatypes[col] in [QVariant.Bool]:
+                try:
+                    objects_dataframe[col] = objects_dataframe[col].astype(bool,errors='ignore')
+                except Exception as ex:
+                    QgsMessageLog.logMessage(f'Boolean conversion failed attribute, {col} {ex} NaN introduced'
+                                             ,MESSAGE_CATEGORY, Qgis.Info)
+
+
+        #Create attribute fields for the QGS layer
+        col_dict = dict(zip(objects_dataframe.columns, objects_dataframe.dtypes.apply(lambda x: x.name)))
+
+        #A QGIS feature is limited to QVariant types  
+        type_map = {'Int64':QVariant.Int,'int64':QVariant.Int
+                    ,'int32':QVariant.Int,'float64':QVariant.Double
+                    ,'object':QVariant.String, 'bool':QVariant.Bool
+                    ,'datetime64[ns]':QVariant.Date}
+        #attribute_fields = []
+        attribute_fields = QgsFields()
+        objects_dataframe_colnames = list(objects_dataframe.columns.values.tolist())
+        for col_name in objects_dataframe_colnames:
+            field = QgsField(str(col_name), type_map[col_dict[col_name]])
+            attribute_fields.append(field)
+
+        temp_data.addAttributes(attribute_fields)
+        temp.updateFields()
+        progressbarlength = 100
+        total = len(objects_dataframe.index)
+        increment = 10
+        i = 1
+        QgsMessageLog.logMessage(f'Starting feature creation: {task.description()}'
+                                 ,MESSAGE_CATEGORY, Qgis.Info)
+        #The features to the QGIS layer is created with a for loop
+        #The attributes are set using a string of values from the objects_dataframe
+        # Create concatenated strings of attributes
+        ##str_objects = objects_dataframe.apply(
+        ##    lambda x: x.astype(str).tolist(), axis=1).tolist()
+
+        #Create QGS features and set attributes
+        i = 1
+        #for ob in str_objects:
+        for index, row in objects_dataframe.iterrows():
+            feature = QgsFeature()
+            #newrow = ob
+            feature.setFields(attribute_fields)
+            progress = (progressbarlength*i) / total
+            if int(progress) > increment:
+                task.setProgress(int((progressbarlength*i)/total))
+                increment += 10
+            for column in objects_dataframe.columns:
+                if pd.isna(row[column]):
+                    feature.setAttribute(column, None)
+                else:
+                    feature.setAttribute(column, row[column])
+            #feature.setAttributes(newrow)
+            temp_data.addFeature(feature)
+            i = i+1
+            # Check if the task is cancelled
+            if task.isCanceled():
+                # Log a message and return None
+                QgsMessageLog.logMessage(f'Task was canceled: {task.description()}'
+                                         ,MESSAGE_CATEGORY, Qgis.Info)
+                return None
+        QgsMessageLog.logMessage(
+            f'Commiting changes {task.description()}'
+            ,MESSAGE_CATEGORY
+            , Qgis.Info)
+        temp.commitChanges()
+        task.setProgress(100)
+        QgsMessageLog.logMessage(f'Finished {task.description()}: {task.progress()}'
+                                 ,MESSAGE_CATEGORY, Qgis.Info)
+        #The layer (temp), group_name and temp_layername is returned
+        #to on_finished=self.add_geo_layer
+        return [temp, group_name, temp_layername]
+
     def add_non_geo_layer(self, exception, result:list[QgsVectorLayer,str,str]) -> None:
         """This is called when create_non_spatial_layer is finished.
         Exception is not None if create_non_spatial_layer raises an exception.
@@ -902,7 +1084,7 @@ class IntrasisAnalysisBrowseTablesDialog(QtWidgets.QDialog, FORM_CLASS):
                                  MESSAGE_CATEGORY, Qgis.Critical)
             raise exception
 
-    def create_spatial_layer(self, task:QgsTask, objects:pd.DataFrame
+    def create_spatial_layerOLD(self, task:QgsTask, objects:pd.DataFrame
                              , fields:list, group:str, layer_name:str) -> list[QgsVectorLayer,list,str,str]:
         '''Create layer(s) containing geometry object(s)'''
         QgsMessageLog.logMessage(f'Started task: {task.description()}'
@@ -1044,6 +1226,180 @@ class IntrasisAnalysisBrowseTablesDialog(QtWidgets.QDialog, FORM_CLASS):
                 task.setProgress(int((progressbarlength*i)/total))
                 increment+=10
             feature.setAttributes(newrow)
+            temp_data.addFeature(feature)
+            i = i + 1
+            if task.isCanceled():
+                # Log a message and return None
+                QgsMessageLog.logMessage(f'Task was canceled: {task.description()}'
+                                         ,MESSAGE_CATEGORY, Qgis.Info)
+                return None
+
+        QgsMessageLog.logMessage(
+            f'Commiting changes {task.description()}'
+            ,MESSAGE_CATEGORY
+            , Qgis.Info)
+        temp.commitChanges()
+
+        task.setProgress(100)
+        return [temp, fields_to_keep, group, temp_layername]
+
+    def create_spatial_layer(self, task:QgsTask, objects:pd.DataFrame
+                             , fields:list, group:str, layer_name:str) -> list[QgsVectorLayer,list,str,str]:
+        '''Create layer(s) containing geometry object(s)'''
+        QgsMessageLog.logMessage(f'Started task: {task.description()}'
+                                 ,MESSAGE_CATEGORY, Qgis.Info)
+        task.setProgress(1)
+        objects_dataframe = objects
+        fields_to_keep = fields
+        #Create layer name
+        temp_layername = layer_name
+
+        #Create a memory layer without geometry
+        temp = None
+        temp = QgsVectorLayer("none","geo","memory")
+        temp_data = None
+        temp_data = temp.dataProvider()
+
+        #Enter editing mode
+        temp.startEditing()
+        #Create attribute fields
+        objects_dataframe_colnames = list(
+            objects_dataframe.columns.values.tolist())
+        attribute_datatypes = dict(zip(objects_dataframe_colnames
+                                       ,[QVariant.String]*len(objects_dataframe_colnames)))
+        #Set datatypes
+        object_id_filter = list(objects_dataframe['object_id'])
+        object_id_filter = str(object_id_filter).replace('[', '(').replace(']', ')')
+        conn = sqlite3.connect(self.current_gpkg)
+        conn.close()
+
+        attributes_datatypes_dict = self.class_subclass_attributes.attributes_datatypes_dict.copy()
+
+        if len(attributes_datatypes_dict) != 0:
+            for attrib in attributes_datatypes_dict:
+                #if attrib != None:
+                #if attrib is not None:
+                #    attributes_datatypes_dict[attrib] = Utils.get_qvariant_type_from_attribute_data_type(attributes_datatypes_dict[attrib])
+                if attrib == attrib:
+                    if attrib is not None:
+                        attributes_datatypes_dict[attrib] = Utils.get_qvariant_type_from_attribute_data_type(attributes_datatypes_dict[attrib])
+                if attrib != attrib:
+                    attributes_datatypes_dict[attrib] = QVariant.String
+                if attrib is None:
+                    attributes_datatypes_dict[attrib] = QVariant.String
+
+        attribute_datatypes['IntrasisId'] = QVariant.Int
+        attribute_datatypes['object_id'] = QVariant.Int
+        attribute_datatypes['Name'] = QVariant.String
+        attribute_datatypes['Class'] = QVariant.String
+        attribute_datatypes['SubClass'] = QVariant.String
+        attribute_datatypes['GeoObjectId'] = QVariant.Int
+        attribute_datatypes['spatial_type'] = QVariant.String
+
+        for attrib in attributes_datatypes_dict:
+            try:
+                attribute_datatypes[attrib] = attributes_datatypes_dict[attrib]
+            except Exception as ex:
+                QgsMessageLog.logMessage(f'Failed to set datatype of {attrib} from attributes.data_type defaulting to string {ex}'
+                                         ,MESSAGE_CATEGORY, Qgis.Info)
+
+        for col in objects_dataframe.columns:
+            if attribute_datatypes[col] in [QVariant.Int]:
+                try:
+                    objects_dataframe[col] = pd.to_numeric(
+                        objects_dataframe[col]
+                        ,errors='ignore')
+                except Exception as ex:
+                    QgsMessageLog.logMessage(
+                        f'Numeric conversion failed, attribute: {col} {ex}'
+                        ,MESSAGE_CATEGORY
+                        , Qgis.Info)
+                try:
+                    objects_dataframe.astype({col: 'Int64'}).dtypes
+                    QgsMessageLog.logMessage(
+                        f'Attribute {col} converted to Int64 NaN introduced'
+                        ,MESSAGE_CATEGORY
+                        , Qgis.Info)
+                except Exception as ex:
+                    QgsMessageLog.logMessage(
+                        f'Numeric conversion failed{col} {ex} NaN introduced'
+                        ,MESSAGE_CATEGORY
+                        , Qgis.Info)
+
+            if attribute_datatypes[col] in [QVariant.Double]:
+                try:
+                    objects_dataframe[col] = pd.to_numeric(
+                        objects_dataframe[col]
+                        ,errors='coerce')
+                except Exception as ex:
+                    QgsMessageLog.logMessage(f'Numeric conversion failed, attribute {col} {ex} NaN introduced'
+                                             ,MESSAGE_CATEGORY, Qgis.Info)
+
+            if attribute_datatypes[col] in [QVariant.Date]:
+                try:
+                    objects_dataframe[col] = pd.to_datetime(
+                        objects_dataframe[col]
+                        ,errors='coerce')
+                except Exception as ex:
+                    QgsMessageLog.logMessage(f'Date/time conversion failed, attribute {col} {ex} NaN introduced'
+                                             ,MESSAGE_CATEGORY, Qgis.Info)
+
+            if attribute_datatypes[col] in [QVariant.Bool]:
+                try:
+                    objects_dataframe[col] = objects_dataframe[col].astype(bool,errors='ignore')
+                except Exception as ex:
+                    QgsMessageLog.logMessage(f'Boolean conversion failed, attribute {col} {ex} NaN introduced'
+                                             ,MESSAGE_CATEGORY, Qgis.Info)
+
+        col_dict = dict(zip(objects_dataframe.columns
+                            , objects_dataframe.dtypes.apply(lambda x: x.name)))
+
+        type_map = {'Int64':QVariant.Int,'int64':QVariant.Int
+                    ,'int32':QVariant.Int,'float64':QVariant.Double
+                    ,'object':QVariant.String, 'bool':QVariant.Bool
+                    , 'datetime64[ns]':QVariant.Date}
+        #attribute_fields = []
+        attribute_fields = QgsFields()
+        objects_dataframe_colnames = list(objects_dataframe.columns.values.tolist())
+
+        for col_name in objects_dataframe_colnames:
+            field = QgsField(str(col_name), type_map[col_dict[col_name]])
+            attribute_fields.append(field)
+        temp_data.addAttributes(attribute_fields)
+        temp.updateFields()
+
+        #Fill attribute table with data
+        progressbarlength = 100
+        total = len(objects_dataframe.index)
+        increment = 10
+        i = 1
+
+        QgsMessageLog.logMessage(
+            f'Starting feature creation {task.description()}'
+            ,MESSAGE_CATEGORY, Qgis.Info)
+
+        #Create concatenated strings of attributes, 
+        #Keep it outside of any for loop to improve performance!
+        ##str_objects = objects_dataframe.apply(
+        ##    lambda x: x.astype(str).tolist(), axis=1).copy(deep=True).tolist()
+
+        #Set attribute data
+        i = 1
+        #for ob in str_objects:
+        for index, row in objects_dataframe.iterrows():
+            feature=QgsFeature()
+            #newrow = ob
+            feature.setFields(attribute_fields)
+            progress = (progressbarlength*i)/total
+            if int(progress) > increment:
+                task.setProgress(int((progressbarlength*i)/total))
+                increment+=10
+            for column in objects_dataframe.columns:
+                if pd.isna(row[column]):
+                    feature.setAttribute(column, None)
+                else:
+                    feature.setAttribute(column, row[column])
+            #feature.setAttributes(newrow)
             temp_data.addFeature(feature)
             i = i + 1
             if task.isCanceled():
