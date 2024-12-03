@@ -135,7 +135,7 @@
     <message>
         <location filename="../export_confirmation_dialog.ui" line="72"/>
         <source>These subclasses will be excluded from the export</source>
-        <translation>Dessa subklasser kommer att exkluderas från exporten</translation>
+        <translation>Följande subklasser exkluderas från exporten</translation>
     </message>
     <message>
         <location filename="../export_confirmation_dialog.py" line="78"/>
@@ -348,7 +348,7 @@
     <message>
         <location filename="../intrasis_analysis_browse_relations_dialog.ui" line="855"/>
         <source>Hierarchical layers</source>
-        <translation type="unfinished">objekt kan ta flera minuter</translation>
+        <translation>Hierarkiska lager</translation>
     </message>
     <message>
         <location filename="." line="1869641829"/>
@@ -419,12 +419,12 @@
         <translation>Spara tabell som...</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="1247"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="1663"/>
         <source>Intrasis Analysis Class/SubClass Browser, Save File</source>
         <translation>Intrasis Class/Subclass Browser, Spara tabell som</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="1248"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="1664"/>
         <source>Text Files (*.csv);;Excel xlsx (*.xlsx)</source>
         <translation>Text Fil (*.csv);;Excel xlsx (*.xlsx)</translation>
     </message>
@@ -444,27 +444,27 @@
         <translation>Alla objekt</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="320"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="380"/>
         <source>No intrasis geopackage loaded</source>
         <translation>För att kunna titta på data i Class/Subclass browser måste ett eller flera Intrasis-GeoPackages vara laddade</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="313"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="373"/>
         <source>analysis dialog closed</source>
         <translation>Klass subklass browsern stängdes</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="321"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="381"/>
         <source>To view data in the Class/Subclass browser one or more Intrasis Geopackages must be loaded</source>
         <translation>För att kunna titta på data i Klass subklass browsern måste ett eller flera Intrasis-GeoPackages vara laddade</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="366"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="427"/>
         <source>No intrasis geopackage(s) loaded</source>
         <translation>Inga intrasis-GeoPackage laddade</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="1118"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="1534"/>
         <source>Completed with no exception and no result (probably manually canceled by the user)</source>
         <translation>Inget undantag inträffade och inget resultat skapades (avbrutet av användaren?)</translation>
     </message>
@@ -479,37 +479,37 @@
         <translation type="obsolete">Lager kunder inte skapas</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="1091"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="1507"/>
         <source>Could not write (all) features</source>
         <translation>Kunde inte skriva (alla) geoobjekt</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="1068"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="1484"/>
         <source>something went wrong: {ex}, perhaps Invalid join fields?</source>
         <translation>Något gick fel: {ex}, kanske ogiltiga kopplingsfält?</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="1088"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="1504"/>
         <source>could not create layer {ex}</source>
         <translation>Lager kunder inte skapas</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="1139"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="1555"/>
         <source>rows</source>
         <translation>rader</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="1139"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="1555"/>
         <source>row</source>
         <translation>rad</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="1140"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="1556"/>
         <source>with geometry</source>
         <translation>med geometri</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="1141"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="1557"/>
         <source>without geometry</source>
         <translation>utan geometri</translation>
     </message>
@@ -726,8 +726,8 @@ select which to analyze.</source>
     <name>SelectSubClassesToFilterDialog</name>
     <message>
         <location filename="../select_subclasses_to_filter_dialog.ui" line="14"/>
-        <source>Select Subclasses to filter</source>
-        <translation>Välj subklasser att filtrera</translation>
+        <source>Select Subclasses to exclude</source>
+        <translation>Välj subklasser att exkludera</translation>
     </message>
     <message>
         <location filename="../select_subclasses_to_filter_dialog_ui.py" line="87"/>
@@ -736,8 +736,8 @@ select which to analyze.</source>
     </message>
     <message>
         <location filename="../select_subclasses_to_filter_dialog.ui" line="92"/>
-        <source>Selected Subclasses for filtering</source>
-        <translation>Valda subklasser för filtrering</translation>
+        <source>Selected Subclasses for exclusion</source>
+        <translation>Valda subklasser för exkludering</translation>
     </message>
     <message>
         <location filename="../select_subclasses_to_filter_dialog.ui" line="106"/>
@@ -747,10 +747,10 @@ select which to analyze.</source>
     <message>
         <location filename="../select_subclasses_to_filter_dialog.ui" line="49"/>
         <source>All Classes/SubClasses with objects in the selected databases</source>
-        <translation>Alla Klasser/Subklasser med objekt i valda databaser</translation>
+        <translation>Klasser och subklasser med objekt i valda databaser</translation>
     </message>
     <message>
-        <location filename="../select_subclasses_to_filter_dialog.py" line="237"/>
+        <location filename="../select_subclasses_to_filter_dialog.py" line="240"/>
         <source>No selection</source>
         <translation>Inget valt</translation>
     </message>
@@ -765,9 +765,14 @@ select which to analyze.</source>
         <translation>Avbryt</translation>
     </message>
     <message>
-        <location filename="../select_subclasses_to_filter_dialog.py" line="235"/>
+        <location filename="../select_subclasses_to_filter_dialog.py" line="238"/>
         <source>Selected</source>
         <translation>Valda</translation>
+    </message>
+    <message>
+        <location filename="../select_subclasses_to_filter_dialog.py" line="227"/>
+        <source>present in</source>
+        <translation>finns i</translation>
     </message>
 </context>
 <context>
@@ -887,25 +892,25 @@ select which to analyze.</source>
     </message>
     <message>
         <location filename="../swedigarch_export_dialog.py" line="89"/>
-        <source>Overwrite existing GeoPackage</source>
-        <translation>Ersätt befintligt GeoPackage</translation>
+        <source>Overwrite existing GPKG</source>
+        <translation>Skriv över existerande GPKG</translation>
     </message>
     <message>
         <location filename="../swedigarch_export_dialog.py" line="90"/>
         <source>If the GeoPackage already exist it will be overwritten if checked.
 Otherwice the GeoPackage will not be exported.</source>
-        <translation>Om GeoPackage redan finns kommer det att skrivas över om detta är markerat.
+        <translation type="obsolete">Om GeoPackage redan finns kommer det att skrivas över.
 Annars kommer GeoPackage inte att exporteras.</translation>
     </message>
     <message>
         <location filename="../swedigarch_export_dialog.py" line="91"/>
-        <source>Export CSV</source>
-        <translation>Exportera CSV</translation>
+        <source>CSV</source>
+        <translation>CSV</translation>
     </message>
     <message>
         <location filename="../swedigarch_export_dialog.py" line="92"/>
-        <source>Should an CSV export also be done for every exported database</source>
-        <translation>Ska en CSV-export också göras för varje exporterad databas</translation>
+        <source>Export CSV for every exported database</source>
+        <translation>Exportera CSV för varje exporterad databas</translation>
     </message>
     <message>
         <location filename="../swedigarch_export_dialog.py" line="87"/>
@@ -914,23 +919,28 @@ Annars kommer GeoPackage inte att exporteras.</translation>
     </message>
     <message>
         <location filename="../swedigarch_export_dialog.py" line="93"/>
-        <source>Filter by SubClass</source>
-        <translation>Filtrera efter SubKlass</translation>
+        <source>Exclude Subclasses</source>
+        <translation>Exkludera subklasser</translation>
     </message>
     <message>
         <location filename="../swedigarch_export_dialog.py" line="94"/>
-        <source>Should we filter by Subclass in every exported database</source>
-        <translation>Ska vi filtrera efter SubKlass för varje exporterad databas</translation>
+        <source>Exclude selected Subclasses (selected in next step) from the export</source>
+        <translation>Exkludera valda subklasser (väljs i nästkommande steg) från exporten</translation>
     </message>
     <message>
         <location filename="../swedigarch_export_dialog.py" line="95"/>
-        <source>Simplified Export</source>
-        <translation>Förenklad Export</translation>
+        <source>Simplified GPKG</source>
+        <translation>Förenklat GPKG</translation>
     </message>
     <message>
         <location filename="../swedigarch_export_dialog.py" line="96"/>
-        <source>Should simplified GPKG export also be done for every exported database</source>
-        <translation>Skall förenklad GPKG export göras för varje exporterad databas</translation>
+        <source>Export simplified GPKG for every exported database</source>
+        <translation>Exportera förenklat GPKG för varje exporterad databas</translation>
+    </message>
+    <message>
+        <location filename="../swedigarch_export_dialog.py" line="90"/>
+        <source>If GPKG already exist it will be overwritten</source>
+        <translation>Om GPKG redan finns kommer den skrivas över</translation>
     </message>
 </context>
 <context>
@@ -941,57 +951,57 @@ Annars kommer GeoPackage inte att exporteras.</translation>
         <translation>Intrasis DB Manager</translation>
     </message>
     <message>
-        <location filename="../swedigarch_export_dialog_base.ui" line="31"/>
+        <location filename="../swedigarch_export_dialog_base.ui" line="29"/>
         <source>Database connection</source>
         <translation>Databas anslutning</translation>
     </message>
     <message>
-        <location filename="../swedigarch_export_dialog_base.ui" line="70"/>
+        <location filename="../swedigarch_export_dialog_base.ui" line="68"/>
         <source>Select stored PostgreSQL connection (stored by DB Manager)</source>
         <translation>Välj lagrad PostgreSQL anslutning (Sparad av DB Manager)</translation>
     </message>
     <message>
-        <location filename="../swedigarch_export_dialog_base.ui" line="73"/>
+        <location filename="../swedigarch_export_dialog_base.ui" line="71"/>
         <source>Select connection</source>
         <translation>Välj anslutning</translation>
     </message>
     <message>
-        <location filename="../swedigarch_export_dialog_base.ui" line="93"/>
+        <location filename="../swedigarch_export_dialog_base.ui" line="91"/>
         <source>Disconnect</source>
         <translation>Koppla från</translation>
     </message>
     <message>
-        <location filename="../swedigarch_export_dialog_base.ui" line="160"/>
+        <location filename="../swedigarch_export_dialog_base.ui" line="158"/>
         <source>Doubleclick to move databases between the lists</source>
         <translation>Dubbelklicka för att flytta en databas mellan listorna</translation>
     </message>
     <message>
-        <location filename="../swedigarch_export_dialog_base.ui" line="166"/>
+        <location filename="../swedigarch_export_dialog_base.ui" line="164"/>
         <source>Available databases</source>
         <translation>Tillgängliga databaser</translation>
     </message>
     <message>
-        <location filename="../swedigarch_export_dialog_base.ui" line="324"/>
+        <location filename="../swedigarch_export_dialog_base.ui" line="322"/>
         <source>Doubleclick to move databaases between lists</source>
         <translation>Dubbelklicka för att flytta en databas mellan listorna</translation>
     </message>
     <message>
-        <location filename="../swedigarch_export_dialog_base.ui" line="303"/>
+        <location filename="../swedigarch_export_dialog_base.ui" line="301"/>
         <source>Selected databases for export</source>
         <translation>Valda databaser att exportera</translation>
     </message>
     <message>
-        <location filename="../swedigarch_export_dialog_base.ui" line="342"/>
+        <location filename="../swedigarch_export_dialog_base.ui" line="340"/>
         <source>Export catalog</source>
         <translation>Export katalog</translation>
     </message>
     <message>
-        <location filename="../swedigarch_export_dialog_base.ui" line="358"/>
+        <location filename="../swedigarch_export_dialog_base.ui" line="356"/>
         <source>…</source>
         <translation>…</translation>
     </message>
     <message>
-        <location filename="../swedigarch_export_dialog_base.ui" line="201"/>
+        <location filename="../swedigarch_export_dialog_base.ui" line="199"/>
         <source>Select all databases</source>
         <translation>Välj alla databaser</translation>
     </message>
@@ -1006,42 +1016,42 @@ Annars kommer GeoPackage inte att exporteras.</translation>
         <translation type="obsolete">...</translation>
     </message>
     <message>
-        <location filename="../swedigarch_export_dialog_base.ui" line="86"/>
+        <location filename="../swedigarch_export_dialog_base.ui" line="84"/>
         <source>Connect...</source>
         <translation>Anslut...</translation>
     </message>
     <message>
-        <location filename="../swedigarch_export_dialog_base.ui" line="126"/>
+        <location filename="../swedigarch_export_dialog_base.ui" line="124"/>
         <source>search info text</source>
         <translation>sök informationstext</translation>
     </message>
     <message>
-        <location filename="../swedigarch_export_dialog_base.ui" line="108"/>
+        <location filename="../swedigarch_export_dialog_base.ui" line="106"/>
         <source>Filter databases</source>
         <translation>Filtrera databaser</translation>
     </message>
     <message>
-        <location filename="../swedigarch_export_dialog_base.ui" line="198"/>
+        <location filename="../swedigarch_export_dialog_base.ui" line="196"/>
         <source>Add / remove all databases</source>
         <translation>Lägg till/ta bort alla databaser</translation>
     </message>
     <message>
-        <location filename="../swedigarch_export_dialog_base.ui" line="230"/>
+        <location filename="../swedigarch_export_dialog_base.ui" line="228"/>
         <source>Add selected databases</source>
         <translation>Lägg till valda databaser</translation>
     </message>
     <message>
-        <location filename="../swedigarch_export_dialog_base.ui" line="233"/>
+        <location filename="../swedigarch_export_dialog_base.ui" line="231"/>
         <source>Add</source>
         <translation>Lägg till</translation>
     </message>
     <message>
-        <location filename="../swedigarch_export_dialog_base.ui" line="266"/>
+        <location filename="../swedigarch_export_dialog_base.ui" line="264"/>
         <source>Remove selected databases</source>
         <translation>Ta bort markerade databaser</translation>
     </message>
     <message>
-        <location filename="../swedigarch_export_dialog_base.ui" line="269"/>
+        <location filename="../swedigarch_export_dialog_base.ui" line="267"/>
         <source>Remove</source>
         <translation>Ta bort</translation>
     </message>
@@ -1056,41 +1066,81 @@ Annars kommer GeoPackage inte att exporteras.</translation>
         <translation type="obsolete">databaser matchar filter</translation>
     </message>
     <message>
-        <location filename="../swedigarch_export_dialog_base.ui" line="369"/>
+        <location filename="../swedigarch_export_dialog_base.ui" line="367"/>
         <source>If the GeoPackage already exist it will be overwritten if checked.
 Otherwice the GeoPackage will not be exported.</source>
-        <translation>Om GeoPackage redan finns kommer det att skrivas över om detta är markerat.
+        <translation type="obsolete">Om GeoPackage redan finns kommer det att skrivas över om detta är markerat.
 Annars kommer GeoPackage inte att exporteras.</translation>
     </message>
     <message>
-        <location filename="../swedigarch_export_dialog_base.ui" line="373"/>
-        <source>Overwrite existing GeoPackage</source>
-        <translation>Ersätt befintligt GeoPackage</translation>
+        <location filename="../swedigarch_export_dialog_base.ui" line="370"/>
+        <source>Overwrite existing GPKG</source>
+        <translation>Skriv över existerande GPKG</translation>
     </message>
     <message>
-        <location filename="../swedigarch_export_dialog_base.ui" line="397"/>
+        <location filename="../swedigarch_export_dialog_base.ui" line="419"/>
         <source>Should an CSV export also be done for every exported database</source>
-        <translation>Ska en CSV-export också göras för varje exporterad databas</translation>
+        <translation type="obsolete">Ska en CSV-export också göras för varje exporterad databas</translation>
     </message>
     <message>
         <location filename="../swedigarch_export_dialog_base.ui" line="383"/>
         <source>Export CSV</source>
-        <translation>Exportera CSV</translation>
+        <translation type="obsolete">Exportera CSV</translation>
     </message>
     <message>
-        <location filename="../swedigarch_export_dialog_base.ui" line="430"/>
+        <location filename="../swedigarch_export_dialog_base.ui" line="454"/>
         <source>Help</source>
         <translation>Hjälp</translation>
     </message>
     <message>
         <location filename="../swedigarch_export_dialog_base.ui" line="390"/>
         <source>Filter by SubClass</source>
-        <translation>Filtrera på SubKlass</translation>
+        <translation type="obsolete">Filtrera på SubKlass</translation>
     </message>
     <message>
         <location filename="../swedigarch_export_dialog_base.ui" line="400"/>
         <source>Simplified Export</source>
-        <translation>Förenklad Export</translation>
+        <translation type="obsolete">Förenklad Export</translation>
+    </message>
+    <message>
+        <location filename="../swedigarch_export_dialog_base.ui" line="380"/>
+        <source>Exclude Subclasses</source>
+        <translation>Exkludera subklasser</translation>
+    </message>
+    <message>
+        <location filename="../swedigarch_export_dialog_base.ui" line="404"/>
+        <source>Include:</source>
+        <translation>Inkludera:</translation>
+    </message>
+    <message>
+        <location filename="../swedigarch_export_dialog_base.ui" line="414"/>
+        <source>CSV</source>
+        <translation>CSV</translation>
+    </message>
+    <message>
+        <location filename="../swedigarch_export_dialog_base.ui" line="424"/>
+        <source>Simplified GPKG</source>
+        <translation>Förenklat GPKG</translation>
+    </message>
+    <message>
+        <location filename="../swedigarch_export_dialog_base.ui" line="367"/>
+        <source>If GPKG already exist it will be overwritten</source>
+        <translation>Om GPKG redan finns kommer den skrivas över</translation>
+    </message>
+    <message>
+        <location filename="../swedigarch_export_dialog_base.ui" line="377"/>
+        <source>Exclude selected Subclasses (selected in next step) from the export</source>
+        <translation>Exkludera valda subklasser (väljs i nästkommande steg) från exporten</translation>
+    </message>
+    <message>
+        <location filename="../swedigarch_export_dialog_base.ui" line="411"/>
+        <source>Export CSV for every exported database</source>
+        <translation>Exportera CSV för varje exporterad databas</translation>
+    </message>
+    <message>
+        <location filename="../swedigarch_export_dialog_base.ui" line="421"/>
+        <source>Export simplified GPKG for every exported database</source>
+        <translation>Exportera förenklat GPKG för varje exporterad databas</translation>
     </message>
 </context>
 <context>

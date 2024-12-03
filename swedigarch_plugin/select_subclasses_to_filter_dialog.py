@@ -198,9 +198,11 @@ class SelectSubClassesToFilterDialog(QtWidgets.QDialog, FORM_CLASS):
 
     def extract_class_and_subclass_from_string(self, s):
         """Extract class_name and subclass_name from a string on the form 'class_name \\ subclass_name (occurrence)'"""
-        class_name, subclass_with_occurrence = s.split(' \\ ')
-        subclass_name = re.sub(r' \(\d+\)', '', subclass_with_occurrence)
-        return (class_name, subclass_name)
+        class_name, subclass_with_occurrence = s.split('\\')
+        subclass_name, _ = subclass_with_occurrence.split('(')
+        # subclass_name = re.sub(r' \(\d+\)', '', subclass_with_occurrence)
+        print(f"class_name: {class_name.strip()}  subclass_name: {subclass_name.strip()}")
+        return (class_name.strip(), subclass_name.strip())
 
     def on_ok(self):
         """Selection of tree nodes done"""
@@ -222,8 +224,9 @@ class SelectSubClassesToFilterDialog(QtWidgets.QDialog, FORM_CLASS):
         """On tree item selection changed"""
         if self.initialized:
             #print(f"on_item_changed() item: {item.text(0)}  checkState: {item.checkState(0)}")
+            num_db_message_part_1 = self.tr("present in")
             combined_name = f"{item.class_name}\\{item.sub_class_name}"
-            long_combined_name = f"{item.class_name} \\ {item.sub_class_name} ({len(item.databases)})"
+            long_combined_name = f"{item.class_name} \\ {item.sub_class_name} ({num_db_message_part_1} {len(item.databases)} db)"
             if item.checkState(0) == 2:
                 self.selected_sub_classes.append(combined_name)
                 self.lwSelectedSubClasses.addItem(long_combined_name)

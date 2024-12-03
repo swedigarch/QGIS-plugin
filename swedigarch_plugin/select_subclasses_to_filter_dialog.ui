@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Select Subclasses to filter</string>
+   <string>Select Subclasses to exclude</string>
   </property>
   <property name="windowIcon">
    <iconset>
@@ -89,7 +89,7 @@
           </size>
          </property>
          <property name="title">
-          <string>Selected Subclasses for filtering</string>
+          <string>Selected Subclasses for exclusion</string>
          </property>
          <layout class="QGridLayout" name="gridLayout">
           <item row="0" column="0">
