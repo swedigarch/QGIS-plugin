@@ -654,13 +654,13 @@ select which to analyze.</translation>
     <name>SelectSubClassesToFilterDialog</name>
     <message>
         <location filename="../select_subclasses_to_filter_dialog.ui" line="14"/>
-        <source>Select Subclasses to filter</source>
-        <translation>Select Subclasses to filter</translation>
+        <source>Select Subclasses to exclude</source>
+        <translation>Select Subclasses to exclude</translation>
     </message>
     <message>
         <location filename="../select_subclasses_to_filter_dialog.ui" line="92"/>
-        <source>Selected Subclasses for filtering</source>
-        <translation>Selected Subclasses for filtering</translation>
+        <source>Selected Subclasses for exclusion</source>
+        <translation>Selected Subclasses for exclusion</translation>
     </message>
     <message>
         <location filename="../select_subclasses_to_filter_dialog.ui" line="106"/>
@@ -673,7 +673,7 @@ select which to analyze.</translation>
         <translation>All Classes/SubClasses with objects in the selected databases</translation>
     </message>
     <message>
-        <location filename="../select_subclasses_to_filter_dialog.py" line="237"/>
+        <location filename="../select_subclasses_to_filter_dialog.py" line="240"/>
         <source>No selection</source>
         <translation>No selection</translation>
     </message>
@@ -688,9 +688,14 @@ select which to analyze.</translation>
         <translation>Cancel</translation>
     </message>
     <message>
-        <location filename="../select_subclasses_to_filter_dialog.py" line="235"/>
+        <location filename="../select_subclasses_to_filter_dialog.py" line="238"/>
         <source>Selected</source>
         <translation>Selected</translation>
+    </message>
+    <message>
+        <location filename="../select_subclasses_to_filter_dialog.py" line="227"/>
+        <source>present in</source>
+        <translation>present in</translation>
     </message>
 </context>
 <context>

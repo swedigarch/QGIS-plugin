@@ -135,7 +135,7 @@
     <message>
         <location filename="../export_confirmation_dialog.ui" line="72"/>
         <source>These subclasses will be excluded from the export</source>
-        <translation>Dessa subklasser kommer att exkluderas från exporten</translation>
+        <translation>Följande subklasser exkluderas från exporten</translation>
     </message>
     <message>
         <location filename="../export_confirmation_dialog.py" line="78"/>
@@ -726,8 +726,8 @@ select which to analyze.</source>
     <name>SelectSubClassesToFilterDialog</name>
     <message>
         <location filename="../select_subclasses_to_filter_dialog.ui" line="14"/>
-        <source>Select Subclasses to filter</source>
-        <translation>Välj subklasser att filtrera</translation>
+        <source>Select Subclasses to exclude</source>
+        <translation>Välj subklasser att exkludera</translation>
     </message>
     <message>
         <location filename="../select_subclasses_to_filter_dialog_ui.py" line="87"/>
@@ -736,8 +736,8 @@ select which to analyze.</source>
     </message>
     <message>
         <location filename="../select_subclasses_to_filter_dialog.ui" line="92"/>
-        <source>Selected Subclasses for filtering</source>
-        <translation>Valda subklasser för filtrering</translation>
+        <source>Selected Subclasses for exclusion</source>
+        <translation>Valda subklasser för exkludering</translation>
     </message>
     <message>
         <location filename="../select_subclasses_to_filter_dialog.ui" line="106"/>
@@ -747,10 +747,10 @@ select which to analyze.</source>
     <message>
         <location filename="../select_subclasses_to_filter_dialog.ui" line="49"/>
         <source>All Classes/SubClasses with objects in the selected databases</source>
-        <translation>Alla Klasser/Subklasser med objekt i valda databaser</translation>
+        <translation>Klasser och subklasser med objekt i valda databaser</translation>
     </message>
     <message>
-        <location filename="../select_subclasses_to_filter_dialog.py" line="237"/>
+        <location filename="../select_subclasses_to_filter_dialog.py" line="240"/>
         <source>No selection</source>
         <translation>Inget valt</translation>
     </message>
@@ -765,9 +765,14 @@ select which to analyze.</source>
         <translation>Avbryt</translation>
     </message>
     <message>
-        <location filename="../select_subclasses_to_filter_dialog.py" line="235"/>
+        <location filename="../select_subclasses_to_filter_dialog.py" line="238"/>
         <source>Selected</source>
         <translation>Valda</translation>
+    </message>
+    <message>
+        <location filename="../select_subclasses_to_filter_dialog.py" line="227"/>
+        <source>present in</source>
+        <translation>finns i</translation>
     </message>
 </context>
 <context>
