@@ -368,7 +368,7 @@
 Otherwice the GeoPackage will not be exported.</string>
        </property>
        <property name="text">
-        <string>Overwrite existing GeoPackage</string>
+        <string>Overwrite existing GPKG</string>
        </property>
       </widget>
      </item>
