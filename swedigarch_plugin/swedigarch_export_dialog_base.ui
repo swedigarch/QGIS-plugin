@@ -387,7 +387,7 @@ Otherwice the GeoPackage will not be exported.</string>
        <item>
         <widget class="QCheckBox" name="cbFilterSubClass">
          <property name="text">
-          <string>Filter by SubClass</string>
+          <string>Exclude Subclasses</string>
          </property>
         </widget>
        </item>
@@ -397,7 +397,7 @@ Otherwice the GeoPackage will not be exported.</string>
           <string>Should an CSV export also be done for every exported database</string>
          </property>
          <property name="text">
-          <string>Simplified Export</string>
+          <string>Simplified GPKG</string>
          </property>
         </widget>
        </item>
