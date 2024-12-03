@@ -88,8 +88,8 @@ class SwedigarchExportDialog(QtWidgets.QDialog, FORM_CLASS):
 
         self.cbOverwriteExistingGeoPackage.setText(self.tr("Overwrite existing GeoPackage"))
         self.cbOverwriteExistingGeoPackage.setToolTip(self.tr("If the GeoPackage already exist it will be overwritten if checked.\nOtherwice the GeoPackage will not be exported."))
-        self.cbExportCSV.setText(self.tr("Export CSV"))
-        self.cbExportCSV.setToolTip(self.tr("Should an CSV export also be done for every exported database"))
+        self.cbExportCSV.setText(self.tr("CSV"))
+        self.cbExportCSV.setToolTip(self.tr("Should a CSV export also be done for every exported database"))
         self.cbFilterSubClass.setText(self.tr("Exclude Subclasses"))
         self.cbFilterSubClass.setToolTip(self.tr("Should selected Subclasses (selected in next step) be excluded from the export"))
         self.cbSimplifiedExport.setText(self.tr("Simplified GPKG"))
