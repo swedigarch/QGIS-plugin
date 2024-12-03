@@ -87,13 +87,13 @@ class SwedigarchExportDialog(QtWidgets.QDialog, FORM_CLASS):
         self.help_button.setText(self.tr("Help"))
 
         self.cbOverwriteExistingGeoPackage.setText(self.tr("Overwrite existing GPKG"))
-        self.cbOverwriteExistingGeoPackage.setToolTip(self.tr("If the GeoPackage already exist it will be overwritten if checked.\nOtherwice the GeoPackage will not be exported."))
+        self.cbOverwriteExistingGeoPackage.setToolTip(self.tr("If GPKG already exist it will be overwritten"))
         self.cbExportCSV.setText(self.tr("CSV"))
-        self.cbExportCSV.setToolTip(self.tr("Should a CSV export also be done for every exported database"))
+        self.cbExportCSV.setToolTip(self.tr("Export CSV for every exported database"))
         self.cbFilterSubClass.setText(self.tr("Exclude Subclasses"))
-        self.cbFilterSubClass.setToolTip(self.tr("Should selected Subclasses (selected in next step) be excluded from the export"))
+        self.cbFilterSubClass.setToolTip(self.tr("Exclude selected Subclasses (selected in next step) from the export"))
         self.cbSimplifiedExport.setText(self.tr("Simplified GPKG"))
-        self.cbSimplifiedExport.setToolTip(self.tr("Should simplified GPKG export also be done for every exported database"))
+        self.cbSimplifiedExport.setToolTip(self.tr("Export simplified GPKG for every exported database"))
 
         self.pbSelectAllDb.setEnabled(False)
         self.lwDatabases.setSortingEnabled(True)

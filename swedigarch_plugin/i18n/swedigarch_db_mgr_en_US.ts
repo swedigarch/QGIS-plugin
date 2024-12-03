@@ -817,7 +817,7 @@ select which to analyze.</translation>
         <location filename="../swedigarch_export_dialog.py" line="90"/>
         <source>If the GeoPackage already exist it will be overwritten if checked.
 Otherwice the GeoPackage will not be exported.</source>
-        <translation>If the GeoPackage already exist it will be overwritten if checked.
+        <translation type="obsolete">If the GeoPackage already exist it will be overwritten if checked.
 Otherwice the GeoPackage will not be exported.</translation>
     </message>
     <message>
@@ -827,8 +827,8 @@ Otherwice the GeoPackage will not be exported.</translation>
     </message>
     <message>
         <location filename="../swedigarch_export_dialog.py" line="92"/>
-        <source>Should a CSV export also be done for every exported database</source>
-        <translation>Should a CSV export also be done for every exported database</translation>
+        <source>Export CSV for every exported database</source>
+        <translation>Export CSV for every exported database</translation>
     </message>
     <message>
         <location filename="../swedigarch_export_dialog.py" line="87"/>
@@ -842,8 +842,8 @@ Otherwice the GeoPackage will not be exported.</translation>
     </message>
     <message>
         <location filename="../swedigarch_export_dialog.py" line="94"/>
-        <source>Should selected Subclasses (selected in next step) be excluded from the export</source>
-        <translation>Should selected Subclasses (selected in next step) be excluded from the export</translation>
+        <source>Exclude selected Subclasses (selected in next step) from the export</source>
+        <translation>Exclude selected Subclasses (selected in next step) from the export</translation>
     </message>
     <message>
         <location filename="../swedigarch_export_dialog.py" line="95"/>
@@ -852,8 +852,13 @@ Otherwice the GeoPackage will not be exported.</translation>
     </message>
     <message>
         <location filename="../swedigarch_export_dialog.py" line="96"/>
-        <source>Should simplified GPKG export also be done for every exported database</source>
-        <translation>Should simplified GPKG export also be done for every exported database</translation>
+        <source>Export simplified GPKG for every exported database</source>
+        <translation>Export simplified GPKG for every exported database</translation>
+    </message>
+    <message>
+        <location filename="../swedigarch_export_dialog.py" line="90"/>
+        <source>If GPKG already exist it will be overwritten</source>
+        <translation>If GPKG already exist it will be overwritten</translation>
     </message>
 </context>
 <context>
@@ -982,18 +987,18 @@ Otherwice the GeoPackage will not be exported.</translation>
         <location filename="../swedigarch_export_dialog_base.ui" line="367"/>
         <source>If the GeoPackage already exist it will be overwritten if checked.
 Otherwice the GeoPackage will not be exported.</source>
-        <translation>If the GeoPackage already exist it will be overwritten if checked.
+        <translation type="obsolete">If the GeoPackage already exist it will be overwritten if checked.
 Otherwice the GeoPackage will not be exported.</translation>
     </message>
     <message>
-        <location filename="../swedigarch_export_dialog_base.ui" line="371"/>
+        <location filename="../swedigarch_export_dialog_base.ui" line="370"/>
         <source>Overwrite existing GPKG</source>
         <translation>Overwrite existing GPKG</translation>
     </message>
     <message>
         <location filename="../swedigarch_export_dialog_base.ui" line="419"/>
         <source>Should an CSV export also be done for every exported database</source>
-        <translation>Should an CSV export also be done for every exported database</translation>
+        <translation type="obsolete">Should an CSV export also be done for every exported database</translation>
     </message>
     <message>
         <location filename="../swedigarch_export_dialog_base.ui" line="383"/>
@@ -1001,7 +1006,7 @@ Otherwice the GeoPackage will not be exported.</translation>
         <translation type="obsolete">Export CSV</translation>
     </message>
     <message>
-        <location filename="../swedigarch_export_dialog_base.ui" line="452"/>
+        <location filename="../swedigarch_export_dialog_base.ui" line="454"/>
         <source>Help</source>
         <translation>Help</translation>
     </message>
@@ -1016,24 +1021,44 @@ Otherwice the GeoPackage will not be exported.</translation>
         <translation type="obsolete">Simplified Export</translation>
     </message>
     <message>
-        <location filename="../swedigarch_export_dialog_base.ui" line="378"/>
+        <location filename="../swedigarch_export_dialog_base.ui" line="380"/>
         <source>Exclude Subclasses</source>
         <translation>Exclude Subclasses</translation>
     </message>
     <message>
-        <location filename="../swedigarch_export_dialog_base.ui" line="402"/>
+        <location filename="../swedigarch_export_dialog_base.ui" line="404"/>
         <source>Include:</source>
         <translation>Include:</translation>
     </message>
     <message>
-        <location filename="../swedigarch_export_dialog_base.ui" line="412"/>
+        <location filename="../swedigarch_export_dialog_base.ui" line="414"/>
         <source>CSV</source>
         <translation>CSV</translation>
     </message>
     <message>
-        <location filename="../swedigarch_export_dialog_base.ui" line="422"/>
+        <location filename="../swedigarch_export_dialog_base.ui" line="424"/>
         <source>Simplified GPKG</source>
         <translation>Simplified GPKG</translation>
+    </message>
+    <message>
+        <location filename="../swedigarch_export_dialog_base.ui" line="367"/>
+        <source>If GPKG already exist it will be overwritten</source>
+        <translation>If GPKG already exist it will be overwritten</translation>
+    </message>
+    <message>
+        <location filename="../swedigarch_export_dialog_base.ui" line="377"/>
+        <source>Exclude selected Subclasses (selected in next step) from the export</source>
+        <translation>xclude selected Subclasses (selected in next step) from the export</translation>
+    </message>
+    <message>
+        <location filename="../swedigarch_export_dialog_base.ui" line="411"/>
+        <source>Export CSV for every exported database</source>
+        <translation>Export CSV for every exported database</translation>
+    </message>
+    <message>
+        <location filename="../swedigarch_export_dialog_base.ui" line="421"/>
+        <source>Export simplified GPKG for every exported database</source>
+        <translation>Export simplified GPKG for every exported database</translation>
     </message>
 </context>
 <context>

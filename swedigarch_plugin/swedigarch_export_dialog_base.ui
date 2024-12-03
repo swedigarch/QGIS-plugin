@@ -364,8 +364,7 @@
      <item>
       <widget class="QCheckBox" name="cbOverwriteExistingGeoPackage">
        <property name="toolTip">
-        <string>If the GeoPackage already exist it will be overwritten if checked.
-Otherwice the GeoPackage will not be exported.</string>
+        <string>If GPKG already exist it will be overwritten</string>
        </property>
        <property name="text">
         <string>Overwrite existing GPKG</string>
@@ -374,6 +373,9 @@ Otherwice the GeoPackage will not be exported.</string>
      </item>
      <item>
       <widget class="QCheckBox" name="cbFilterSubClass">
+       <property name="toolTip">
+        <string>Exclude selected Subclasses (selected in next step) from the export</string>
+       </property>
        <property name="text">
         <string>Exclude Subclasses</string>
        </property>
@@ -406,7 +408,7 @@ Otherwice the GeoPackage will not be exported.</string>
      <item>
       <widget class="QCheckBox" name="cbExportCSV">
        <property name="toolTip">
-        <string>Should an CSV export also be done for every exported database</string>
+        <string>Export CSV for every exported database</string>
        </property>
        <property name="text">
         <string>CSV</string>
@@ -416,7 +418,7 @@ Otherwice the GeoPackage will not be exported.</string>
      <item>
       <widget class="QCheckBox" name="cbSimplifiedExport">
        <property name="toolTip">
-        <string>Should an CSV export also be done for every exported database</string>
+        <string>Export simplified GPKG for every exported database</string>
        </property>
        <property name="text">
         <string>Simplified GPKG</string>
