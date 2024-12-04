@@ -212,17 +212,15 @@ class SwedigarchGeotools:
             callback=self.run_analysis_browse_relations,
             parent=self.iface.mainWindow())
 
-        icon_path = ':/plugins/swedigarch_plugin/assets/compressed-csv.svg'
         self.add_action(
-            icon_path,
+            '',
             text=self.title_export_gpkg_to_csv,
             callback=self.export_gpkg_to_csv,
             parent=self.iface.mainWindow(),
             add_to_toolbar=False)
 
-        icon_path = ':/plugins/swedigarch_plugin/assets/simplified_export.svg'
         self.add_action(
-            icon_path,
+            '',
             text=self.title_export_simplified_gpkg,
             callback=self.on_export_simplified_gpkg,
             parent=self.iface.mainWindow(),
