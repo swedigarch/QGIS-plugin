@@ -33,13 +33,14 @@ from qgis.PyQt import uic, QtWidgets
 #from PyQt5 import QtCore
 from PyQt5.QtWidgets import QComboBox # QDialogButtonBox, QMenu, QAction, QTreeWidgetItem
 #from PyQt5.QtCore import QVariant ,QAbstractTableModel, QModelIndex, Qt
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, pyqtSignal
 # This loads your .ui file so that PyQt can populate your plugin with the elements from Qt Designer
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'class_subclass_browser_parent_id_dialog.ui'))
 
 class ClassSubclassBrowserParentIdDialog(QtWidgets.QDialog, FORM_CLASS):
     """ClassSubclassBrowserParentIdDialog dialog. Dialog to generate Parent Id to objects without geometry"""
+    customSignal = pyqtSignal(list)
     def __init__(self, parent_dialog_df, child_class_string):
         """ClassSubclassBrowserParentIdDialog Constructor"""
         super(ClassSubclassBrowserParentIdDialog, self).__init__()
@@ -61,6 +62,8 @@ class ClassSubclassBrowserParentIdDialog(QtWidgets.QDialog, FORM_CLASS):
         self.combo_box_parentlayer.currentIndexChanged.connect(self.update_combo_box_grandparentlayer)
         self.combo_box_grandparentlayer.currentIndexChanged.connect(self.update_combo_box_greatgrandparentlayer)
         self.check_box_activate_grand_parent.stateChanged.connect(self.update_check_box_activate_great_parent)
+        self.pushButton_generate_parent_id.setText(self.tr("XXXXXXXXXXX"))
+        self.pushButton_generate_parent_id.clicked.connect(self.on_ok)
         self.init_gui()
 
     def on_activate_grand_parent(self, state):
@@ -113,9 +116,11 @@ class ClassSubclassBrowserParentIdDialog(QtWidgets.QDialog, FORM_CLASS):
     def on_ok(self):
         """Selection of parent layers done"""
         self.get_values()
-        #print(self.settings)
-        self.accept()
-        self.close()
+        print(self.settings)
+        self.customSignal.emit(self.settings)
+        #self.accept()
+        #self.close()
+
 
     def on_cancel(self):
         """Handle cancel clicked - close dialog"""
@@ -131,6 +136,7 @@ class ClassSubclassBrowserParentIdDialog(QtWidgets.QDialog, FORM_CLASS):
         self.check_box_activate_great_parent.setChecked(False)
         self.check_box_activate_great_parent.setEnabled(False)
         self.label.setText(f"Select {self.child_class_string} Parent Layer")
+        self.show()
 
     def get_values(self):
         self.settings = [self.combo_box_parentlayer.currentText(),'','']

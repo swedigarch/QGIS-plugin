@@ -215,15 +215,27 @@ class IntrasisAnalysisBrowseTablesDialog(QtWidgets.QDialog, FORM_CLASS):
                 parent_id_dlg.tableView_parent.setSortingEnabled(True)
                 parent_id_dlg.tableView_parent.resizeColumnsToContents()
                 self.pb_open_parent_id_dialog.setEnabled(True)
-                if parent_id_dlg.exec_() == QDialog.Accepted:
+                def handle_custom_signal(settings):
+                    print(f"fick dessa data: {settings}")
+                    print(f"self.parent_id_dlg.settings: {parent_id_dlg.settings}")
                     values = parent_id_dlg.settings
                     self.create_parent_id_based_on_chosen_relation(values, relation_table)
+                parent_id_dlg.customSignal.connect(handle_custom_signal)
+                parent_id_dlg.show(self)
+                
+        #self.create_parent_id_based_on_chosen_relation(self.data, relation_table)
+                #if self.parent_id_dlg.exec_() == QDialog.Accepted:
+                #    values = self.parent_id_dlg.settings
+                #    self.create_parent_id_based_on_chosen_relation(values, relation_table)
+                #if self.parent_id_dlg.exec_() == QDialog.Accepted:
+                #    values = self.parent_id_dlg.settings
+                #    self.create_parent_id_based_on_chosen_relation(values, relation_table)
         else:
             QgsMessageLog.logMessage(f"Exception: {exception}",
                                  MESSAGE_CATEGORY, Qgis.Critical)
             self.pb_open_parent_id_dialog.setEnabled(True)
             raise exception
-    
+
     def create_parent_id_based_on_chosen_relation(self, values, relation_table):
         #print(f"Received values: {values} Start extracting relations")
         chosen_parentid = None
