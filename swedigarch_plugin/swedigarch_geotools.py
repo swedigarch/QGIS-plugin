@@ -328,6 +328,7 @@ class SwedigarchGeotools:
             self.dlg_browse_tables.show_messagebox_no_loaded_gpkg(QIcon(":/plugins/swedigarch_plugin/assets/svedigark.svg"))
             return
         user_select_klicked = self.dlg_browse_tables.select_and_activate_intrasis_geopackage()
+        self.dlg_browse_tables.init_gui()
         if not user_select_klicked:
             return
 

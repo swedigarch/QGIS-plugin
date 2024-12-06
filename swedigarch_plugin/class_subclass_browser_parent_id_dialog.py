@@ -52,9 +52,10 @@ class ClassSubclassBrowserParentIdDialog(QtWidgets.QDialog, FORM_CLASS):
         self.setupUi(self)
         self.parent_dialog_df = parent_dialog_df
         self.child_class_string = child_class_string
-        self.button_box_generate_parent_id.button(QtWidgets.QDialogButtonBox.Cancel).setText(self.tr("Cancel"))
-        self.button_box_generate_parent_id.button(QtWidgets.QDialogButtonBox.Ok).setText(self.tr("Create ParentId Table"))
-        self.button_box_generate_parent_id.accepted.connect(self.on_ok)
+        self.button_box_generate_parent_id.button(QtWidgets.QDialogButtonBox.Close).setText(self.tr("Close"))
+        #self.button_box_generate_parent_id.button(QtWidgets.QDialogButtonBox.Ok).setText(self.tr("Create ParentId Table"))
+        #self.button_box_generate_parent_id.accepted.connect(self.on_ok)
+        self.button_box_generate_parent_id.clicked.connect(self.on_cancel)
         self.check_box_activate_grand_parent.stateChanged.connect(self.on_activate_grand_parent)
         self.check_box_activate_great_parent.stateChanged.connect(self.on_activate_great_parent)
         self.settings = []
@@ -62,7 +63,8 @@ class ClassSubclassBrowserParentIdDialog(QtWidgets.QDialog, FORM_CLASS):
         self.combo_box_parentlayer.currentIndexChanged.connect(self.update_combo_box_grandparentlayer)
         self.combo_box_grandparentlayer.currentIndexChanged.connect(self.update_combo_box_greatgrandparentlayer)
         self.check_box_activate_grand_parent.stateChanged.connect(self.update_check_box_activate_great_parent)
-        self.pushButton_generate_parent_id.setText(self.tr("XXXXXXXXXXX"))
+        self.text_pb_generate_parent_id = self.tr("Create ParentIds Table")
+        self.pushButton_generate_parent_id.setText(self.text_pb_generate_parent_id)
         self.pushButton_generate_parent_id.clicked.connect(self.on_ok)
         self.init_gui()
 
@@ -102,7 +104,10 @@ class ClassSubclassBrowserParentIdDialog(QtWidgets.QDialog, FORM_CLASS):
         self.combo_box_grandparentlayer.clear()
         selected_category = self.combo_box_parentlayer.currentText()
         filtered_df = self.parent_dialog_df[self.parent_dialog_df['parent_class'] == selected_category]
-        self.combo_box_grandparentlayer.addItems(filtered_df['grand_parent_class'].unique())
+        grandparent_items = filtered_df['grand_parent_class'].dropna().unique()
+        #print(grandparent_items)
+        self.combo_box_grandparentlayer.addItems(grandparent_items)
+        #self.combo_box_grandparentlayer.addItems(filtered_df['grand_parent_class'].unique())
         self.combo_box_grandparentlayer.setSizeAdjustPolicy(QComboBox.AdjustToContents)
         self.update_combo_box_greatgrandparentlayer()  # Reset combo3
 
@@ -110,7 +115,9 @@ class ClassSubclassBrowserParentIdDialog(QtWidgets.QDialog, FORM_CLASS):
         self.combo_box_greatgrandparentlayer.clear()
         selected_type = self.combo_box_grandparentlayer.currentText()
         filtered_df = self.parent_dialog_df[self.parent_dialog_df['grand_parent_class'] == selected_type]
-        self.combo_box_greatgrandparentlayer.addItems(filtered_df['great_grand_parent_class'].unique())
+        greatgrandparent_items = filtered_df['great_grand_parent_class'].dropna().unique()
+        self.combo_box_greatgrandparentlayer.addItems(greatgrandparent_items)
+        #self.combo_box_greatgrandparentlayer.addItems(filtered_df['great_grand_parent_class'].unique())
         self.combo_box_greatgrandparentlayer.setSizeAdjustPolicy(QComboBox.AdjustToContents)
 
     def on_ok(self):
@@ -127,6 +134,12 @@ class ClassSubclassBrowserParentIdDialog(QtWidgets.QDialog, FORM_CLASS):
         print("Dialog closed")
         self.close()
 
+    def closeEvent(self, event):
+        # Här kan du lägga till den kod som ska köras när dialogen stängs
+        print("Dialogen stängs!")
+        # Acceptera stängningshändelsen
+        event.accept()
+
     def init_gui(self):
         """Initialize gui components and load data"""
         print("dialog open")
@@ -135,7 +148,9 @@ class ClassSubclassBrowserParentIdDialog(QtWidgets.QDialog, FORM_CLASS):
         self.combo_box_greatgrandparentlayer.setEnabled(False)
         self.check_box_activate_great_parent.setChecked(False)
         self.check_box_activate_great_parent.setEnabled(False)
-        self.label.setText(f"Select {self.child_class_string} Parent Layer")
+        #self.label.setText(f"Select {self.child_class_string} Parent Layer")
+        self.label_class_subclass_table.setText(f"For table <b>{self.child_class_string}</b>")
+        self.label_found_relationships.setText(f"Relationships found for the table <b>{self.child_class_string}</b>")
         self.show()
 
     def get_values(self):

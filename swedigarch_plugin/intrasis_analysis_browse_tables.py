@@ -140,6 +140,8 @@ class IntrasisAnalysisBrowseTablesDialog(QtWidgets.QDialog, FORM_CLASS):
     def generate_parent_id(self, task:QgsTask):
         """Show dialog for generating parent id to objects without geometry"""
         task.setProgress(1)
+        child_class_string = f"{self.class_subclass_attributes.class_item}.{self.class_subclass_attributes.subclass_item}"
+        #print(current_selection)
         object_id_data_frame = self.class_subclass_attributes.objects_dataframe.copy()
         child_id_string = object_id_data_frame['object_id'].tolist()
         child_id_string = ', '.join(map(str, child_id_string))
@@ -176,7 +178,7 @@ class IntrasisAnalysisBrowseTablesDialog(QtWidgets.QDialog, FORM_CLASS):
         #relation_tableX = relation_tableX.drop_duplicates(subset=['parent_class','grand_parent_class','great_grand_parent_class'])[['parent_class','grand_parent_class','great_grand_parent_class','parenthierarchy','parenthierarchy_count']]
         task.setProgress(95)
 
-        child_class_string = ClassSubclassBrowserUtils.get_child_class(self.current_gpkg, child_id_string)
+        #child_class_string = ClassSubclassBrowserUtils.get_child_class(self.current_gpkg, child_id_string)
         #parent_dialog_df = relation_table.drop_duplicates(subset=['parent_class','grand_parent_class','great_grand_parent_class'])[['parent_class','grand_parent_class','great_grand_parent_class','parenthierarchy','parenthierarchy_count']]
         parent_dialog_df = relation_tableX.drop_duplicates(subset=['parent_class','grand_parent_class','great_grand_parent_class'])[['parent_class','grand_parent_class','great_grand_parent_class','parenthierarchy','parenthierarchy_count']]
 
@@ -191,13 +193,14 @@ class IntrasisAnalysisBrowseTablesDialog(QtWidgets.QDialog, FORM_CLASS):
         if task.isCanceled():
             self.stopped(task)
             return None
+        #return [relation_tableX, child_class_string, parent_dialog_df]
         return [relation_tableX, child_class_string, parent_dialog_df]
 
     def stopped(self, task):
         QgsMessageLog.logMessage(
         'Task "{name}" was cancelled'.format(name=task.description()),
         MESSAGE_CATEGORY, Qgis.Info)
-    
+
     def handle_result_generate_parent_id(self, exception, result):
         if exception is None:
             if result is None:
@@ -211,15 +214,17 @@ class IntrasisAnalysisBrowseTablesDialog(QtWidgets.QDialog, FORM_CLASS):
                 child_class_string = result[1]
                 parent_dialog_df = result[2]
                 parent_id_dlg = ClassSubclassBrowserParentIdDialog(parent_dialog_df, child_class_string)
-                parent_id_dlg.tableView_parent.setModel(TableModelParenID(table_data=parent_dialog_df))
+                #parent_id_dlg.tableView_parent.setModel(TableModelParenID(table_data=parent_dialog_df))
+                parent_id_dlg.tableView_parent.setModel(TableModelParenID(table_data=parent_dialog_df.drop('parenthierarchy', axis=1)))
                 parent_id_dlg.tableView_parent.setSortingEnabled(True)
                 parent_id_dlg.tableView_parent.resizeColumnsToContents()
-                self.pb_open_parent_id_dialog.setEnabled(True)
+                self.pb_open_parent_id_dialog.setEnabled(False)
                 def handle_custom_signal(settings):
                     print(f"fick dessa data: {settings}")
                     print(f"self.parent_id_dlg.settings: {parent_id_dlg.settings}")
                     values = parent_id_dlg.settings
-                    self.create_parent_id_based_on_chosen_relation(values, relation_table)
+                    if(values[0]!=''):
+                        self.create_parent_id_based_on_chosen_relation(values, relation_table)
                 parent_id_dlg.customSignal.connect(handle_custom_signal)
                 parent_id_dlg.show(self)
                 
@@ -244,53 +249,64 @@ class IntrasisAnalysisBrowseTablesDialog(QtWidgets.QDialog, FORM_CLASS):
         multiple_greatgrandparents = ''
         if(len(values[0])>0 and len(values[1])==0 and len(values[2])==0):
             chosen_parentid = 'filtrering på parent'
+            chosen_parentklass = f"_{values[0]}"
             #resultat = relation_table.query(f"parent_class == '{values[0]}'")[['child_id','parent_id', 'ParentId', 'parent_count', 'parenthierarchy','ParentIdString']]
             resultat = relation_table.query(f"parent_class == '{values[0]}'")[['child_id','parent_id', 'ParentId', 'parent_count','ParentIdString']]
             resultat.drop_duplicates(inplace=True)
-            resultat['log'] = 'OK'
+            resultat['InfoMultipleParents'] = ''
+            #resultat['InfoMultipleParents'] = 'OK'
             resultat['ParentClass'] = values[0]
-            resultat.loc[resultat['parent_count'] > 1, 'log'] = 'Flera träffar detekterade'
+            resultat.loc[resultat['parent_count'] > 1, 'InfoMultipleParents'] = 'Flera träffar detekterade'
             #för att kunna hantera missing value behöver Int64 används
             resultat['parent_id'] = resultat['parent_id'].astype('Int64')
             resultat['ParentId'] = resultat['ParentId'].astype('Int64')
             resultat.loc[resultat['parent_count'] > 1, ['parent_id','ParentId']] = pd.NA
+            ##############
+            resultat.loc[resultat['parent_count'] == 1, ['ParentIdString']] = pd.NA
             if (resultat['parent_count'] != 1).any():
                 multiple_parents = 'flera parents'
             #resultat.drop(columns=['parent_id','parent_count'], inplace=True)
         if(len(values[0])>0 and len(values[1])>0 and len(values[2])==0):
             chosen_parentid = 'filtrering på parent och grandparent'
+            chosen_parentklass = f"_{values[0]}_{values[1]}"
             #resultat = relation_table.query(f"parent_class == '{values[0]}' and grand_parent_class =='{values[1]}'")[['child_id','parent_id','grand_parent_id', 'ParentId','GrandParentId', 'parent_count','grand_parent_count', 'parenthierarchy','ParentIdString','GrandParentIdString']]
             resultat = relation_table.query(f"parent_class == '{values[0]}' and grand_parent_class =='{values[1]}'")[['child_id','parent_id','grand_parent_id', 'ParentId','GrandParentId', 'parent_count','grand_parent_count','ParentIdString','GrandParentIdString']]
             resultat.drop_duplicates(inplace=True)
-            resultat['log'] = 'OK'
+            resultat['InfoMultipleParents'] = ''
+            #resultat['InfoMultipleParents'] = 'OK'
             resultat['ParentClass'] = values[0]
             resultat['GrandParentClass'] = values[1]
-            resultat.loc[resultat['parent_count'] > 1, 'log'] = 'Flera träffar detekterade'
-            resultat.loc[resultat['grand_parent_count'] > 1, 'log'] = 'Flera träffar detekterade'
+            resultat.loc[resultat['parent_count'] > 1, 'InfoMultipleParents'] = 'Flera träffar detekterade'
+            resultat.loc[resultat['grand_parent_count'] > 1, 'InfoMultipleParents'] = 'Flera träffar detekterade'
             resultat['parent_id'] = resultat['parent_id'].astype('Int64')
             resultat['ParentId'] = resultat['ParentId'].astype('Int64')
             resultat['grand_parent_id'] = resultat['grand_parent_id'].astype('Int64')
             resultat['GrandParentId'] = resultat['GrandParentId'].astype('Int64')
             resultat.loc[resultat['parent_count'] > 1, ['parent_id','ParentId','grand_parent_id','GrandParentId']] = pd.NA
             resultat.loc[resultat['grand_parent_count'] > 1, ['grand_parent_id','GrandParentId']] = pd.NA
+            #############
+            resultat.loc[resultat['parent_count'] == 1, ['ParentIdString']] = pd.NA
+            resultat.loc[resultat['grand_parent_count'] == 1, ['GrandParentIdString']] = pd.NA
             if (resultat['parent_count'] != 1).any():
                 multiple_parents = 'flera parents, '
             if (resultat['grand_parent_count'] != 1).any():
                 multiple_grandparents = 'flera grand parents'
             #resultat.drop(columns=['parent_id','parent_count','grand_parent_id','grand_parent_count'], inplace=True)
-        
+
         if(len(values[0])>0 and len(values[1])>0 and len(values[2])>0):
             chosen_parentid = 'filtrering på parent, grandparent och greatgrandparent'
+            chosen_parentklass = f"_{values[0]}_{values[1]}_{values[2]}"
             #resultat = relation_table.query(f"parent_class == '{values[0]}' and grand_parent_class =='{values[1]}' and great_grand_parent_class =='{values[2]}'")[['child_id','parent_id','grand_parent_id','great_grand_parent_id', 'ParentId','GrandParentId','GreatGrandParentId', 'parent_count','grand_parent_count','great_grand_parent_count', 'parenthierarchy','ParentIdString','GrandParentIdString','GreatGrandParentIdString']]
             resultat = relation_table.query(f"parent_class == '{values[0]}' and grand_parent_class =='{values[1]}' and great_grand_parent_class =='{values[2]}'")[['child_id','parent_id','grand_parent_id','great_grand_parent_id', 'ParentId','GrandParentId','GreatGrandParentId', 'parent_count','grand_parent_count','great_grand_parent_count','ParentIdString','GrandParentIdString','GreatGrandParentIdString']]
             resultat.drop_duplicates(inplace=True)
-            resultat['log'] = 'OK'
+            resultat['InfoMultipleParents'] = ''
+            #resultat['InfoMultipleParents'] = 'OK'
             resultat['ParentClass'] = values[0]
             resultat['GrandParentClass'] = values[1]
             resultat['GreatGrandParentClass'] = values[2]
-            resultat.loc[resultat['parent_count'] > 1, 'log'] = 'Flera träffar detekterade'
-            resultat.loc[resultat['grand_parent_count'] > 1, 'log'] = 'Flera träffar detekterade'
-            resultat.loc[resultat['great_grand_parent_count'] > 1, 'log'] = 'Flera träffar detekterade'
+            resultat.loc[resultat['parent_count'] > 1, 'InfoMultipleParents'] = 'Flera träffar detekterade'
+            resultat.loc[resultat['grand_parent_count'] > 1, 'InfoMultipleParents'] = 'Flera träffar detekterade'
+            resultat.loc[resultat['great_grand_parent_count'] > 1, 'InfoMultipleParents'] = 'Flera träffar detekterade'
             resultat['parent_id'] = resultat['parent_id'].astype('int64')
             resultat['ParentId'] = resultat['ParentId'].astype('Int64')
             resultat['grand_parent_id'] = resultat['grand_parent_id'].astype('int64')
@@ -300,6 +316,10 @@ class IntrasisAnalysisBrowseTablesDialog(QtWidgets.QDialog, FORM_CLASS):
             resultat.loc[resultat['parent_count'] > 1, ['parent_id','ParentId','grand_parent_id','GrandParentId','great_grand_parent_id','GreatGrandParentId']] = pd.NA
             resultat.loc[resultat['grand_parent_count'] > 1, ['grand_parent_id','GrandParentId','great_grand_parent_id','GreatGrandParentId']] = pd.NA
             resultat.loc[resultat['great_grand_parent_count'] > 1, ['great_grand_parent_id','GreatGrandParentId']] = pd.NA
+            ##############
+            resultat.loc[resultat['parent_count'] == 1, ['ParentIdString']] = pd.NA
+            resultat.loc[resultat['grand_parent_count'] == 1, ['GrandParentIdString']] = pd.NA
+            resultat.loc[resultat['great_grand_parent_count'] == 1, ['GreatGrandParentIdString']] = pd.NA
             if (resultat['parent_count'] != 1).any():
                 multiple_parents = 'flera parents, '
             if (resultat['grand_parent_count'] != 1).any():
@@ -330,17 +350,22 @@ class IntrasisAnalysisBrowseTablesDialog(QtWidgets.QDialog, FORM_CLASS):
         #resultat.drop(columns=['parent_id','parent_count','grand_parent_id','grand_parent_count','great_grand_parent_id','great_grand_parent_count'], inplace=True)
         #resultat.drop(columns=['parent_id','parent_count'], inplace=True)
 
-        self.load_layer_with_parent_id_to_qgis_layer(resultat)
+        resultat.rename(columns={'ParentIdString': 'MultipleParents', 'GrandParentIdString':'MultipleGrandParents', 'GreatGrandParentIdString':'MultipleGreatGrandParents'}, inplace=True)#, 'old_name2': 'new_name2'}, inplace=True)
+        self.load_layer_with_parent_id_to_qgis_layer(resultat,chosen_parentklass)
 
     def showEvent(self, event):
-        """DialogShow event, returns selected databases to top list."""
+        print("""DialogShow event, returns selected databases to top list.""")
         super(IntrasisAnalysisBrowseTablesDialog, self).showEvent(event)
         self.title_string = "Intrasis Class/Subclass Browser "
         self.setWindowTitle(self.tr(self.title_string))
         self.init_gui()
 
     def init_gui(self):
-        '''Initialise GUI'''
+        print('''Initialise GUI''')
+        self.title_string = "Intrasis Class/Subclass Browser "
+        self.label_num_loaded_objects_info.setText('')
+        if(self.class_subclass_attributes is not None):
+            self.class_subclass_attributes.clear_qtablewidget()
         self.setWindowTitle(self.tr(self.title_string
                                     +self.selected_gpkg_string))
 
@@ -423,7 +448,7 @@ class IntrasisAnalysisBrowseTablesDialog(QtWidgets.QDialog, FORM_CLASS):
         if self.selected_gpkg_name is None or len(gpgk_files_intrasis) > 1:
             selected_gpkg_path_and_name = ''
         #get selected gpkg, activate selected
-            #if len(gpgk_files_intrasis) > 1
+            #if len(gpgk_files_intrasis) > 1:
             if len(gpgk_files_intrasis) > 1 and self.selected_gpkg is None :
                 sel_dlg = SelectGeoPackageDialog()
                 if sel_dlg.exec_():
@@ -449,7 +474,7 @@ class IntrasisAnalysisBrowseTablesDialog(QtWidgets.QDialog, FORM_CLASS):
                 self.current_gpkg = selected_gpkg_path_and_name
         return user_select_klicked
 
-    def load_layer_with_parent_id_to_qgis_layer(self, resultat) -> bool:
+    def load_layer_with_parent_id_to_qgis_layer(self, resultat, chosen_parent_class) -> bool:
         '''Creates QGIS layers from Class/Subclass browser data by 
         joining the browser data with geometry layers objects that 
         do not hold geometry is created as table without geometry'''
@@ -484,7 +509,8 @@ class IntrasisAnalysisBrowseTablesDialog(QtWidgets.QDialog, FORM_CLASS):
         if group_already_exist == 1:
             Utils.expand_group(group_name)
         #set layer name
-        temp_layername = self.class_subclass_attributes.temp_layername
+        #temp_layername = self.class_subclass_attributes.temp_layername
+        temp_layername = f"{self.class_subclass_attributes.temp_layername}{chosen_parent_class}"
 
         #Create layer ("table") with no geometry
         if len(objects_dataframe_.index) > 0:
@@ -620,11 +646,17 @@ class IntrasisAnalysisBrowseTablesDialog(QtWidgets.QDialog, FORM_CLASS):
         #Get datatypes attribute from self.class_subclass_attributes object, note .copy()
         #If not copied the attributes_datatypes_dict will not be a separate object and will cause problems
         attributes_datatypes_dict = self.class_subclass_attributes.attributes_datatypes_dict.copy()
-
         if len(attributes_datatypes_dict) != 0:
             for attrib in attributes_datatypes_dict:
-                if attrib is not None:
-                    attributes_datatypes_dict[attrib] = Utils.get_qvariant_type_from_attribute_data_type(attributes_datatypes_dict[attrib])
+                if attrib == attrib:
+                    if attrib is not None:
+                        attributes_datatypes_dict[attrib] = Utils.get_qvariant_type_from_attribute_data_type(attributes_datatypes_dict[attrib])
+                if attrib != attrib:
+                    attributes_datatypes_dict[attrib] = QVariant.String
+                if attrib is None:
+                    attributes_datatypes_dict[attrib] = QVariant.String
+                #if attrib is not None:#hur löstes detta i andra funktioner?
+                #    attributes_datatypes_dict[attrib] = Utils.get_qvariant_type_from_attribute_data_type(attributes_datatypes_dict[attrib])
         #Because not all datatypes exist in self.class_subclass_attributes.attributes_datatypes_dict
         #only datatypes from attributes.datatypes the rest of the datatypes is set here 
         attribute_datatypes['IntrasisId'] = QVariant.Int
@@ -1908,7 +1940,8 @@ class populateTableFromGpkg:
         if number_of_attributes['antal_attribut_id'].iloc[0] > 0:
             self.objects_dataframe['object_id'] = self.objects_dataframe.index
             conn = sqlite3.connect(self.selected_gpkg)
-            class_subclass_dataframe = pd.read_sql_query('select object_id, IntrasisId, Name, Class, SubClass from objects', conn)
+            #class_subclass_dataframe = pd.read_sql_query('select object_id, IntrasisId, Name, Class, SubClass from objects', conn)
+            class_subclass_dataframe = pd.read_sql_query('select object_id, IntrasisId, Name, Class, SubClass, geometry_count from objects', conn)
 
             class_subclass_dataframe = class_subclass_dataframe.set_index(['object_id'])
             conn.close()
@@ -1950,6 +1983,7 @@ class populateTableFromGpkg:
         attribute_label_order.insert(2,'Name')
         attribute_label_order.insert(3,'Class')
         attribute_label_order.insert(4,'SubClass')
+        attribute_label_order.insert(5,'geometry_count')
 
         attribute_label_order = [x for x in attribute_label_order if x in objects_dataframe_colnames]
         self.objects_dataframe = self.objects_dataframe[attribute_label_order].copy(deep=True)
@@ -2161,7 +2195,8 @@ class TableModel(QAbstractTableModel):
     def data(self, index: QModelIndex, role: int = ...) -> typing.Any:
         """Returns table data row as a string"""
         if role == Qt.DisplayRole:
-            return str(self.table_data.iloc[index.row()][index.column()])
+            #return str(self.table_data.iloc[index.row()][index.column()])
+            return str(self.table_data.iloc[index.row(),index.column()])
 
     def headerData(self, section: int, orientation: Qt.Orientation
                    , role: int = ...) -> typing.Any:
