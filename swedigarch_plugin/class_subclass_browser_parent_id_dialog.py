@@ -50,7 +50,7 @@ class ClassSubclassBrowserParentIdDialog(QtWidgets.QDialog, FORM_CLASS):
         # self.<objectname>, and you can use autoconnect slots - see
         # http://qt-project.org/doc/qt-4.8/designer-using-a-ui-file.html
         # #widgets-and-dialogs-with-auto-connect
-        self.setModal(True)
+        #self.setModal(True)
         #self.setWindowModality(Qt.WindowModal)
         self.setupUi(self)
         self.parent_dialog_df = parent_dialog_df

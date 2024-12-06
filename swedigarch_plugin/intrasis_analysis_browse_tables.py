@@ -43,7 +43,7 @@ from qgis.core import (
 )
 from qgis.PyQt import uic, QtWidgets
 from PyQt5.QtWidgets import QDialogButtonBox, QMessageBox, QDialog
-from PyQt5.QtCore import QVariant ,QAbstractTableModel, QModelIndex, Qt
+from PyQt5.QtCore import QVariant ,QAbstractTableModel, QModelIndex, Qt#, QContiguousCache
 import pandas as pd
 import processing
 from . import utils as Utils
@@ -52,6 +52,7 @@ from . import class_subclass_browser_utils as ClassSubclassBrowserUtils
 from .select_geo_package_dalog import SelectGeoPackageDialog
 from .help_dialog import HelpDialog
 from .class_subclass_browser_parent_id_dialog import ClassSubclassBrowserParentIdDialog
+from .class_subclass_cache import Cache
 ######################################
 #from . import browse_relations_utils as browse_relations_utils
 ######################################
@@ -74,6 +75,7 @@ class IntrasisAnalysisBrowseTablesDialog(QtWidgets.QDialog, FORM_CLASS):
         # #widgets-and-dialogs-with-auto-connect
         #Prepare variables
         self.setupUi(self)
+        self.cache = Cache(8)
         self.selected_gpkg_name = None
         self.selected_gpkg = None
         self.archeological_classes = None
@@ -210,6 +212,9 @@ class IntrasisAnalysisBrowseTablesDialog(QtWidgets.QDialog, FORM_CLASS):
                     MESSAGE_CATEGORY, Qgis.Warning)
                 self.pb_open_parent_id_dialog.setEnabled(True)
             else:
+                #self.cache.insert('objects_dataframe', self.class_subclass_attributes.objects_dataframe.copy())
+                self.cache.insert('class_subclass_attributes', self.class_subclass_attributes)
+                self.cache.insert('current_gpkg', self.current_gpkg)
                 relation_table = result[0]
                 child_class_string = result[1]
                 parent_dialog_df = result[2]
@@ -228,9 +233,10 @@ class IntrasisAnalysisBrowseTablesDialog(QtWidgets.QDialog, FORM_CLASS):
                 #parent_id_dlg.customSignal.connect(handle_custom_signal)
                 #parent_id_dlg.setWindowModality(Qt.WindowModal)
                 #parent_id_dlg.setModal(True)
-                self.setEnabled(False)
+                self.setEnabled(True)
                 def activate_dialog_signal():
                     print("fångade aktiveringssignal")
+                    self.cache.clear()
                     self.setEnabled(True)
                 parent_id_dlg.activate_dialog_signal.connect(activate_dialog_signal)
                 parent_id_dlg.customSignal.connect(handle_custom_signal)
@@ -488,7 +494,9 @@ class IntrasisAnalysisBrowseTablesDialog(QtWidgets.QDialog, FORM_CLASS):
 
         #self.disable_load_to_map()
         objects_dataframe_ = None
-        objects_dataframe_ = self.class_subclass_attributes.objects_dataframe.copy()
+        #objects_dataframe_ = self.class_subclass_attributes.objects_dataframe.copy()
+        #objects_dataframe_ = self.cache.get('objects_dataframe')
+        objects_dataframe_ = self.cache.get('class_subclass_attributes').objects_dataframe.copy()
         objects_dataframe_.reset_index(drop=True, inplace=True)
         objects_dataframe_.set_index('object_id')
 
@@ -501,7 +509,8 @@ class IntrasisAnalysisBrowseTablesDialog(QtWidgets.QDialog, FORM_CLASS):
         objects_dataframe_.drop(columns=['child_id'], inplace=True)
 
         #Create layer groups QGIS Table of contents "TOC"
-        selected_gpkg_name = self.current_gpkg.split('/')[-1]
+        #selected_gpkg_name = self.current_gpkg.split('/')[-1]
+        selected_gpkg_name = self.cache.get('current_gpkg').split('/')[-1]
         group_name="Class_Subclass"+'.'+selected_gpkg_name.rsplit('.',1)[0]
         root = QgsProject.instance().layerTreeRoot()
         group_already_exist = 0
@@ -517,7 +526,8 @@ class IntrasisAnalysisBrowseTablesDialog(QtWidgets.QDialog, FORM_CLASS):
             Utils.expand_group(group_name)
         #set layer name
         #temp_layername = self.class_subclass_attributes.temp_layername
-        temp_layername = f"{self.class_subclass_attributes.temp_layername}{chosen_parent_class}"
+        #temp_layername = f"{self.class_subclass_attributes.temp_layername}{chosen_parent_class}"
+        temp_layername = f"{self.cache.get('class_subclass_attributes').temp_layername}{chosen_parent_class}"
 
         #Create layer ("table") with no geometry
         if len(objects_dataframe_.index) > 0:
