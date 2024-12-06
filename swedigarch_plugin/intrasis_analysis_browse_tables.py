@@ -225,9 +225,16 @@ class IntrasisAnalysisBrowseTablesDialog(QtWidgets.QDialog, FORM_CLASS):
                     values = parent_id_dlg.settings
                     if(values[0]!=''):
                         self.create_parent_id_based_on_chosen_relation(values, relation_table)
+                #parent_id_dlg.customSignal.connect(handle_custom_signal)
+                #parent_id_dlg.setWindowModality(Qt.WindowModal)
+                #parent_id_dlg.setModal(True)
+                self.setEnabled(False)
+                def activate_dialog_signal():
+                    print("fångade aktiveringssignal")
+                    self.setEnabled(True)
+                parent_id_dlg.activate_dialog_signal.connect(activate_dialog_signal)
                 parent_id_dlg.customSignal.connect(handle_custom_signal)
                 parent_id_dlg.show(self)
-                
         #self.create_parent_id_based_on_chosen_relation(self.data, relation_table)
                 #if self.parent_id_dlg.exec_() == QDialog.Accepted:
                 #    values = self.parent_id_dlg.settings

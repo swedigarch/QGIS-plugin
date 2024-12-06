@@ -41,6 +41,7 @@ FORM_CLASS, _ = uic.loadUiType(os.path.join(
 class ClassSubclassBrowserParentIdDialog(QtWidgets.QDialog, FORM_CLASS):
     """ClassSubclassBrowserParentIdDialog dialog. Dialog to generate Parent Id to objects without geometry"""
     customSignal = pyqtSignal(list)
+    activate_dialog_signal = pyqtSignal()
     def __init__(self, parent_dialog_df, child_class_string):
         """ClassSubclassBrowserParentIdDialog Constructor"""
         super(ClassSubclassBrowserParentIdDialog, self).__init__()
@@ -49,6 +50,8 @@ class ClassSubclassBrowserParentIdDialog(QtWidgets.QDialog, FORM_CLASS):
         # self.<objectname>, and you can use autoconnect slots - see
         # http://qt-project.org/doc/qt-4.8/designer-using-a-ui-file.html
         # #widgets-and-dialogs-with-auto-connect
+        self.setModal(True)
+        #self.setWindowModality(Qt.WindowModal)
         self.setupUi(self)
         self.parent_dialog_df = parent_dialog_df
         self.child_class_string = child_class_string
@@ -132,11 +135,13 @@ class ClassSubclassBrowserParentIdDialog(QtWidgets.QDialog, FORM_CLASS):
     def on_cancel(self):
         """Handle cancel clicked - close dialog"""
         print("Dialog closed")
+        self.activate_dialog_signal.emit()
         self.close()
 
     def closeEvent(self, event):
         # Här kan du lägga till den kod som ska köras när dialogen stängs
         print("Dialogen stängs!")
+        self.activate_dialog_signal.emit()
         # Acceptera stängningshändelsen
         event.accept()
 
