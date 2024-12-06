@@ -758,7 +758,7 @@ def list_geom_types_to_export(conn, callback:Callable) -> tuple[list[QgsWkbTypes
         callback(None, "Error in list_geom_types_to_export()", err)
         return [], f'{str(err).rstrip()}', False
 
-def export_simplified_gpkg(gpkg_path:str) -> tuple[bool, str]:
+def export_simplified_gpkg(gpkg_path:str) -> tuple[RetCode, str, str]:
     """Export given GPKG to simplified format"""
     try:
         path, ext = os.path.splitext(gpkg_path)
@@ -767,7 +767,7 @@ def export_simplified_gpkg(gpkg_path:str) -> tuple[bool, str]:
         print(f'export_simplified_gpkg() output_file: {output_file}')
 
         if not QFile(gpkg_path).exists():
-            return False, f'GeoPackage: "{gpkg_path}" does not exist'
+            return RetCode.UNKNOWN_ERROR, f'GeoPackage: "{gpkg_path}" does not exist', None
 
         layer_names = []
         gpkg_ds = ogr.Open(gpkg_path)
@@ -822,13 +822,6 @@ def export_simplified_gpkg(gpkg_path:str) -> tuple[bool, str]:
                 gp_conn.commit()
                 print('objects table copied')
 
-                """ # layer_styles table
-                data_frame = pd.read_sql('SELECT * FROM layer_styles', srcGp_conn)
-                #Utils.get_data_frame_from_gpkg()
-                data_frame.to_sql(name='layer_styles', con = gp_conn, if_exists='append', index=False)
-                gp_conn.commit()
-                print('layer_styles table copied') """
-
         # Fix field names with space in them, ESRI can't handle them
         columns_to_fix = []
         with closing(sqlite3.connect(output_file)) as gp_conn:
@@ -846,8 +839,8 @@ def export_simplified_gpkg(gpkg_path:str) -> tuple[bool, str]:
                 sql = f'ALTER TABLE project_information RENAME "{column}" TO "{fixed_name}"'
                 gp_conn.execute(sql)
                 gp_conn.commit()
-        return True, None
+        return RetCode.EXPORT_OK, None, output_file
     except Exception as ex:
         traceback.print_exc()
         print(f"Error in export_simplified_gpkg() {ex}")
-        return False, f"Error in export_simplified_gpkg() {ex}"
+        return RetCode.UNKNOWN_ERROR, f"Error in export_simplified_gpkg() {ex}", None
