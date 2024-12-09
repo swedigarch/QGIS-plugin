@@ -335,7 +335,7 @@ def export_database(conn:psycopg2.extensions.connection, host:str, port:int, use
 
                 number_excluded = export_class_attributes(conn, cur, row.ClassId, row.SubClassId, callback, detailed_print_outs, exclude_subclass_attributes)
                 if exclude_subclass_attributes and number_excluded > 0:
-                    log_string_excluded_subclasses += '\n"' + row.Class +' \ '+ row.SubClass + f'", number of excluded objects: {number_excluded}'
+                    log_string_excluded_subclasses += '\n"' + row.Class +' \\ '+ row.SubClass + f'", number of excluded objects: {number_excluded}'
 
                 layers_done = layers_done + attr_inc
                 db_progress = (layers_done / layer_export_steps) * 100
