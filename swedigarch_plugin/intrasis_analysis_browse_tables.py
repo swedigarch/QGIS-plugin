@@ -110,7 +110,7 @@ class IntrasisAnalysisBrowseTablesDialog(QtWidgets.QDialog, FORM_CLASS):
         self.comboBox_subclass.currentIndexChanged.connect(
             self.enable_button_read_to_table)
         self.pushButton_read_to_table.setEnabled(False)
-        self.pb_open_parent_id_dialog.setEnabled(False)
+        #self.pb_open_parent_id_dialog.setEnabled(False)
         self.pushButton_read_to_table.clicked.connect(
             self.start_task_load_table)
         self.pushButton_export_as_chart.clicked.connect(self.export_as_chart)
@@ -238,6 +238,7 @@ class IntrasisAnalysisBrowseTablesDialog(QtWidgets.QDialog, FORM_CLASS):
                     print("fångade aktiveringssignal")
                     self.cache.clear()
                     self.setEnabled(True)
+                    self.pb_open_parent_id_dialog.setEnabled(True)
                 parent_id_dlg.activate_dialog_signal.connect(activate_dialog_signal)
                 parent_id_dlg.customSignal.connect(handle_custom_signal)
                 parent_id_dlg.show(self)

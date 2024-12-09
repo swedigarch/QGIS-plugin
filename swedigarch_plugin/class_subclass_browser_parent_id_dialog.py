@@ -87,7 +87,7 @@ class ClassSubclassBrowserParentIdDialog(QtWidgets.QDialog, FORM_CLASS):
 
     def update_check_box_activate_great_parent(self):
         '''checkbox logics'''
-        if self.check_box_activate_grand_parent.isChecked():
+        if self.check_box_activate_grand_parent.isChecked() and self.combo_box_greatgrandparentlayer.count() > 0:
             self.check_box_activate_great_parent.setEnabled(True)
         else:
             self.check_box_activate_great_parent.setChecked(False)
@@ -100,6 +100,20 @@ class ClassSubclassBrowserParentIdDialog(QtWidgets.QDialog, FORM_CLASS):
         self.combo_box_grandparentlayer.clear()
         self.combo_box_greatgrandparentlayer.clear()
         class_items = self.parent_dialog_df['parent_class'].unique().tolist()
+        if len(class_items)==0:
+            #class_items = ['No Parents Found']
+            self.combo_box_parentlayer.setEnabled(False)
+            self.combo_box_grandparentlayer.setEnabled(False)
+            self.check_box_activate_grand_parent.setEnabled(False)
+            self.combo_box_greatgrandparentlayer.setEnabled(False)
+            self.pushButton_generate_parent_id.setEnabled(False)
+            self.check_box_activate_grand_parent.setChecked(False)
+            self.check_box_activate_great_parent.setChecked(False)
+        else:
+            self.combo_box_grandparentlayer.setEnabled(True)
+            self.check_box_activate_grand_parent.setEnabled(True)
+            self.pushButton_generate_parent_id.setEnabled(True)
+            #self.update_combo_box_grandparentlayer()
         self.combo_box_parentlayer.addItems(class_items)
         self.combo_box_parentlayer.setSizeAdjustPolicy(QComboBox.AdjustToContents)
 
@@ -108,9 +122,22 @@ class ClassSubclassBrowserParentIdDialog(QtWidgets.QDialog, FORM_CLASS):
         selected_category = self.combo_box_parentlayer.currentText()
         filtered_df = self.parent_dialog_df[self.parent_dialog_df['parent_class'] == selected_category]
         grandparent_items = filtered_df['grand_parent_class'].dropna().unique()
-        #print(grandparent_items)
+        #self.combo_box_grandparentlayer.addItems(grandparent_items)
+        if len(grandparent_items)==0:
+            #grandparent_items = ['No Grand Parents Found']
+            #self.combo_box_parentlayer.setEnabled(False)
+            self.combo_box_grandparentlayer.setEnabled(False)
+            self.check_box_activate_grand_parent.setEnabled(False)
+            self.combo_box_greatgrandparentlayer.setEnabled(False)
+            #self.pushButton_generate_parent_id.setEnabled(False)
+            self.check_box_activate_grand_parent.setChecked(False)
+            self.check_box_activate_great_parent.setChecked(False)
+            self.check_box_activate_great_parent.setEnabled(False)
+        else:
+            self.combo_box_grandparentlayer.setEnabled(True)
+            self.check_box_activate_grand_parent.setEnabled(True)
+            self.pushButton_generate_parent_id.setEnabled(True)
         self.combo_box_grandparentlayer.addItems(grandparent_items)
-        #self.combo_box_grandparentlayer.addItems(filtered_df['grand_parent_class'].unique())
         self.combo_box_grandparentlayer.setSizeAdjustPolicy(QComboBox.AdjustToContents)
         self.update_combo_box_greatgrandparentlayer()  # Reset combo3
 
@@ -119,8 +146,21 @@ class ClassSubclassBrowserParentIdDialog(QtWidgets.QDialog, FORM_CLASS):
         selected_type = self.combo_box_grandparentlayer.currentText()
         filtered_df = self.parent_dialog_df[self.parent_dialog_df['grand_parent_class'] == selected_type]
         greatgrandparent_items = filtered_df['great_grand_parent_class'].dropna().unique()
+        if len(greatgrandparent_items)==0:
+            #greatgrandparent_items = ['No Great Grand Parents Found']
+            #self.combo_box_parentlayer.setEnabled(False)
+            self.combo_box_greatgrandparentlayer.setEnabled(False)
+            #self.check_box_activate_grand_parent.setEnabled(False)
+            self.combo_box_greatgrandparentlayer.setEnabled(False)
+            #self.pushButton_generate_parent_id.setEnabled(False)
+        else:
+            self.combo_box_parentlayer.setEnabled(True)
+            self.combo_box_grandparentlayer.setEnabled(True)
+            self.combo_box_greatgrandparentlayer.setEnabled(True)
+            self.check_box_activate_grand_parent.setEnabled(True)
+            self.check_box_activate_great_parent.setEnabled(True)
+            self.pushButton_generate_parent_id.setEnabled(True)
         self.combo_box_greatgrandparentlayer.addItems(greatgrandparent_items)
-        #self.combo_box_greatgrandparentlayer.addItems(filtered_df['great_grand_parent_class'].unique())
         self.combo_box_greatgrandparentlayer.setSizeAdjustPolicy(QComboBox.AdjustToContents)
 
     def on_ok(self):
@@ -144,6 +184,14 @@ class ClassSubclassBrowserParentIdDialog(QtWidgets.QDialog, FORM_CLASS):
         self.activate_dialog_signal.emit()
         # Acceptera stängningshändelsen
         event.accept()
+
+    def keyPressEvent(self, event):
+        if event.key() == Qt.Key_Escape:
+            self.activate_dialog_signal.emit()
+            self.close()
+        else:
+            super().keyPressEvent(event)
+
 
     def init_gui(self):
         """Initialize gui components and load data"""
