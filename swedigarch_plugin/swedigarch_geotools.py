@@ -109,8 +109,8 @@ class SwedigarchGeotools:
 
         self.dlg = None
         self.dlg_browse_tables = None
-        self.title_export_gpkg_to_csv = self.tr('Export GPKG to CSV')
-        self.title_export_simplified_gpkg = self.tr('Export simplified version of GPKG')
+        self.title_export_gpkg_to_csv = self.tr('Export Intrasis GPKG to CSV')
+        self.title_export_simplified_gpkg = self.tr('Export to simplified version of Intrasis GPKG')
 
         # Explicitly signal using exceptions to silence warning
         ogr.UseExceptions()
@@ -222,7 +222,7 @@ class SwedigarchGeotools:
         self.add_action(
             '',
             text=self.title_export_simplified_gpkg,
-            callback=self.on_export_simplified_gpkg,
+            callback=self.export_simplified_gpkg,
             parent=self.iface.mainWindow(),
             add_to_toolbar=False)
 
@@ -349,9 +349,9 @@ class SwedigarchGeotools:
             export_folder = s.value("SwedigarchGeotools/exportFolder", "")
             print(f'start export_folder: {export_folder}')
             if QDir(export_folder).exists():
-                export_folder = QFileDialog.getExistingDirectory(None, self.tr('Select folder to convert GPKG to CSV in'), export_folder, QtWidgets.QFileDialog.ShowDirsOnly)
+                export_folder = QFileDialog.getExistingDirectory(None, self.tr('Select folder'), export_folder, QtWidgets.QFileDialog.ShowDirsOnly)
             else:
-                export_folder = QFileDialog.getExistingDirectory(None, self.tr('Select folder to convert GPKG to CSV in'), "", QtWidgets.QFileDialog.ShowDirsOnly)
+                export_folder = QFileDialog.getExistingDirectory(None, self.tr('Select folder'), "", QtWidgets.QFileDialog.ShowDirsOnly)
             if export_folder == '':
                 return # Canceled
 
@@ -377,7 +377,7 @@ class SwedigarchGeotools:
 
             msg_box.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
             msg_box.button(QMessageBox.Cancel).setText(self.tr("Cancel"))
-            text = self.tr('Start export of _COUNT_ Intrasis GeoPackages to CSV-zip files.\nIn directory _FOLDER_')
+            text = self.tr('Start export of _COUNT_ Intrasis GPKG to CSV-files in directory.\n_FOLDER_')
             text = text.replace('_COUNT_', f'{len(gpkg_files)}')
             text = text.replace('_FOLDER_', f'{export_folder}')
             msg_box.setText(text)
@@ -470,34 +470,163 @@ class SwedigarchGeotools:
             traceback.print_exc()
             print(f'export_gpkg_to_csv_done() Exception: {err}')
 
-    def on_export_simplified_gpkg(self) -> None:
+    def export_simplified_gpkg(self) -> None:
         """Export simplified version of GPKG"""
         try:
             s = QgsSettings()
             export_folder = s.value("SwedigarchGeotools/exportFolder", "")
-            print(f'start export_folder: {export_folder}')
-
-            options = QtWidgets.QFileDialog.Options()
-            gpkg_path = QtWidgets.QFileDialog.getOpenFileName(None, self.tr('Select Intrasis GPKG to export to simplified version'),
-                                                              export_folder, self.tr('GeoPackge (*.gpkg);;All files (*.*)'), '*.gpkg', options)[0]
-            if gpkg_path == '':
+            if QDir(export_folder).exists():
+                export_folder = QFileDialog.getExistingDirectory(None, self.tr('Select folder'), export_folder, QtWidgets.QFileDialog.ShowDirsOnly)
+            else:
+                export_folder = QFileDialog.getExistingDirectory(None, self.tr('Select folder'), "", QtWidgets.QFileDialog.ShowDirsOnly)
+            if export_folder == '':
                 return # Canceled
 
-            ok, error_msg = export_simplified_gpkg(gpkg_path)
+            already_simplified = []
+            existing_simplified = []
+            for gpkg_file in glob.glob(f'{export_folder}/*_simplified.gpkg'):
+                org_gpkg_file = gpkg_file.replace('_simplified.gpkg', '.gpkg')
+                print(f'Found simplified GPKG for: {org_gpkg_file}')
+                already_simplified.append(org_gpkg_file)
+                existing_simplified.append(gpkg_file)
+
+            print(f'Selected export_folder: {export_folder}')
+            all_gpkg_files = []
+            gpkg_files = []
+            for gpkg_file in glob.glob(f'{export_folder}/*.gpkg'):
+                if gpkg_file in already_simplified:
+                    print(f'skipping {gpkg_file}, alread have simplified version')
+                    continue
+
+                if gpkg_file in existing_simplified:
+                    print(f'skipping simplified version: {gpkg_file}')
+                    continue
+
+                all_gpkg_files.append(gpkg_file)
+                if Utils.is_intrasis_gpkg_export(gpkg_file) is True:
+                    gpkg_files.append(gpkg_file)
+                else:
+                    QgsMessageLog.logMessage(f'{gpkg_file} is not an Intrasis GPKG, skipping', self.title_export_simplified_gpkg, Qgis.Info)
+
+            print(f'gpkg_files: {gpkg_files}')
+
             msg_box = QMessageBox()
-            msg_box.setWindowTitle(self.tr('Result from:') + ' ' + self.title_export_simplified_gpkg)
-            msg_box.setStandardButtons(QMessageBox.Ok)
-            if ok:
-                text = self.tr('Successfully converted Intrasis GeoPackage to simplified version')
-                msg_box.setIcon(QMessageBox.Information)
-            else:
-                text = f'Error during runnig of "{self.title_export_simplified_gpkg}" Error: {error_msg}'
-                msg_box.setIcon(QMessageBox.Critical)
+            msg_box.setWindowTitle(self.title_export_simplified_gpkg)
+            msg_box.setIcon(QMessageBox.Information)
+            if len(gpkg_files) == 0:
+                msg_box.setStandardButtons(QMessageBox.Ok)
+                msg_box.button(QMessageBox.Ok).setText(self.tr("OK"))
+                if len(already_simplified) == len(existing_simplified):
+                    msg_box.setText(self.tr('All Intrasis GPKG in selected folder have already been exported to simplified version.'))
+                else:
+                    msg_box.setText(self.tr('Selected folder does not contain any Intrasis GPKG'))
+                msg_box.exec()
+                return
+
+            msg_box.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
+            msg_box.button(QMessageBox.Cancel).setText(self.tr("Cancel"))
+            text = self.tr('Start export of _COUNT_ Intrasis GPKG to simplified version of Intrasis GPKG.\nIn directory _FOLDER_')
+            text = text.replace('_COUNT_', f'{len(gpkg_files)}')
+            text = text.replace('_FOLDER_', f'{export_folder}')
             msg_box.setText(text)
-            msg_box.exec()
+            return_value = msg_box.exec()
+            if return_value != QMessageBox.Ok:
+                return
+
+            globals()['Task_export_simplified_gpkg'] = QgsTask.fromFunction(
+                self.title_export_simplified_gpkg,
+                self.task_export_simplified_gpkg,
+                on_finished=self.export_simplified_gpkg_done,
+                export_folder = export_folder,
+                gpkg_files = gpkg_files,
+                already_simplified = already_simplified)
+            QgsApplication.taskManager().addTask(globals()['Task_export_simplified_gpkg'])
+            QgsApplication.processEvents()
+        except Exception as err:
+            print(f'export_simplified_gpkg() Exception: {err}')
+
+    def task_export_simplified_gpkg(self, task:QgsTask, export_folder:str, gpkg_files:list, already_simplified:list) -> tuple[int, int]:
+        """Task to run actual calls to export_simplified_gpkg()"""
+        try:
+            task.setProgress(1)
+            with open(export_utils.create_log_file_name(export_folder, "folder_export_simplified_gpkg"), "w", encoding='utf-8') as log_file:
+                failed = 0
+                total_count = 0
+                found_count = len(gpkg_files) + len(already_simplified)
+                print(f'Found {found_count} Intrasis GPKG files in folder: {export_folder}')
+                all_gpkg = gpkg_files + already_simplified
+                max_length = len(max(all_gpkg, key=len))
+                if len(already_simplified) > 0:
+                    for gpkg_file in already_simplified:
+                        padded_gpkg_file = gpkg_file.ljust(max_length + 2)
+                        log_file.write(f'{padded_gpkg_file} alread have simplified version, skipping\n')
+                    log_file.write('\n')
+
+                log_file.write(f'Starting simplified export of {len(gpkg_files)} Intrasis GPKG files in folder: {export_folder}\n')
+                log_file.flush()
+                file_count = len(gpkg_files)
+                text = self.tr('Starting simplified export of _FILE_COUNT_ Intrasis GPKG file')
+                text = text.replace('_FILE_COUNT_', f'{file_count}')
+                QgsMessageLog.logMessage(text ,self.title_export_simplified_gpkg, Qgis.Info)
+                for gpkg_file in gpkg_files:
+                    if task.isCanceled():
+                        QgsMessageLog.logMessage(f'Task was canceled: {task.description()}', self.title_export_simplified_gpkg, Qgis.Info)
+                        return None
+
+                    padded_gpkg_file = gpkg_file.ljust(max_length + 2)
+                    ret_code, error_msg, output_filename = export_simplified_gpkg(gpkg_file)
+                    total_count += 1
+                    if ret_code == RetCode.EXPORT_OK:
+                        log_file.write(f'{padded_gpkg_file} simplified export OK  ({output_filename})\n')
+                        QgsMessageLog.logMessage(f'{padded_gpkg_file} simplified export OK ({output_filename})' ,self.title_export_simplified_gpkg, Qgis.Info)
+                    else:
+                        log_file.write(f'{padded_gpkg_file} Error during simplified export: {error_msg}\n')
+                        QgsMessageLog.logMessage(f'{padded_gpkg_file} Error during simplified export: {error_msg})' ,self.title_export_simplified_gpkg, Qgis.Warning)
+                        failed += 1
+
+                    log_file.flush()
+                    task.setProgress((total_count / file_count) * 100)
+
+                task.setProgress(100)
+                return total_count, failed
 
         except Exception as err:
-            print(f'export_gpkg_to_csv() Exception: {err}')
+            print(f'task_export_simplified_gpkg() Exception: {err}')
+            QgsMessageLog.logMessage(f'Error: {err}', self.title_export_simplified_gpkg, Qgis.Critical)
+            raise
+        finally:
+            if log_file is not None:
+                log_file.close()
+
+    def export_simplified_gpkg_done(self, exception:Exception, result:tuple[int, int]=None) -> None:
+        """GPKG export to Simplified GPKG done
+        Exception is not None if self.task_export_simplified_gpkg raises an exception.
+        result is the return value of self.task_export_simplified_gpkg."""
+        try:
+            msg_box = QMessageBox()
+            msg_box.setWindowTitle(self.tr('Result from:') + ' ' + f'{self.title_export_simplified_gpkg}')
+            msg_box.setStandardButtons(QMessageBox.Ok)
+            if result is None:
+                text = f'Error during running of "{self.title_export_simplified_gpkg}" Exception: {exception}'
+                msg_box.setText(text)
+                msg_box.setIcon(QMessageBox.Critical)
+            else:
+                total_count, failed = result
+                if failed == 0:
+                    text = self.tr("Successfully converted all _COUNT_ Intrasis GPKG to simplified version.")
+                    text = text.replace('_COUNT_', f'{total_count}')
+                    msg_box.setIcon(QMessageBox.Information)
+                elif failed > 0:
+                    text = self.tr("Have tried to convert _COUNT_ALL_ Intrasis GPKG to simplified version, _COUNT_ failed.")
+                    text = text.replace('_COUNT_ALL_', f'{total_count}')
+                    text = text.replace('_COUNT_', f'{failed}')
+                    msg_box.setIcon(QMessageBox.Warning)
+                msg_box.setText(text)
+            msg_box.exec()
+            del globals()['Task_export_simplified_gpkg']
+        except Exception as err:
+            traceback.print_exc()
+            print(f'export_simplified_gpkg_done() Exception: {err}')
 
     def show_about(self) -> None:
         """Display the about message box"""

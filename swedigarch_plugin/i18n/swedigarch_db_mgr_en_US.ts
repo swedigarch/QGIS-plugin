@@ -1069,7 +1069,7 @@ Otherwice the GeoPackage will not be exported.</translation>
 <context>
     <name>SwedigarchGeotools</name>
     <message>
-        <location filename="../swedigarch_geotools.py" line="246"/>
+        <location filename="../swedigarch_geotools.py" line="244"/>
         <source>&amp;Swedigarch Geotools</source>
         <translation>&amp;Swedigarch Geotools</translation>
     </message>
@@ -1099,9 +1099,9 @@ Otherwice the GeoPackage will not be exported.</translation>
         <translation type="obsolete">Select GeoPackage to export as zipped CSV files</translation>
     </message>
     <message>
-        <location filename="../swedigarch_geotools.py" line="480"/>
+        <location filename="../swedigarch_geotools.py" line="636"/>
         <source>GeoPackge (*.gpkg);;All files (*.*)</source>
-        <translation>GeoPackge (*.gpkg);;All files (*.*)</translation>
+        <translation type="obsolete">GeoPackge (*.gpkg);;All files (*.*)</translation>
     </message>
     <message>
         <location filename="." line="6357100"/>
@@ -1139,31 +1139,31 @@ Otherwice the GeoPackage will not be exported.</translation>
         <translation>Intrasis DB Manager</translation>
     </message>
     <message>
-        <location filename="../swedigarch_geotools.py" line="231"/>
+        <location filename="../swedigarch_geotools.py" line="229"/>
         <source>About</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../swedigarch_geotools.py" line="519"/>
+        <location filename="../swedigarch_geotools.py" line="646"/>
         <source>About {0}</source>
         <translation>About {0}</translation>
     </message>
     <message>
-        <location filename="../swedigarch_geotools.py" line="379"/>
-        <source>Start export of _COUNT_ Intrasis GeoPackages to CSV-zip files.
-In directory _FOLDER_</source>
-        <translation>Start export of _COUNT_ Intrasis GeoPackages to CSV-zip files.
-In directory _FOLDER_</translation>
+        <location filename="../swedigarch_geotools.py" line="377"/>
+        <source>Start export of _COUNT_ Intrasis GPKG to CSV-files in directory.
+_FOLDER_</source>
+        <translation>Start export of _COUNT_ Intrasis GPKG to CSV-files in directory.
+_FOLDER_</translation>
     </message>
     <message>
         <location filename="../swedigarch_geotools.py" line="112"/>
-        <source>Export GPKG to CSV</source>
-        <translation>Export GPKG to CSV</translation>
+        <source>Export Intrasis GPKG to CSV</source>
+        <translation>Export Intrasis GPKG to CSV</translation>
     </message>
     <message>
-        <location filename="../swedigarch_geotools.py" line="353"/>
+        <location filename="../swedigarch_geotools.py" line="351"/>
         <source>Select folder to convert GPKG to CSV in</source>
-        <translation>Select folder to convert GPKG to CSV in</translation>
+        <translation type="obsolete">Select folder to convert GPKG to CSV in</translation>
     </message>
     <message>
         <location filename="../swedigarch_geotools.py" line="438"/>
@@ -1171,7 +1171,7 @@ In directory _FOLDER_</translation>
         <translation type="obsolete">Result from: {self.title_export_gpkg_to_csv}</translation>
     </message>
     <message>
-        <location filename="../swedigarch_geotools.py" line="373"/>
+        <location filename="../swedigarch_geotools.py" line="371"/>
         <source>Selected folder does not contain any Intrasis GeoPackages</source>
         <translation>Selected folder does not contain any Intrasis GeoPackages</translation>
     </message>
@@ -1181,44 +1181,81 @@ In directory _FOLDER_</translation>
         <translation type="obsolete">Sucessfully converted all _COUNT_ Intrasis GeoPackages to CSV.</translation>
     </message>
     <message>
-        <location filename="../swedigarch_geotools.py" line="461"/>
+        <location filename="../swedigarch_geotools.py" line="459"/>
         <source>Have tried to convert _COUNT_ALL_ Intrasis GeoPackages to CSV, _COUNT_ failed.</source>
         <translation>Have tried to convert _COUNT_ALL_ Intrasis GeoPackages to CSV, _COUNT_ failed.</translation>
     </message>
     <message>
-        <location filename="../swedigarch_geotools.py" line="487"/>
+        <location filename="../swedigarch_geotools.py" line="604"/>
         <source>Result from:</source>
         <translation>Result from:</translation>
     </message>
     <message>
         <location filename="../swedigarch_geotools.py" line="113"/>
-        <source>Export simplified version of GPKG</source>
-        <translation>Export simplified version of GPKG</translation>
+        <source>Export to simplified version of Intrasis GPKG</source>
+        <translation>Export to simplified version of Intrasis GPKG</translation>
     </message>
     <message>
-        <location filename="../swedigarch_geotools.py" line="457"/>
+        <location filename="../swedigarch_geotools.py" line="455"/>
         <source>Successfully converted all _COUNT_ Intrasis GeoPackages to CSV.</source>
         <translation>Successfully converted all _COUNT_ Intrasis GeoPackages to CSV.</translation>
     </message>
     <message>
-        <location filename="../swedigarch_geotools.py" line="480"/>
+        <location filename="../swedigarch_geotools.py" line="636"/>
         <source>Select Intrasis GPKG to export to simplified version</source>
-        <translation>Select Intrasis GPKG to export to simplified version</translation>
+        <translation type="obsolete">Select Intrasis GPKG to export to simplified version</translation>
     </message>
     <message>
-        <location filename="../swedigarch_geotools.py" line="490"/>
-        <source>Successfully converted Intrasis GeoPackage to simplified version</source>
-        <translation>Successfully converted Intrasis GeoPackage to simplified version</translation>
+        <location filename="../swedigarch_geotools.py" line="646"/>
+        <source>Successfully converted Intrasis GPKG to simplified version</source>
+        <translation type="obsolete">Successfully converted Intrasis GPKG to simplified version</translation>
     </message>
     <message>
-        <location filename="../swedigarch_geotools.py" line="372"/>
+        <location filename="../swedigarch_geotools.py" line="515"/>
         <source>OK</source>
         <translation>OK</translation>
     </message>
     <message>
-        <location filename="../swedigarch_geotools.py" line="378"/>
+        <location filename="../swedigarch_geotools.py" line="524"/>
         <source>Cancel</source>
         <translation>Cancel</translation>
+    </message>
+    <message>
+        <location filename="../swedigarch_geotools.py" line="478"/>
+        <source>Select folder</source>
+        <translation>Select folder</translation>
+    </message>
+    <message>
+        <location filename="../swedigarch_geotools.py" line="517"/>
+        <source>All Intrasis GPKG in selected folder have already been exported to simplified version.</source>
+        <translation>All intrasis GPKG in selected folder have already been exported to simplified version.</translation>
+    </message>
+    <message>
+        <location filename="../swedigarch_geotools.py" line="519"/>
+        <source>Selected folder does not contain any Intrasis GPKG</source>
+        <translation>Selected folder does not contain any Intrasis GPKG</translation>
+    </message>
+    <message>
+        <location filename="../swedigarch_geotools.py" line="525"/>
+        <source>Start export of _COUNT_ Intrasis GPKG to simplified version of Intrasis GPKG.
+In directory _FOLDER_</source>
+        <translation>Start export of _COUNT_ Intrasis GPKG to simplified version of Intrasis GPKG.
+In directory _FOLDER_</translation>
+    </message>
+    <message>
+        <location filename="../swedigarch_geotools.py" line="565"/>
+        <source>Starting simplified export of _FILE_COUNT_ Intrasis GPKG file</source>
+        <translation>Starting simplified export of _FILE_COUNT_ Intrasis GPKG file</translation>
+    </message>
+    <message>
+        <location filename="../swedigarch_geotools.py" line="613"/>
+        <source>Successfully converted all _COUNT_ Intrasis GPKG to simplified version.</source>
+        <translation>Successfully converted all _COUNT_ Intrasis GPKG to simplified version.</translation>
+    </message>
+    <message>
+        <location filename="../swedigarch_geotools.py" line="617"/>
+        <source>Have tried to convert _COUNT_ALL_ Intrasis GPKG to simplified version, _COUNT_ failed.</source>
+        <translation>Have tried to convert _COUNT_ALL_ Intrasis GPKG to simplified version, _COUNT_ failed.</translation>
     </message>
 </context>
 </TS>
