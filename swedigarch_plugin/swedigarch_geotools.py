@@ -508,15 +508,21 @@ class SwedigarchGeotools:
                 else:
                     QgsMessageLog.logMessage(f'{gpkg_file} is not an Intrasis GPKG, skipping', self.title_export_simplified_gpkg, Qgis.Info)
 
-            print(f'gpkg_files: {gpkg_files}')
-
             msg_box = QMessageBox()
             msg_box.setWindowTitle(self.title_export_simplified_gpkg)
             msg_box.setIcon(QMessageBox.Information)
             if len(gpkg_files) == 0:
                 msg_box.setStandardButtons(QMessageBox.Ok)
                 msg_box.button(QMessageBox.Ok).setText(self.tr("OK"))
-                if len(already_simplified) == len(existing_simplified):
+                if len(all_gpkg_files) > 0:
+                    msg = self.tr('Folder \"_EXPORT_FOLDER_\" does not contain any Intrasis GPKG files.')
+                    msg = msg.replace('_EXPORT_FOLDER_', f'{export_folder}')
+                    msg_box.setText(msg)
+                elif len(all_gpkg_files) == 0:
+                    msg = self.tr('Folder \"_EXPORT_FOLDER_\" does not contain any GPKG files.')
+                    msg = msg.replace('_EXPORT_FOLDER_', f'{export_folder}')
+                    msg_box.setText(msg)
+                elif len(already_simplified) == len(existing_simplified):
                     msg_box.setText(self.tr('All Intrasis GPKG in selected folder have already been exported to simplified version.'))
                 else:
                     msg_box.setText(self.tr('Selected folder does not contain any Intrasis GPKG'))

@@ -419,12 +419,12 @@
         <translation>Spara tabell som...</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="1663"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="1707"/>
         <source>Intrasis Analysis Class/SubClass Browser, Save File</source>
         <translation>Intrasis Class/Subclass Browser, Spara tabell som</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="1664"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="1708"/>
         <source>Text Files (*.csv);;Excel xlsx (*.xlsx)</source>
         <translation>Text Fil (*.csv);;Excel xlsx (*.xlsx)</translation>
     </message>
@@ -444,27 +444,27 @@
         <translation>Alla objekt</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="380"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="417"/>
         <source>No intrasis geopackage loaded</source>
         <translation>För att kunna titta på data i Class/Subclass browser måste ett eller flera Intrasis-GeoPackages vara laddade</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="373"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="410"/>
         <source>analysis dialog closed</source>
         <translation>Klass subklass browsern stängdes</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="381"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="418"/>
         <source>To view data in the Class/Subclass browser one or more Intrasis Geopackages must be loaded</source>
         <translation>För att kunna titta på data i Klass subklass browsern måste ett eller flera Intrasis-GeoPackages vara laddade</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="427"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="464"/>
         <source>No intrasis geopackage(s) loaded</source>
         <translation>Inga intrasis-GeoPackage laddade</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="1534"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="1578"/>
         <source>Completed with no exception and no result (probably manually canceled by the user)</source>
         <translation>Inget undantag inträffade och inget resultat skapades (avbrutet av användaren?)</translation>
     </message>
@@ -479,37 +479,37 @@
         <translation type="obsolete">Lager kunder inte skapas</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="1507"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="1551"/>
         <source>Could not write (all) features</source>
         <translation>Kunde inte skriva (alla) geoobjekt</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="1484"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="1528"/>
         <source>something went wrong: {ex}, perhaps Invalid join fields?</source>
         <translation>Något gick fel: {ex}, kanske ogiltiga kopplingsfält?</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="1504"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="1548"/>
         <source>could not create layer {ex}</source>
         <translation>Lager kunder inte skapas</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="1555"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="1599"/>
         <source>rows</source>
         <translation>rader</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="1555"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="1599"/>
         <source>row</source>
         <translation>rad</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="1556"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="1600"/>
         <source>with geometry</source>
         <translation>med geometri</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="1557"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="1601"/>
         <source>without geometry</source>
         <translation>utan geometri</translation>
     </message>
@@ -1221,7 +1221,7 @@ Annars kommer GeoPackage inte att exporteras.</translation>
         <translation>Om</translation>
     </message>
     <message>
-        <location filename="../swedigarch_geotools.py" line="646"/>
+        <location filename="../swedigarch_geotools.py" line="657"/>
         <source>About {0}</source>
         <translation>Om {0}</translation>
     </message>
@@ -1236,7 +1236,7 @@ Annars kommer GeoPackage inte att exporteras.</translation>
         <translation type="obsolete">Välj katalog att konvertera GPKG filer till CSV i</translation>
     </message>
     <message>
-        <location filename="../swedigarch_geotools.py" line="377"/>
+        <location filename="../swedigarch_geotools.py" line="378"/>
         <source>Start export of _COUNT_ Intrasis GPKG to CSV-files in directory.
 _FOLDER_</source>
         <translation>Startar export av _COUNT_ Intrasis GPKG till CSV-filer i mappen.
@@ -1248,7 +1248,7 @@ _FOLDER_</translation>
         <translation type="obsolete">Resultat från: {self.title_export_gpkg_to_csv}</translation>
     </message>
     <message>
-        <location filename="../swedigarch_geotools.py" line="371"/>
+        <location filename="../swedigarch_geotools.py" line="372"/>
         <source>Selected folder does not contain any Intrasis GeoPackages</source>
         <translation>Vald katalog innehåller inga Intrasis GeoPackages</translation>
     </message>
@@ -1258,12 +1258,12 @@ _FOLDER_</translation>
         <translation type="obsolete">Lyckades konvertera alla _COUNT_ Intrasis GeoPackages till CSV.</translation>
     </message>
     <message>
-        <location filename="../swedigarch_geotools.py" line="459"/>
+        <location filename="../swedigarch_geotools.py" line="460"/>
         <source>Have tried to convert _COUNT_ALL_ Intrasis GeoPackages to CSV, _COUNT_ failed.</source>
         <translation>Har försökt konvertera _COUNT_ALL_ Intrasis GeoPackages till CSV, _COUNT_ misslyckades.</translation>
     </message>
     <message>
-        <location filename="../swedigarch_geotools.py" line="604"/>
+        <location filename="../swedigarch_geotools.py" line="615"/>
         <source>Result from:</source>
         <translation>Resultat från:</translation>
     </message>
@@ -1273,7 +1273,7 @@ _FOLDER_</translation>
         <translation>Exportera Intrasis GPKG till förenklad version</translation>
     </message>
     <message>
-        <location filename="../swedigarch_geotools.py" line="455"/>
+        <location filename="../swedigarch_geotools.py" line="456"/>
         <source>Successfully converted all _COUNT_ Intrasis GeoPackages to CSV.</source>
         <translation>Lyckades konvertera alla _COUNT_ Intrasis GeoPackages till CSV.</translation>
     </message>
@@ -1288,51 +1288,61 @@ _FOLDER_</translation>
         <translation type="obsolete">Lyckades konvertera Intrasis GPKG till förenklad version</translation>
     </message>
     <message>
-        <location filename="../swedigarch_geotools.py" line="515"/>
+        <location filename="../swedigarch_geotools.py" line="518"/>
         <source>OK</source>
         <translation>OK</translation>
     </message>
     <message>
-        <location filename="../swedigarch_geotools.py" line="524"/>
+        <location filename="../swedigarch_geotools.py" line="535"/>
         <source>Cancel</source>
         <translation>Avbryt</translation>
     </message>
     <message>
-        <location filename="../swedigarch_geotools.py" line="478"/>
+        <location filename="../swedigarch_geotools.py" line="479"/>
         <source>Select folder</source>
         <translation>Välj katalog</translation>
     </message>
     <message>
-        <location filename="../swedigarch_geotools.py" line="517"/>
+        <location filename="../swedigarch_geotools.py" line="528"/>
         <source>All Intrasis GPKG in selected folder have already been exported to simplified version.</source>
         <translation>Alla Intrasis GPKG i vald katalog har redan exporterats till förenklad version.</translation>
     </message>
     <message>
-        <location filename="../swedigarch_geotools.py" line="519"/>
+        <location filename="../swedigarch_geotools.py" line="530"/>
         <source>Selected folder does not contain any Intrasis GPKG</source>
         <translation>Vald katalog innehåller inga Intrasis GPKG</translation>
     </message>
     <message>
-        <location filename="../swedigarch_geotools.py" line="525"/>
+        <location filename="../swedigarch_geotools.py" line="536"/>
         <source>Start export of _COUNT_ Intrasis GPKG to simplified version of Intrasis GPKG.
 In directory _FOLDER_</source>
         <translation>Börja export av _COUNT_ Intrasis GPKG till förenklad version av Intrasis GPKG.
 I katalogen _FOLDER_</translation>
     </message>
     <message>
-        <location filename="../swedigarch_geotools.py" line="565"/>
+        <location filename="../swedigarch_geotools.py" line="576"/>
         <source>Starting simplified export of _FILE_COUNT_ Intrasis GPKG file</source>
         <translation>Börjar förenklad export av _FILE_COUNT_ Intrasis GPKG filer</translation>
     </message>
     <message>
-        <location filename="../swedigarch_geotools.py" line="613"/>
+        <location filename="../swedigarch_geotools.py" line="624"/>
         <source>Successfully converted all _COUNT_ Intrasis GPKG to simplified version.</source>
         <translation>Lyckades konvertera alla _COUNT_ Intrasis GPKG till förenklad version.</translation>
     </message>
     <message>
-        <location filename="../swedigarch_geotools.py" line="617"/>
+        <location filename="../swedigarch_geotools.py" line="628"/>
         <source>Have tried to convert _COUNT_ALL_ Intrasis GPKG to simplified version, _COUNT_ failed.</source>
         <translation>Har försökt att konvertera _COUNT_ALL_ Intrasis GPKG till förenklad version, _COUNT_ misslyckades.</translation>
+    </message>
+    <message>
+        <location filename="../swedigarch_geotools.py" line="520"/>
+        <source>Folder &quot;_EXPORT_FOLDER_&quot; does not contain any Intrasis GPKG files.</source>
+        <translation>Katalogen &quot;_EXPORT_FOLDER_&quot; innehåller inte några Intrasis GPKG filer.</translation>
+    </message>
+    <message>
+        <location filename="../swedigarch_geotools.py" line="524"/>
+        <source>Folder &quot;_EXPORT_FOLDER_&quot; does not contain any GPKG files.</source>
+        <translation>Katalogen &quot;_EXPORT_FOLDER_&quot; innehåller inte några GPKG filer.</translation>
     </message>
 </context>
 </TS>
