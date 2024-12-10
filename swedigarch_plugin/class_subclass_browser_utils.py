@@ -237,3 +237,19 @@ def get_unique_id_string(relation_df, child_id, relation_class, relation_id):
     result = unique_df.groupby([f"{child_id}", f"{relation_class}"])[f"{relation_id}"].agg(lambda x: ','.join(x.dropna().astype(str))).reset_index()
     result.rename(columns={f"{relation_id}": f"{relation_id}String"}, inplace=True)
     return result
+
+class Cache:
+    def __init__(self, size):
+        self.size = size
+        self.data = {}
+
+    def insert(self, key, value):
+        if len(self.data) >= self.size:
+            self.data.pop(next(iter(self.data)))
+        self.data[key] = value
+
+    def get(self, key):
+        return self.data.get(key)
+
+    def clear(self):
+        self.data.clear()

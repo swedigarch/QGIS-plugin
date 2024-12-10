@@ -52,7 +52,8 @@ from . import class_subclass_browser_utils as ClassSubclassBrowserUtils
 from .select_geo_package_dalog import SelectGeoPackageDialog
 from .help_dialog import HelpDialog
 from .class_subclass_browser_parent_id_dialog import ClassSubclassBrowserParentIdDialog
-from .class_subclass_cache import Cache
+#from .class_subclass_cache import Cache
+from .class_subclass_browser_utils import Cache
 ######################################
 #from . import browse_relations_utils as browse_relations_utils
 ######################################
@@ -224,9 +225,9 @@ class IntrasisAnalysisBrowseTablesDialog(QtWidgets.QDialog, FORM_CLASS):
                 parent_id_dlg.tableView_parent.setSortingEnabled(True)
                 parent_id_dlg.tableView_parent.resizeColumnsToContents()
                 self.pb_open_parent_id_dialog.setEnabled(False)
-                def handle_custom_signal(settings):
-                    print(f"fick dessa data: {settings}")
-                    print(f"self.parent_id_dlg.settings: {parent_id_dlg.settings}")
+                def handle_create_signal(settings):
+                    #print(f"fick dessa data: {settings}")
+                    #print(f"self.parent_id_dlg.settings: {parent_id_dlg.settings}")
                     values = parent_id_dlg.settings
                     if(values[0]!=''):
                         self.create_parent_id_based_on_chosen_relation(values, relation_table)
@@ -235,12 +236,12 @@ class IntrasisAnalysisBrowseTablesDialog(QtWidgets.QDialog, FORM_CLASS):
                 #parent_id_dlg.setModal(True)
                 self.setEnabled(True)
                 def activate_dialog_signal():
-                    print("fångade aktiveringssignal")
+                    #print("fångade aktiveringssignal")
                     self.cache.clear()
                     self.setEnabled(True)
                     self.pb_open_parent_id_dialog.setEnabled(True)
                 parent_id_dlg.activate_dialog_signal.connect(activate_dialog_signal)
-                parent_id_dlg.customSignal.connect(handle_custom_signal)
+                parent_id_dlg.signal_create_parentsids_table.connect(handle_create_signal)
                 parent_id_dlg.show(self)
         #self.create_parent_id_based_on_chosen_relation(self.data, relation_table)
                 #if self.parent_id_dlg.exec_() == QDialog.Accepted:
@@ -258,6 +259,7 @@ class IntrasisAnalysisBrowseTablesDialog(QtWidgets.QDialog, FORM_CLASS):
     def create_parent_id_based_on_chosen_relation(self, values, relation_table):
         #print(f"Received values: {values} Start extracting relations")
         chosen_parentid = None
+        chosen_parentklass = ''
         multiple_parents = ''
         multiple_grandparents = ''
         multiple_greatgrandparents = ''
@@ -296,7 +298,9 @@ class IntrasisAnalysisBrowseTablesDialog(QtWidgets.QDialog, FORM_CLASS):
             resultat['ParentId'] = resultat['ParentId'].astype('Int64')
             resultat['grand_parent_id'] = resultat['grand_parent_id'].astype('Int64')
             resultat['GrandParentId'] = resultat['GrandParentId'].astype('Int64')
-            resultat.loc[resultat['parent_count'] > 1, ['parent_id','ParentId','grand_parent_id','GrandParentId']] = pd.NA
+            #resultat.loc[resultat['parent_count'] > 1, ['parent_id','ParentId','grand_parent_id','GrandParentId']] = pd.NA
+            #resultat.loc[resultat['grand_parent_count'] > 1, ['grand_parent_id','GrandParentId']] = pd.NA
+            resultat.loc[resultat['parent_count'] > 1, ['parent_id','ParentId']] = pd.NA
             resultat.loc[resultat['grand_parent_count'] > 1, ['grand_parent_id','GrandParentId']] = pd.NA
             #############
             resultat.loc[resultat['parent_count'] == 1, ['ParentIdString']] = pd.NA
@@ -327,19 +331,22 @@ class IntrasisAnalysisBrowseTablesDialog(QtWidgets.QDialog, FORM_CLASS):
             resultat['GrandParentId'] = resultat['GrandParentId'].astype('Int64')
             resultat['great_grand_parent_id'] = resultat['great_grand_parent_id'].astype('int64')
             resultat['GreatGrandParentId'] = resultat['GreatGrandParentId'].astype('Int64')
-            resultat.loc[resultat['parent_count'] > 1, ['parent_id','ParentId','grand_parent_id','GrandParentId','great_grand_parent_id','GreatGrandParentId']] = pd.NA
-            resultat.loc[resultat['grand_parent_count'] > 1, ['grand_parent_id','GrandParentId','great_grand_parent_id','GreatGrandParentId']] = pd.NA
+            #resultat.loc[resultat['parent_count'] > 1, ['parent_id','ParentId','grand_parent_id','GrandParentId','great_grand_parent_id','GreatGrandParentId']] = pd.NA
+            #resultat.loc[resultat['grand_parent_count'] > 1, ['grand_parent_id','GrandParentId','great_grand_parent_id','GreatGrandParentId']] = pd.NA
+            #resultat.loc[resultat['great_grand_parent_count'] > 1, ['great_grand_parent_id','GreatGrandParentId']] = pd.NA
+            resultat.loc[resultat['parent_count'] > 1, ['parent_id','ParentId']] = pd.NA
+            resultat.loc[resultat['grand_parent_count'] > 1, ['grand_parent_id','GrandParentId']] = pd.NA
             resultat.loc[resultat['great_grand_parent_count'] > 1, ['great_grand_parent_id','GreatGrandParentId']] = pd.NA
             ##############
             resultat.loc[resultat['parent_count'] == 1, ['ParentIdString']] = pd.NA
             resultat.loc[resultat['grand_parent_count'] == 1, ['GrandParentIdString']] = pd.NA
             resultat.loc[resultat['great_grand_parent_count'] == 1, ['GreatGrandParentIdString']] = pd.NA
             if (resultat['parent_count'] != 1).any():
-                multiple_parents = 'flera parents, '
+                multiple_parents = self.tr('flera parents, ')
             if (resultat['grand_parent_count'] != 1).any():
-                multiple_grandparents = 'flera grand parents, '
+                multiple_grandparents = self.tr('flera grand parents, ')
             if (resultat['great_grand_parent_count'] != 1).any():
-                multiple_greatgrandparents = 'flera great grand parents'
+                multiple_greatgrandparents = self.tr('flera great grand parents')
             #resultat.drop(columns=['parent_id','parent_count','grand_parent_id','grand_parent_count','great_grand_parent_id','great_grand_parent_count'], inplace=True)
         #print(chosen_parentid)
         resultat.drop_duplicates(inplace=True)
@@ -350,9 +357,11 @@ class IntrasisAnalysisBrowseTablesDialog(QtWidgets.QDialog, FORM_CLASS):
             msg = QMessageBox()
             msg.setIcon(QMessageBox.Warning)
             #msg.setText("Observera!")
-            msg.setText(f"Observera! För minst ett objekt detekterades {multiple_parents}\n{multiple_grandparents}\n{multiple_greatgrandparents}")
+            text_notice_message = self.tr('Observera! För minst ett objekt detekterades')
+            msg.setText(f"{text_notice_message} {multiple_parents}\n{multiple_grandparents}\n{multiple_greatgrandparents}")
+            #msg.setText(f"Observera! För minst ett objekt detekterades {multiple_parents}\n{multiple_grandparents}\n{multiple_greatgrandparents}")
             #msg.setInformativeText(f"Observera! För minst ett objekt detekterades {multiple_parents}{multiple_grandparents}{multiple_greatgrandparents}")
-            msg.setWindowTitle("Varning")
+            msg.setWindowTitle(self.tr("Varning"))
             msg.setStandardButtons(QMessageBox.Ok)
             msg.adjustSize()
             # Visa meddelanderutan och vänta på att användaren klickar OK
@@ -375,13 +384,13 @@ class IntrasisAnalysisBrowseTablesDialog(QtWidgets.QDialog, FORM_CLASS):
         self.init_gui()
 
     def init_gui(self):
-        print('''Initialise GUI''')
+        #print('''Initialise GUI''')
         self.title_string = "Intrasis Class/Subclass Browser "
         self.label_num_loaded_objects_info.setText('')
         if(self.class_subclass_attributes is not None):
             self.class_subclass_attributes.clear_qtablewidget()
-        self.setWindowTitle(self.tr(self.title_string
-                                    +self.selected_gpkg_string))
+        if self.title_string is not None and self.selected_gpkg_string is not None:
+            self.setWindowTitle(self.tr(self.title_string+self.selected_gpkg_string))
 
     def closeEvent(self, event):
         """The close dialog event (QCloseEvent)"""
@@ -2247,7 +2256,8 @@ class TableModelParenID(QAbstractTableModel):
     def data(self, index: QModelIndex, role: int = ...) -> typing.Any:
         """Returns table data row as a string"""
         if role == Qt.DisplayRole:
-            return str(self.table_data.iloc[index.row()][index.column()])
+            #return str(self.table_data.iloc[index.row()][index.column()])
+            return str(self.table_data.iloc[index.row(),index.column()])
 
     def headerData(self, section: int, orientation: Qt.Orientation
                    , role: int = ...) -> typing.Any:
