@@ -43,7 +43,7 @@ from qgis.core import (
 )
 from qgis.PyQt import uic, QtWidgets
 from PyQt5.QtWidgets import QDialogButtonBox, QMessageBox, QDialog
-from PyQt5.QtCore import QVariant ,QAbstractTableModel, QModelIndex, Qt#, QContiguousCache
+from PyQt5.QtCore import QVariant ,QAbstractTableModel, QModelIndex, Qt
 import pandas as pd
 import processing
 from . import utils as Utils
@@ -52,11 +52,9 @@ from . import class_subclass_browser_utils as ClassSubclassBrowserUtils
 from .select_geo_package_dalog import SelectGeoPackageDialog
 from .help_dialog import HelpDialog
 from .class_subclass_browser_parent_id_dialog import ClassSubclassBrowserParentIdDialog
-#from .class_subclass_cache import Cache
 from .class_subclass_browser_utils import Cache
 ######################################
-#from . import browse_relations_utils as browse_relations_utils
-######################################
+
 MESSAGE_CATEGORY = 'Class_Subclass_Browser'
 
 '''This loads your .ui file so that 
@@ -111,7 +109,6 @@ class IntrasisAnalysisBrowseTablesDialog(QtWidgets.QDialog, FORM_CLASS):
         self.comboBox_subclass.currentIndexChanged.connect(
             self.enable_button_read_to_table)
         self.pushButton_read_to_table.setEnabled(False)
-        #self.pb_open_parent_id_dialog.setEnabled(False)
         self.pushButton_read_to_table.clicked.connect(
             self.start_task_load_table)
         self.pushButton_export_as_chart.clicked.connect(self.export_as_chart)
@@ -128,6 +125,7 @@ class IntrasisAnalysisBrowseTablesDialog(QtWidgets.QDialog, FORM_CLASS):
 
     def generate_parent_id_task(self) -> bool:
         self.pb_open_parent_id_dialog.setEnabled(False)
+        self.setEnabled(False)
         globals()['Create Relations Table'] = QgsTask.fromFunction('Create_Relations_Table_Task'
                                                           , self.generate_parent_id
                                                           , on_finished=self.handle_result_generate_parent_id
@@ -234,7 +232,7 @@ class IntrasisAnalysisBrowseTablesDialog(QtWidgets.QDialog, FORM_CLASS):
                 #parent_id_dlg.customSignal.connect(handle_custom_signal)
                 #parent_id_dlg.setWindowModality(Qt.WindowModal)
                 #parent_id_dlg.setModal(True)
-                self.setEnabled(True)
+                #self.setEnabled(True)
                 def activate_dialog_signal():
                     #print("fångade aktiveringssignal")
                     self.cache.clear()
@@ -243,17 +241,11 @@ class IntrasisAnalysisBrowseTablesDialog(QtWidgets.QDialog, FORM_CLASS):
                 parent_id_dlg.activate_dialog_signal.connect(activate_dialog_signal)
                 parent_id_dlg.signal_create_parentsids_table.connect(handle_create_signal)
                 parent_id_dlg.show(self)
-        #self.create_parent_id_based_on_chosen_relation(self.data, relation_table)
-                #if self.parent_id_dlg.exec_() == QDialog.Accepted:
-                #    values = self.parent_id_dlg.settings
-                #    self.create_parent_id_based_on_chosen_relation(values, relation_table)
-                #if self.parent_id_dlg.exec_() == QDialog.Accepted:
-                #    values = self.parent_id_dlg.settings
-                #    self.create_parent_id_based_on_chosen_relation(values, relation_table)
         else:
             QgsMessageLog.logMessage(f"Exception: {exception}",
                                  MESSAGE_CATEGORY, Qgis.Critical)
             self.pb_open_parent_id_dialog.setEnabled(True)
+            self.setEnabled(True)
             raise exception
 
     def create_parent_id_based_on_chosen_relation(self, values, relation_table):
@@ -364,7 +356,6 @@ class IntrasisAnalysisBrowseTablesDialog(QtWidgets.QDialog, FORM_CLASS):
             msg.setWindowTitle(self.tr("Varning"))
             msg.setStandardButtons(QMessageBox.Ok)
             msg.adjustSize()
-            # Visa meddelanderutan och vänta på att användaren klickar OK
             msg.exec_()
 
         #Remove columns not necessary to layer attributes table:
