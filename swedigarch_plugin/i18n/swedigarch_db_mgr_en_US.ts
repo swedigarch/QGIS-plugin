@@ -546,7 +546,7 @@
     <message>
         <location filename="../intrasis_analysis_browse_tables.py" line="352"/>
         <source>Observera! Ett eller flera objekt detekterades med flera</source>
-        <translation>Observe. One or more objects detected with multiple“</translation>
+        <translation>Observe. One or more objects detected with multiple</translation>
     </message>
     <message>
         <location filename="../intrasis_analysis_browse_tables.py" line="357"/>
