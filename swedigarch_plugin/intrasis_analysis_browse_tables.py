@@ -217,7 +217,7 @@ class IntrasisAnalysisBrowseTablesDialog(QtWidgets.QDialog, FORM_CLASS):
                 relation_table = result[0]
                 child_class_string = result[1]
                 parent_dialog_df = result[2]
-                parent_id_dlg = ClassSubclassBrowserParentIdDialog(parent_dialog_df, child_class_string)
+                parent_id_dlg = ClassSubclassBrowserParentIdDialog(parent_dialog_df, child_class_string, self.selected_gpkg_string)
                 #parent_id_dlg.tableView_parent.setModel(TableModelParenID(table_data=parent_dialog_df))
                 parent_id_dlg.tableView_parent.setModel(TableModelParenID(table_data=parent_dialog_df.drop('parenthierarchy', axis=1)))
                 parent_id_dlg.tableView_parent.setSortingEnabled(True)

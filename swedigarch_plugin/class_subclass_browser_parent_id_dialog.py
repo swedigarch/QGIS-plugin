@@ -38,7 +38,7 @@ class ClassSubclassBrowserParentIdDialog(QtWidgets.QDialog, FORM_CLASS):
     """ClassSubclassBrowserParentIdDialog dialog. Dialog to generate Parent Id to objects without geometry"""
     signal_create_parentsids_table = pyqtSignal(list)
     activate_dialog_signal = pyqtSignal()
-    def __init__(self, parent_dialog_df, child_class_string):
+    def __init__(self, parent_dialog_df, child_class_string, current_gpgk):
         """ClassSubclassBrowserParentIdDialog Constructor"""
         super(ClassSubclassBrowserParentIdDialog, self).__init__()
         # Set up the user interface from Designer through FORM_CLASS.
@@ -63,6 +63,8 @@ class ClassSubclassBrowserParentIdDialog(QtWidgets.QDialog, FORM_CLASS):
         self.text_pb_generate_parent_id = self.tr("Create ParentIds Table")
         self.pushButton_generate_parent_id.setText(self.text_pb_generate_parent_id)
         self.pushButton_generate_parent_id.clicked.connect(self.on_ok)
+        self.title_string = self.tr("Create table with ParentIds")
+        self.selected_gpkg_string = current_gpgk
         self.init_gui()
 
     def on_activate_grand_parent(self, state):
@@ -189,6 +191,8 @@ class ClassSubclassBrowserParentIdDialog(QtWidgets.QDialog, FORM_CLASS):
         text_relations_found = self.tr('Relationships found for the table')
         self.label_found_relationships.setText(f"{text_relations_found} <b>{self.child_class_string}</b>")
         #self.label_found_relationships.setText(f"Relationships found for the table <b>{self.child_class_string}</b>")
+        #if self.title_string is not None and self.selected_gpkg_string is not None:
+        self.setWindowTitle(f"{self.title_string} {self.selected_gpkg_string}")
         self.show()
 
     def get_values(self):
