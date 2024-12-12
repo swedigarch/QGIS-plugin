@@ -255,16 +255,18 @@ class IntrasisAnalysisBrowseTablesDialog(QtWidgets.QDialog, FORM_CLASS):
         multiple_parents = ''
         multiple_grandparents = ''
         multiple_greatgrandparents = ''
+        text_multiple_relations_info = self.tr('Flera träffar detekterade')
         if(len(values[0])>0 and len(values[1])==0 and len(values[2])==0):
             chosen_parentid = 'filtrering på parent'
             chosen_parentklass = f"_{values[0]}"
             #resultat = relation_table.query(f"parent_class == '{values[0]}'")[['child_id','parent_id', 'ParentId', 'parent_count', 'parenthierarchy','ParentIdString']]
             resultat = relation_table.query(f"parent_class == '{values[0]}'")[['child_id','parent_id', 'ParentId', 'parent_count','ParentIdString']]
             resultat.drop_duplicates(inplace=True)
-            resultat['InfoMultipleParents'] = ''
+            resultat.insert(0, 'InfoMultipleParents', '')
+            #resultat['InfoMultipleParents'] = ''
             #resultat['InfoMultipleParents'] = 'OK'
             resultat['ParentClass'] = values[0]
-            resultat.loc[resultat['parent_count'] > 1, 'InfoMultipleParents'] = 'Flera träffar detekterade'
+            resultat.loc[resultat['parent_count'] > 1, 'InfoMultipleParents'] = text_multiple_relations_info
             #för att kunna hantera missing value behöver Int64 används
             resultat['parent_id'] = resultat['parent_id'].astype('Int64')
             resultat['ParentId'] = resultat['ParentId'].astype('Int64')
@@ -280,12 +282,13 @@ class IntrasisAnalysisBrowseTablesDialog(QtWidgets.QDialog, FORM_CLASS):
             #resultat = relation_table.query(f"parent_class == '{values[0]}' and grand_parent_class =='{values[1]}'")[['child_id','parent_id','grand_parent_id', 'ParentId','GrandParentId', 'parent_count','grand_parent_count', 'parenthierarchy','ParentIdString','GrandParentIdString']]
             resultat = relation_table.query(f"parent_class == '{values[0]}' and grand_parent_class =='{values[1]}'")[['child_id','parent_id','grand_parent_id', 'ParentId','GrandParentId', 'parent_count','grand_parent_count','ParentIdString','GrandParentIdString']]
             resultat.drop_duplicates(inplace=True)
-            resultat['InfoMultipleParents'] = ''
+            resultat.insert(0, 'InfoMultipleParents', '')
+            #resultat['InfoMultipleParents'] = ''
             #resultat['InfoMultipleParents'] = 'OK'
             resultat['ParentClass'] = values[0]
             resultat['GrandParentClass'] = values[1]
-            resultat.loc[resultat['parent_count'] > 1, 'InfoMultipleParents'] = 'Flera träffar detekterade'
-            resultat.loc[resultat['grand_parent_count'] > 1, 'InfoMultipleParents'] = 'Flera träffar detekterade'
+            resultat.loc[resultat['parent_count'] > 1, 'InfoMultipleParents'] = text_multiple_relations_info
+            resultat.loc[resultat['grand_parent_count'] > 1, 'InfoMultipleParents'] = text_multiple_relations_info
             resultat['parent_id'] = resultat['parent_id'].astype('Int64')
             resultat['ParentId'] = resultat['ParentId'].astype('Int64')
             resultat['grand_parent_id'] = resultat['grand_parent_id'].astype('Int64')
@@ -309,14 +312,15 @@ class IntrasisAnalysisBrowseTablesDialog(QtWidgets.QDialog, FORM_CLASS):
             #resultat = relation_table.query(f"parent_class == '{values[0]}' and grand_parent_class =='{values[1]}' and great_grand_parent_class =='{values[2]}'")[['child_id','parent_id','grand_parent_id','great_grand_parent_id', 'ParentId','GrandParentId','GreatGrandParentId', 'parent_count','grand_parent_count','great_grand_parent_count', 'parenthierarchy','ParentIdString','GrandParentIdString','GreatGrandParentIdString']]
             resultat = relation_table.query(f"parent_class == '{values[0]}' and grand_parent_class =='{values[1]}' and great_grand_parent_class =='{values[2]}'")[['child_id','parent_id','grand_parent_id','great_grand_parent_id', 'ParentId','GrandParentId','GreatGrandParentId', 'parent_count','grand_parent_count','great_grand_parent_count','ParentIdString','GrandParentIdString','GreatGrandParentIdString']]
             resultat.drop_duplicates(inplace=True)
-            resultat['InfoMultipleParents'] = ''
+            resultat.insert(0, 'InfoMultipleParents', '')
+            #resultat['InfoMultipleParents'] = ''
             #resultat['InfoMultipleParents'] = 'OK'
             resultat['ParentClass'] = values[0]
             resultat['GrandParentClass'] = values[1]
             resultat['GreatGrandParentClass'] = values[2]
-            resultat.loc[resultat['parent_count'] > 1, 'InfoMultipleParents'] = 'Flera träffar detekterade'
-            resultat.loc[resultat['grand_parent_count'] > 1, 'InfoMultipleParents'] = 'Flera träffar detekterade'
-            resultat.loc[resultat['great_grand_parent_count'] > 1, 'InfoMultipleParents'] = 'Flera träffar detekterade'
+            resultat.loc[resultat['parent_count'] > 1, 'InfoMultipleParents'] = text_multiple_relations_info
+            resultat.loc[resultat['grand_parent_count'] > 1, 'InfoMultipleParents'] = text_multiple_relations_info
+            resultat.loc[resultat['great_grand_parent_count'] > 1, 'InfoMultipleParents'] = text_multiple_relations_info
             resultat['parent_id'] = resultat['parent_id'].astype('int64')
             resultat['ParentId'] = resultat['ParentId'].astype('Int64')
             resultat['grand_parent_id'] = resultat['grand_parent_id'].astype('int64')

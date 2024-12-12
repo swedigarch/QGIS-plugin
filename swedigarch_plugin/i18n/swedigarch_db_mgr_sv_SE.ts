@@ -462,12 +462,12 @@
         <translation>Spara tabell som...</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="1726"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="1730"/>
         <source>Intrasis Analysis Class/SubClass Browser, Save File</source>
         <translation>Intrasis Class/Subclass Browser, Spara tabell som</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="1727"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="1731"/>
         <source>Text Files (*.csv);;Excel xlsx (*.xlsx)</source>
         <translation>Text Fil (*.csv);;Excel xlsx (*.xlsx)</translation>
     </message>
@@ -487,27 +487,27 @@
         <translation>Alla objekt</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="432"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="436"/>
         <source>No intrasis geopackage loaded</source>
         <translation>För att kunna titta på data i Class/Subclass browser måste ett eller flera Intrasis-GeoPackages vara laddade</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="425"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="429"/>
         <source>analysis dialog closed</source>
         <translation>Klass subklass browsern stängdes</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="433"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="437"/>
         <source>To view data in the Class/Subclass browser one or more Intrasis Geopackages must be loaded</source>
         <translation>För att kunna titta på data i Klass subklass browsern måste ett eller flera Intrasis-GeoPackages vara laddade</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="479"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="483"/>
         <source>No intrasis geopackage(s) loaded</source>
         <translation>Inga intrasis-GeoPackage laddade</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="1597"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="1601"/>
         <source>Completed with no exception and no result (probably manually canceled by the user)</source>
         <translation>Inget undantag inträffade och inget resultat skapades (avbrutet av användaren?)</translation>
     </message>
@@ -522,37 +522,37 @@
         <translation type="obsolete">Lager kunder inte skapas</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="1570"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="1574"/>
         <source>Could not write (all) features</source>
         <translation>Kunde inte skriva (alla) geoobjekt</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="1547"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="1551"/>
         <source>something went wrong: {ex}, perhaps Invalid join fields?</source>
         <translation>Något gick fel: {ex}, kanske ogiltiga kopplingsfält?</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="1567"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="1571"/>
         <source>could not create layer {ex}</source>
         <translation>Lager kunder inte skapas</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="1618"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="1622"/>
         <source>rows</source>
         <translation>rader</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="1618"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="1622"/>
         <source>row</source>
         <translation>rad</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="1619"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="1623"/>
         <source>with geometry</source>
         <translation>med geometri</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="1620"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="1624"/>
         <source>without geometry</source>
         <translation>utan geometri</translation>
     </message>
@@ -567,34 +567,39 @@
         <translation>Generera ParentIds</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="337"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="341"/>
         <source>flera parents, </source>
         <translation>parent</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="339"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="343"/>
         <source>flera grand parents, </source>
         <translation>grandparent</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="341"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="345"/>
         <source>flera great grand parents</source>
         <translation>greatgrandparent</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="352"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="356"/>
         <source>Observera! Ett eller flera objekt detekterades med flera</source>
         <translation>Observera. För minst ett objekt detekterades flera</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="357"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="361"/>
         <source>Varning</source>
         <translation>Varning</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="353"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="357"/>
         <source>relationships</source>
         <translation>relationer</translation>
+    </message>
+    <message>
+        <location filename="../intrasis_analysis_browse_tables.py" line="258"/>
+        <source>Flera träffar detekterade</source>
+        <translation>Flera träffar detekterade</translation>
     </message>
 </context>
 <context>
