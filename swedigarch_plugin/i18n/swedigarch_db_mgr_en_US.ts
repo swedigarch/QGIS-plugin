@@ -425,20 +425,12 @@
         <translation>Save Table As...</translation>
     </message>
     <message>
-<<<<<<< HEAD
         <location filename="../intrasis_analysis_browse_tables.py" line="1725"/>
-=======
-        <location filename="../intrasis_analysis_browse_tables.py" line="1707"/>
->>>>>>> f215fa44de67a592d4ee8c42bedc10e4fbd99103
         <source>Intrasis Analysis Class/SubClass Browser, Save File</source>
         <translation>Intrasis Class/Subclass Browser, Save File</translation>
     </message>
     <message>
-<<<<<<< HEAD
         <location filename="../intrasis_analysis_browse_tables.py" line="1726"/>
-=======
-        <location filename="../intrasis_analysis_browse_tables.py" line="1708"/>
->>>>>>> f215fa44de67a592d4ee8c42bedc10e4fbd99103
         <source>Text Files (*.csv);;Excel xlsx (*.xlsx)</source>
         <translation>Text Files (*.csv);;Excel xlsx (*.xlsx)</translation>
     </message>
@@ -453,47 +445,26 @@
         <translation>All Objects</translation>
     </message>
     <message>
-<<<<<<< HEAD
         <location filename="../intrasis_analysis_browse_tables.py" line="431"/>
-=======
-        <location filename="../intrasis_analysis_browse_tables.py" line="417"/>
->>>>>>> f215fa44de67a592d4ee8c42bedc10e4fbd99103
         <source>No intrasis geopackage loaded</source>
-        <translation>To view data in the Class/Subclass browser on or more Intrasis Geopackages must be loaded</translation>
     </message>
     <message>
-<<<<<<< HEAD
         <location filename="../intrasis_analysis_browse_tables.py" line="424"/>
-=======
-        <location filename="../intrasis_analysis_browse_tables.py" line="410"/>
->>>>>>> f215fa44de67a592d4ee8c42bedc10e4fbd99103
         <source>analysis dialog closed</source>
         <translation>Analysis dialog closed</translation>
     </message>
     <message>
-<<<<<<< HEAD
         <location filename="../intrasis_analysis_browse_tables.py" line="432"/>
-=======
-        <location filename="../intrasis_analysis_browse_tables.py" line="418"/>
->>>>>>> f215fa44de67a592d4ee8c42bedc10e4fbd99103
         <source>To view data in the Class/Subclass browser one or more Intrasis Geopackages must be loaded</source>
         <translation>To view data in the Class/Subclass browser one or more Intrasis Geopackages must be loaded</translation>
     </message>
     <message>
-<<<<<<< HEAD
         <location filename="../intrasis_analysis_browse_tables.py" line="478"/>
-=======
-        <location filename="../intrasis_analysis_browse_tables.py" line="464"/>
->>>>>>> f215fa44de67a592d4ee8c42bedc10e4fbd99103
         <source>No intrasis geopackage(s) loaded</source>
         <translation>No intrasis geopackage(s) loaded</translation>
     </message>
     <message>
-<<<<<<< HEAD
         <location filename="../intrasis_analysis_browse_tables.py" line="1596"/>
-=======
-        <location filename="../intrasis_analysis_browse_tables.py" line="1578"/>
->>>>>>> f215fa44de67a592d4ee8c42bedc10e4fbd99103
         <source>Completed with no exception and no result (probably manually canceled by the user)</source>
         <translation>Completed with no exception and no result (probably manually canceled by the user)</translation>
     </message>
@@ -508,47 +479,27 @@
         <translation type="obsolete">Could not create layer</translation>
     </message>
     <message>
-<<<<<<< HEAD
         <location filename="../intrasis_analysis_browse_tables.py" line="1569"/>
-=======
-        <location filename="../intrasis_analysis_browse_tables.py" line="1551"/>
->>>>>>> f215fa44de67a592d4ee8c42bedc10e4fbd99103
         <source>Could not write (all) features</source>
         <translation>Could not write (all) features</translation>
     </message>
     <message>
-<<<<<<< HEAD
         <location filename="../intrasis_analysis_browse_tables.py" line="1617"/>
-=======
-        <location filename="../intrasis_analysis_browse_tables.py" line="1599"/>
->>>>>>> f215fa44de67a592d4ee8c42bedc10e4fbd99103
         <source>rows</source>
         <translation>rows</translation>
     </message>
     <message>
-<<<<<<< HEAD
         <location filename="../intrasis_analysis_browse_tables.py" line="1617"/>
-=======
-        <location filename="../intrasis_analysis_browse_tables.py" line="1599"/>
->>>>>>> f215fa44de67a592d4ee8c42bedc10e4fbd99103
         <source>row</source>
         <translation>row</translation>
     </message>
     <message>
-<<<<<<< HEAD
         <location filename="../intrasis_analysis_browse_tables.py" line="1618"/>
-=======
-        <location filename="../intrasis_analysis_browse_tables.py" line="1600"/>
->>>>>>> f215fa44de67a592d4ee8c42bedc10e4fbd99103
         <source>with geometry</source>
         <translation>with geometry</translation>
     </message>
     <message>
-<<<<<<< HEAD
         <location filename="../intrasis_analysis_browse_tables.py" line="1619"/>
-=======
-        <location filename="../intrasis_analysis_browse_tables.py" line="1601"/>
->>>>>>> f215fa44de67a592d4ee8c42bedc10e4fbd99103
         <source>without geometry</source>
         <translation>without geometry</translation>
     </message>
@@ -563,20 +514,12 @@
         <translation>All SubClasses</translation>
     </message>
     <message>
-<<<<<<< HEAD
         <location filename="../intrasis_analysis_browse_tables.py" line="1546"/>
-=======
-        <location filename="../intrasis_analysis_browse_tables.py" line="1528"/>
->>>>>>> f215fa44de67a592d4ee8c42bedc10e4fbd99103
         <source>something went wrong: {ex}, perhaps Invalid join fields?</source>
         <translation>something went wrong: {ex}, perhaps Invalid join fields?</translation>
     </message>
     <message>
-<<<<<<< HEAD
         <location filename="../intrasis_analysis_browse_tables.py" line="1566"/>
-=======
-        <location filename="../intrasis_analysis_browse_tables.py" line="1548"/>
->>>>>>> f215fa44de67a592d4ee8c42bedc10e4fbd99103
         <source>could not create layer {ex}</source>
         <translation>could not create layer {ex}</translation>
     </message>
@@ -1269,20 +1212,12 @@ Otherwice the GeoPackage will not be exported.</translation>
         <translation></translation>
     </message>
     <message>
-<<<<<<< HEAD
-        <location filename="../swedigarch_geotools.py" line="649"/>
-=======
         <location filename="../swedigarch_geotools.py" line="657"/>
->>>>>>> f215fa44de67a592d4ee8c42bedc10e4fbd99103
         <source>About {0}</source>
         <translation>About {0}</translation>
     </message>
     <message>
-<<<<<<< HEAD
         <location filename="../swedigarch_geotools.py" line="380"/>
-=======
-        <location filename="../swedigarch_geotools.py" line="378"/>
->>>>>>> f215fa44de67a592d4ee8c42bedc10e4fbd99103
         <source>Start export of _COUNT_ Intrasis GPKG to CSV-files in directory.
 _FOLDER_</source>
         <translation>Start export of _COUNT_ Intrasis GPKG to CSV-files in directory.
@@ -1304,11 +1239,7 @@ _FOLDER_</translation>
         <translation type="obsolete">Result from: {self.title_export_gpkg_to_csv}</translation>
     </message>
     <message>
-<<<<<<< HEAD
         <location filename="../swedigarch_geotools.py" line="374"/>
-=======
-        <location filename="../swedigarch_geotools.py" line="372"/>
->>>>>>> f215fa44de67a592d4ee8c42bedc10e4fbd99103
         <source>Selected folder does not contain any Intrasis GeoPackages</source>
         <translation>Selected folder does not contain any Intrasis GeoPackages</translation>
     </message>
@@ -1318,20 +1249,12 @@ _FOLDER_</translation>
         <translation type="obsolete">Sucessfully converted all _COUNT_ Intrasis GeoPackages to CSV.</translation>
     </message>
     <message>
-<<<<<<< HEAD
         <location filename="../swedigarch_geotools.py" line="462"/>
-=======
-        <location filename="../swedigarch_geotools.py" line="460"/>
->>>>>>> f215fa44de67a592d4ee8c42bedc10e4fbd99103
         <source>Have tried to convert _COUNT_ALL_ Intrasis GeoPackages to CSV, _COUNT_ failed.</source>
         <translation>Have tried to convert _COUNT_ALL_ Intrasis GeoPackages to CSV, _COUNT_ failed.</translation>
     </message>
     <message>
-<<<<<<< HEAD
-        <location filename="../swedigarch_geotools.py" line="607"/>
-=======
-        <location filename="../swedigarch_geotools.py" line="615"/>
->>>>>>> f215fa44de67a592d4ee8c42bedc10e4fbd99103
+        <location filename="../swedigarch_geotools.py" line="613"/>
         <source>Result from:</source>
         <translation>Result from:</translation>
     </message>
@@ -1341,11 +1264,7 @@ _FOLDER_</translation>
         <translation>Export to simplified version of Intrasis GPKG</translation>
     </message>
     <message>
-<<<<<<< HEAD
         <location filename="../swedigarch_geotools.py" line="458"/>
-=======
-        <location filename="../swedigarch_geotools.py" line="456"/>
->>>>>>> f215fa44de67a592d4ee8c42bedc10e4fbd99103
         <source>Successfully converted all _COUNT_ Intrasis GeoPackages to CSV.</source>
         <translation>Successfully converted all _COUNT_ Intrasis GeoPackages to CSV.</translation>
     </message>
@@ -1365,76 +1284,44 @@ _FOLDER_</translation>
         <translation>OK</translation>
     </message>
     <message>
-<<<<<<< HEAD
-        <location filename="../swedigarch_geotools.py" line="527"/>
-=======
-        <location filename="../swedigarch_geotools.py" line="535"/>
->>>>>>> f215fa44de67a592d4ee8c42bedc10e4fbd99103
+        <location filename="../swedigarch_geotools.py" line="533"/>
         <source>Cancel</source>
         <translation>Cancel</translation>
     </message>
     <message>
-<<<<<<< HEAD
         <location filename="../swedigarch_geotools.py" line="481"/>
-=======
-        <location filename="../swedigarch_geotools.py" line="479"/>
->>>>>>> f215fa44de67a592d4ee8c42bedc10e4fbd99103
         <source>Select folder</source>
         <translation>Select folder</translation>
     </message>
     <message>
-<<<<<<< HEAD
-        <location filename="../swedigarch_geotools.py" line="520"/>
-=======
-        <location filename="../swedigarch_geotools.py" line="528"/>
->>>>>>> f215fa44de67a592d4ee8c42bedc10e4fbd99103
+        <location filename="../swedigarch_geotools.py" line="526"/>
         <source>All Intrasis GPKG in selected folder have already been exported to simplified version.</source>
         <translation>All Intrasis GPKG in selected folder have already been exported to simplified version.</translation>
     </message>
     <message>
-<<<<<<< HEAD
-        <location filename="../swedigarch_geotools.py" line="522"/>
-=======
-        <location filename="../swedigarch_geotools.py" line="530"/>
->>>>>>> f215fa44de67a592d4ee8c42bedc10e4fbd99103
+        <location filename="../swedigarch_geotools.py" line="528"/>
         <source>Selected folder does not contain any Intrasis GPKG</source>
         <translation>Selected folder does not contain any Intrasis GPKG</translation>
     </message>
     <message>
-<<<<<<< HEAD
-        <location filename="../swedigarch_geotools.py" line="528"/>
-=======
-        <location filename="../swedigarch_geotools.py" line="536"/>
->>>>>>> f215fa44de67a592d4ee8c42bedc10e4fbd99103
+        <location filename="../swedigarch_geotools.py" line="534"/>
         <source>Start export of _COUNT_ Intrasis GPKG to simplified version of Intrasis GPKG.
 In directory _FOLDER_</source>
         <translation>Start export of _COUNT_ Intrasis GPKG to simplified version of Intrasis GPKG.
 In directory _FOLDER_</translation>
     </message>
     <message>
-<<<<<<< HEAD
-        <location filename="../swedigarch_geotools.py" line="568"/>
-=======
-        <location filename="../swedigarch_geotools.py" line="576"/>
->>>>>>> f215fa44de67a592d4ee8c42bedc10e4fbd99103
+        <location filename="../swedigarch_geotools.py" line="574"/>
         <source>Starting simplified export of _FILE_COUNT_ Intrasis GPKG file</source>
         <translation>Starting simplified export of _FILE_COUNT_ Intrasis GPKG file</translation>
     </message>
     <message>
-<<<<<<< HEAD
-        <location filename="../swedigarch_geotools.py" line="616"/>
-=======
-        <location filename="../swedigarch_geotools.py" line="624"/>
->>>>>>> f215fa44de67a592d4ee8c42bedc10e4fbd99103
+        <location filename="../swedigarch_geotools.py" line="622"/>
         <source>Successfully converted all _COUNT_ Intrasis GPKG to simplified version.</source>
         <translation>Successfully converted all _COUNT_ Intrasis GPKG to simplified version.</translation>
     </message>
     <message>
-<<<<<<< HEAD
-        <location filename="../swedigarch_geotools.py" line="620"/>
-=======
-        <location filename="../swedigarch_geotools.py" line="628"/>
->>>>>>> f215fa44de67a592d4ee8c42bedc10e4fbd99103
+        <location filename="../swedigarch_geotools.py" line="626"/>
         <source>Have tried to convert _COUNT_ALL_ Intrasis GPKG to simplified version, _COUNT_ failed.</source>
         <translation>Have tried to convert _COUNT_ALL_ Intrasis GPKG to simplified version, _COUNT_ failed.</translation>
     </message>
