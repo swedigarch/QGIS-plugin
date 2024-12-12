@@ -11,38 +11,37 @@
     <message>
         <location filename="../class_subclass_browser_parent_id_dialog.py" line="63"/>
         <source>Create ParentIds Table</source>
-        <translatorcomment>Create table with ParentIds </translatorcomment>
         <translation>Create table with ParentIds </translation>
     </message>
     <message>
-        <location filename="../class_subclass_browser_parent_id_dialog.py" line="98"/>
+        <location filename="../class_subclass_browser_parent_id_dialog.py" line="100"/>
         <source>No Parent Found</source>
-        <translatorcomment>No Parent Found</translatorcomment>
         <translation>No Parent Found</translation>
     </message>
     <message>
-        <location filename="../class_subclass_browser_parent_id_dialog.py" line="120"/>
+        <location filename="../class_subclass_browser_parent_id_dialog.py" line="122"/>
         <source>No Grand Parent Found</source>
-        <translatorcomment>No Grand Parent Found</translatorcomment>
         <translation>No Grand Parent Found</translation>
     </message>
     <message>
-        <location filename="../class_subclass_browser_parent_id_dialog.py" line="142"/>
+        <location filename="../class_subclass_browser_parent_id_dialog.py" line="144"/>
         <source>No Great Grand Parent Found</source>
-        <translatorcomment>No Great Grand Parent Found</translatorcomment>
         <translation>No Great Grand Parent Found</translation>
     </message>
     <message>
-        <location filename="../class_subclass_browser_parent_id_dialog.py" line="186"/>
+        <location filename="../class_subclass_browser_parent_id_dialog.py" line="188"/>
         <source>For table</source>
-        <translatorcomment>For table</translatorcomment>
         <translation>For table</translation>
     </message>
     <message>
-        <location filename="../class_subclass_browser_parent_id_dialog.py" line="189"/>
+        <location filename="../class_subclass_browser_parent_id_dialog.py" line="191"/>
         <source>Relationships found for the table</source>
-        <translatorcomment>Relationships found for the table</translatorcomment>
         <translation>Relationships found for the table</translation>
+    </message>
+    <message>
+        <location filename="../class_subclass_browser_parent_id_dialog.py" line="66"/>
+        <source>Create table with ParentIds</source>
+        <translation>Create table with ParentIds</translation>
     </message>
 </context>
 <context>
@@ -425,19 +424,19 @@
         <translation>Save Table As...</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="1725"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="1726"/>
         <source>Intrasis Analysis Class/SubClass Browser, Save File</source>
         <translation>Intrasis Class/Subclass Browser, Save File</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="1726"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="1727"/>
         <source>Text Files (*.csv);;Excel xlsx (*.xlsx)</source>
         <translation>Text Files (*.csv);;Excel xlsx (*.xlsx)</translation>
     </message>
     <message>
         <location filename="../intrasis_analysis_browse_tables.py" line="96"/>
         <source>No SubClass</source>
-        <translation>No SubClass</translation>
+        <translation>No Subclass</translation>
     </message>
     <message>
         <location filename="../intrasis_analysis_browse_tables.py" line="94"/>
@@ -445,27 +444,27 @@
         <translation>All Objects</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="431"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="432"/>
         <source>No intrasis geopackage loaded</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="424"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="425"/>
         <source>analysis dialog closed</source>
         <translation>Analysis dialog closed</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="432"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="433"/>
         <source>To view data in the Class/Subclass browser one or more Intrasis Geopackages must be loaded</source>
         <translation>To view data in the Class/Subclass browser one or more Intrasis Geopackages must be loaded</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="478"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="479"/>
         <source>No intrasis geopackage(s) loaded</source>
         <translation>No intrasis geopackage(s) loaded</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="1596"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="1597"/>
         <source>Completed with no exception and no result (probably manually canceled by the user)</source>
         <translation>Completed with no exception and no result (probably manually canceled by the user)</translation>
     </message>
@@ -480,27 +479,27 @@
         <translation type="obsolete">Could not create layer</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="1569"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="1570"/>
         <source>Could not write (all) features</source>
         <translation>Could not write (all) features</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="1617"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="1618"/>
         <source>rows</source>
         <translation>rows</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="1617"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="1618"/>
         <source>row</source>
         <translation>row</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="1618"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="1619"/>
         <source>with geometry</source>
         <translation>with geometry</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="1619"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="1620"/>
         <source>without geometry</source>
         <translation>without geometry</translation>
     </message>
@@ -512,15 +511,15 @@
     <message>
         <location filename="../intrasis_analysis_browse_tables.py" line="95"/>
         <source>All SubClasses</source>
-        <translation>All SubClasses</translation>
+        <translation>All Subclasses</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="1546"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="1547"/>
         <source>something went wrong: {ex}, perhaps Invalid join fields?</source>
         <translation>something went wrong: {ex}, perhaps Invalid join fields?</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="1566"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="1567"/>
         <source>could not create layer {ex}</source>
         <translation>could not create layer {ex}</translation>
     </message>
@@ -532,27 +531,32 @@
     <message>
         <location filename="../intrasis_analysis_browse_tables.py" line="337"/>
         <source>flera parents, </source>
-        <translation>multiple parents, </translation>
+        <translation>parent</translation>
     </message>
     <message>
         <location filename="../intrasis_analysis_browse_tables.py" line="339"/>
         <source>flera grand parents, </source>
-        <translation>multiple grand parents, </translation>
+        <translation>grandparent</translation>
     </message>
     <message>
         <location filename="../intrasis_analysis_browse_tables.py" line="341"/>
         <source>flera great grand parents</source>
-        <translation>multiple great grand parents</translation>
+        <translation>greatgrandparent</translation>
     </message>
     <message>
         <location filename="../intrasis_analysis_browse_tables.py" line="352"/>
-        <source>Observera! För minst ett objekt detekterades</source>
-        <translation>Notice!At least one object was detected with</translation>
+        <source>Observera! Ett eller flera objekt detekterades med flera</source>
+        <translation>Observe. One or more objects detected with multiple“</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="356"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="357"/>
         <source>Varning</source>
         <translation>Warning</translation>
+    </message>
+    <message>
+        <location filename="../intrasis_analysis_browse_tables.py" line="353"/>
+        <source>relationships</source>
+        <translation>relationships</translation>
     </message>
 </context>
 <context>
@@ -739,7 +743,7 @@ select which to analyze.</translation>
     <message>
         <location filename="../select_subclasses_to_filter_dialog.ui" line="49"/>
         <source>All Classes/SubClasses with objects in the selected databases</source>
-        <translation>All Classes/SubClasses with objects in the selected databases</translation>
+        <translation>All Classes/Subclasses with objects in the selected databases</translation>
     </message>
     <message>
         <location filename="../select_subclasses_to_filter_dialog.py" line="240"/>
@@ -1213,7 +1217,7 @@ Otherwice the GeoPackage will not be exported.</translation>
         <translation></translation>
     </message>
     <message>
-        <location filename="../swedigarch_geotools.py" line="657"/>
+        <location filename="../swedigarch_geotools.py" line="655"/>
         <source>About {0}</source>
         <translation>About {0}</translation>
     </message>
@@ -1280,7 +1284,7 @@ _FOLDER_</translation>
         <translation type="obsolete">Successfully converted Intrasis GPKG to simplified version</translation>
     </message>
     <message>
-        <location filename="../swedigarch_geotools.py" line="518"/>
+        <location filename="../swedigarch_geotools.py" line="516"/>
         <source>OK</source>
         <translation>OK</translation>
     </message>
@@ -1327,12 +1331,12 @@ In directory _FOLDER_</translation>
         <translation>Have tried to convert _COUNT_ALL_ Intrasis GPKG to simplified version, _COUNT_ failed.</translation>
     </message>
     <message>
-        <location filename="../swedigarch_geotools.py" line="520"/>
+        <location filename="../swedigarch_geotools.py" line="518"/>
         <source>Folder &quot;_EXPORT_FOLDER_&quot; does not contain any Intrasis GPKG files.</source>
         <translation>Folder &quot;_EXPORT_FOLDER_&quot; does not contain any Intrasis GPKG files.</translation>
     </message>
     <message>
-        <location filename="../swedigarch_geotools.py" line="524"/>
+        <location filename="../swedigarch_geotools.py" line="522"/>
         <source>Folder &quot;_EXPORT_FOLDER_&quot; does not contain any GPKG files.</source>
         <translation>Folder &quot;_EXPORT_FOLDER_&quot; does not contain any GPKG files.</translation>
     </message>

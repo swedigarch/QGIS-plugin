@@ -14,29 +14,34 @@
         <translation>Skapa tabell med ParentIds</translation>
     </message>
     <message>
-        <location filename="../class_subclass_browser_parent_id_dialog.py" line="98"/>
+        <location filename="../class_subclass_browser_parent_id_dialog.py" line="100"/>
         <source>No Parent Found</source>
         <translation>Inga träffar</translation>
     </message>
     <message>
-        <location filename="../class_subclass_browser_parent_id_dialog.py" line="120"/>
+        <location filename="../class_subclass_browser_parent_id_dialog.py" line="122"/>
         <source>No Grand Parent Found</source>
         <translation>Ingen träffar</translation>
     </message>
     <message>
-        <location filename="../class_subclass_browser_parent_id_dialog.py" line="142"/>
+        <location filename="../class_subclass_browser_parent_id_dialog.py" line="144"/>
         <source>No Great Grand Parent Found</source>
         <translation>Inga träffar</translation>
     </message>
     <message>
-        <location filename="../class_subclass_browser_parent_id_dialog.py" line="186"/>
+        <location filename="../class_subclass_browser_parent_id_dialog.py" line="188"/>
         <source>For table</source>
         <translation>För tabellen</translation>
     </message>
     <message>
-        <location filename="../class_subclass_browser_parent_id_dialog.py" line="189"/>
+        <location filename="../class_subclass_browser_parent_id_dialog.py" line="191"/>
         <source>Relationships found for the table</source>
         <translation>De relationer som hittats för tabellen</translation>
+    </message>
+    <message>
+        <location filename="../class_subclass_browser_parent_id_dialog.py" line="66"/>
+        <source>Create table with ParentIds</source>
+        <translation>Skapa tabell med ParentIds</translation>
     </message>
 </context>
 <context>
@@ -457,24 +462,24 @@
         <translation>Spara tabell som...</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="1725"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="1726"/>
         <source>Intrasis Analysis Class/SubClass Browser, Save File</source>
         <translation>Intrasis Class/Subclass Browser, Spara tabell som</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="1726"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="1727"/>
         <source>Text Files (*.csv);;Excel xlsx (*.xlsx)</source>
         <translation>Text Fil (*.csv);;Excel xlsx (*.xlsx)</translation>
     </message>
     <message>
         <location filename="../intrasis_analysis_browse_tables.py" line="95"/>
         <source>All SubClasses</source>
-        <translation>Alla SubKlasser</translation>
+        <translation>Alla subklasser</translation>
     </message>
     <message>
         <location filename="../intrasis_analysis_browse_tables.py" line="96"/>
         <source>No SubClass</source>
-        <translation>Ingen SubKlass</translation>
+        <translation>Ingen subklass</translation>
     </message>
     <message>
         <location filename="../intrasis_analysis_browse_tables.py" line="94"/>
@@ -482,27 +487,27 @@
         <translation>Alla objekt</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="431"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="432"/>
         <source>No intrasis geopackage loaded</source>
         <translation>För att kunna titta på data i Class/Subclass browser måste ett eller flera Intrasis-GeoPackages vara laddade</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="424"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="425"/>
         <source>analysis dialog closed</source>
         <translation>Klass subklass browsern stängdes</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="432"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="433"/>
         <source>To view data in the Class/Subclass browser one or more Intrasis Geopackages must be loaded</source>
         <translation>För att kunna titta på data i Klass subklass browsern måste ett eller flera Intrasis-GeoPackages vara laddade</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="478"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="479"/>
         <source>No intrasis geopackage(s) loaded</source>
         <translation>Inga intrasis-GeoPackage laddade</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="1596"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="1597"/>
         <source>Completed with no exception and no result (probably manually canceled by the user)</source>
         <translation>Inget undantag inträffade och inget resultat skapades (avbrutet av användaren?)</translation>
     </message>
@@ -517,37 +522,37 @@
         <translation type="obsolete">Lager kunder inte skapas</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="1569"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="1570"/>
         <source>Could not write (all) features</source>
         <translation>Kunde inte skriva (alla) geoobjekt</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="1546"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="1547"/>
         <source>something went wrong: {ex}, perhaps Invalid join fields?</source>
         <translation>Något gick fel: {ex}, kanske ogiltiga kopplingsfält?</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="1566"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="1567"/>
         <source>could not create layer {ex}</source>
         <translation>Lager kunder inte skapas</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="1617"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="1618"/>
         <source>rows</source>
         <translation>rader</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="1617"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="1618"/>
         <source>row</source>
         <translation>rad</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="1618"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="1619"/>
         <source>with geometry</source>
         <translation>med geometri</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="1619"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="1620"/>
         <source>without geometry</source>
         <translation>utan geometri</translation>
     </message>
@@ -564,27 +569,32 @@
     <message>
         <location filename="../intrasis_analysis_browse_tables.py" line="337"/>
         <source>flera parents, </source>
-        <translation>flera parents, </translation>
+        <translation>parent</translation>
     </message>
     <message>
         <location filename="../intrasis_analysis_browse_tables.py" line="339"/>
         <source>flera grand parents, </source>
-        <translation>flera grand parents, </translation>
+        <translation>grandparent</translation>
     </message>
     <message>
         <location filename="../intrasis_analysis_browse_tables.py" line="341"/>
         <source>flera great grand parents</source>
-        <translation>flera great grand parents</translation>
+        <translation>greatgrandparent</translation>
     </message>
     <message>
         <location filename="../intrasis_analysis_browse_tables.py" line="352"/>
-        <source>Observera! För minst ett objekt detekterades</source>
-        <translation>Observera! För minst ett objekt detekterades</translation>
+        <source>Observera! Ett eller flera objekt detekterades med flera</source>
+        <translation>Observera. För minst ett objekt detekterades flera</translation>
     </message>
     <message>
-        <location filename="../intrasis_analysis_browse_tables.py" line="356"/>
+        <location filename="../intrasis_analysis_browse_tables.py" line="357"/>
         <source>Varning</source>
         <translation>Varning</translation>
+    </message>
+    <message>
+        <location filename="../intrasis_analysis_browse_tables.py" line="353"/>
+        <source>relationships</source>
+        <translation>relationer</translation>
     </message>
 </context>
 <context>
@@ -1284,7 +1294,7 @@ Annars kommer GeoPackage inte att exporteras.</translation>
         <translation>Om</translation>
     </message>
     <message>
-        <location filename="../swedigarch_geotools.py" line="657"/>
+        <location filename="../swedigarch_geotools.py" line="655"/>
         <source>About {0}</source>
         <translation>Om {0}</translation>
     </message>
@@ -1351,7 +1361,7 @@ _FOLDER_</translation>
         <translation type="obsolete">Lyckades konvertera Intrasis GPKG till förenklad version</translation>
     </message>
     <message>
-        <location filename="../swedigarch_geotools.py" line="518"/>
+        <location filename="../swedigarch_geotools.py" line="516"/>
         <source>OK</source>
         <translation>OK</translation>
     </message>
@@ -1398,12 +1408,12 @@ I katalogen _FOLDER_</translation>
         <translation>Har försökt att konvertera _COUNT_ALL_ Intrasis GPKG till förenklad version, _COUNT_ misslyckades.</translation>
     </message>
     <message>
-        <location filename="../swedigarch_geotools.py" line="520"/>
+        <location filename="../swedigarch_geotools.py" line="518"/>
         <source>Folder &quot;_EXPORT_FOLDER_&quot; does not contain any Intrasis GPKG files.</source>
         <translation>Katalogen &quot;_EXPORT_FOLDER_&quot; innehåller inte några Intrasis GPKG filer.</translation>
     </message>
     <message>
-        <location filename="../swedigarch_geotools.py" line="524"/>
+        <location filename="../swedigarch_geotools.py" line="522"/>
         <source>Folder &quot;_EXPORT_FOLDER_&quot; does not contain any GPKG files.</source>
         <translation>Katalogen &quot;_EXPORT_FOLDER_&quot; innehåller inte några GPKG filer.</translation>
     </message>
