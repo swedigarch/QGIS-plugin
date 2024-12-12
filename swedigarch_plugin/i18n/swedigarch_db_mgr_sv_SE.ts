@@ -331,7 +331,7 @@
     <message>
         <location filename="../intrasis_analysis_browse_relations_dialog.ui" line="604"/>
         <source>Create Layer from closest parents</source>
-        <translation>Skapa lager har uppnått</translation>
+        <translation>Skapa lager från närmsta föräldrar</translation>
     </message>
     <message>
         <location filename="." line="1869641829"/>

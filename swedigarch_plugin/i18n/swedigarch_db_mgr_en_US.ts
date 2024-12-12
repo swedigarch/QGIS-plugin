@@ -299,7 +299,7 @@
     <message>
         <location filename="../intrasis_analysis_browse_relations_dialog.ui" line="604"/>
         <source>Create Layer from closest parents</source>
-        <translation>Create layers reached</translation>
+        <translation>Create Layer from closest parents</translation>
     </message>
     <message>
         <location filename="." line="6357100"/>
@@ -447,6 +447,7 @@
     <message>
         <location filename="../intrasis_analysis_browse_tables.py" line="431"/>
         <source>No intrasis geopackage loaded</source>
+        <translation></translation>
     </message>
     <message>
         <location filename="../intrasis_analysis_browse_tables.py" line="424"/>
