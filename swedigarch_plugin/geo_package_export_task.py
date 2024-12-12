@@ -172,7 +172,7 @@ class GeoPackageExportTask(QgsTask):
         print(msg)
         QgsMessageLog.logMessage(msg, MESSAGE_CATEGORY, Qgis.Info)
         QgsMessageLog.logMessage(msg, MESSAGE_CATEGORY, Qgis.Success)
-        iface.messageBar().pushMessage("Complete", "GeoPackage export completed", QgsMessageBar.Success, 10)
+        iface.messageBar().pushMessage("Complete", "GeoPackage export completed", 0, 10) # QgsMessageBar.Success replaced with 0 value
 
     def cancel(self):
         """Task Canceled"""
