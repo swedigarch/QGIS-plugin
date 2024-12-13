@@ -268,8 +268,8 @@ class GeoPackageBulkExportSubtask(QgsTask):
 
                     if self.simplified:
                         gpkg_path = os.path.join(self.export_folder, f"{self.database.lower()}.gpkg")
-                        ok, error_msg = export_simplified_gpkg(gpkg_path)
-                        if ok:
+                        ret_code, error_msg, output_filename = export_simplified_gpkg(gpkg_path)
+                        if ret_code == RetCode.EXPORT_OK:
                             self.write_log_line(f'{padded_db_name} Simplified GPKG export OK\n')
                             QgsMessageLog.logMessage(f'Database {self.database} Simplified GPKG export OK', MESSAGE_CATEGORY, Qgis.Info)
                         else:

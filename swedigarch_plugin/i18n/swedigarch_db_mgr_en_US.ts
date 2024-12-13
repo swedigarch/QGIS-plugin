@@ -243,7 +243,7 @@
     <message>
         <location filename="." line="6357100"/>
         <source>To view data in the BrowseRelations dialog one or more objects must be selected either from the geometry layers or the &apos;objects&apos; table.</source>
-        <translation type="obsolete">To view data in the BrowseRelations dialog one or more objects must be selected either from the geometry layers or the &apos;objects&apos; table.</translation>
+        <translation type="obsolete">To view data in the BrowseRelations dialog one or more objects must be selected either from the geometry layers or the 'objects' table.</translation>
     </message>
     <message>
         <location filename="../intrasis_analysis_browse_relations.py" line="405"/>
@@ -323,7 +323,7 @@
     <message>
         <location filename="../intrasis_analysis_browse_relations.py" line="317"/>
         <source>To view data in the Intrasis relationship browser one or more objects must be selected either from the geometry layers or the &apos;objects&apos; table.</source>
-        <translation>To view data in the Intrasis relationship browser one or more objects must be selected either from the geometry layers or the &apos;objects&apos; table.</translation>
+        <translation>To view data in the Intrasis relationship browser one or more objects must be selected either from the geometry layers or the 'objects' table.</translation>
     </message>
     <message>
         <location filename="../intrasis_analysis_browse_relations.py" line="325"/>
@@ -1222,7 +1222,7 @@ Otherwice the GeoPackage will not be exported.</translation>
         <translation></translation>
     </message>
     <message>
-        <location filename="../swedigarch_geotools.py" line="655"/>
+        <location filename="../swedigarch_geotools.py" line="631"/>
         <source>About {0}</source>
         <translation>About {0}</translation>
     </message>
@@ -1264,7 +1264,7 @@ _FOLDER_</translation>
         <translation>Have tried to convert _COUNT_ALL_ Intrasis GeoPackages to CSV, _COUNT_ failed.</translation>
     </message>
     <message>
-        <location filename="../swedigarch_geotools.py" line="613"/>
+        <location filename="../swedigarch_geotools.py" line="589"/>
         <source>Result from:</source>
         <translation>Result from:</translation>
     </message>
@@ -1289,12 +1289,12 @@ _FOLDER_</translation>
         <translation type="obsolete">Successfully converted Intrasis GPKG to simplified version</translation>
     </message>
     <message>
-        <location filename="../swedigarch_geotools.py" line="516"/>
+        <location filename="../swedigarch_geotools.py" line="503"/>
         <source>OK</source>
         <translation>OK</translation>
     </message>
     <message>
-        <location filename="../swedigarch_geotools.py" line="533"/>
+        <location filename="../swedigarch_geotools.py" line="516"/>
         <source>Cancel</source>
         <translation>Cancel</translation>
     </message>
@@ -1306,42 +1306,42 @@ _FOLDER_</translation>
     <message>
         <location filename="../swedigarch_geotools.py" line="526"/>
         <source>All Intrasis GPKG in selected folder have already been exported to simplified version.</source>
-        <translation>All Intrasis GPKG in selected folder have already been exported to simplified version.</translation>
+        <translation type="obsolete">All Intrasis GPKG in selected folder have already been exported to simplified version.</translation>
     </message>
     <message>
         <location filename="../swedigarch_geotools.py" line="528"/>
         <source>Selected folder does not contain any Intrasis GPKG</source>
-        <translation>Selected folder does not contain any Intrasis GPKG</translation>
+        <translation type="obsolete">Selected folder does not contain any Intrasis GPKG</translation>
     </message>
     <message>
-        <location filename="../swedigarch_geotools.py" line="534"/>
+        <location filename="../swedigarch_geotools.py" line="517"/>
         <source>Start export of _COUNT_ Intrasis GPKG to simplified version of Intrasis GPKG.
 In directory _FOLDER_</source>
         <translation>Start export of _COUNT_ Intrasis GPKG to simplified version of Intrasis GPKG.
 In directory _FOLDER_</translation>
     </message>
     <message>
-        <location filename="../swedigarch_geotools.py" line="574"/>
+        <location filename="../swedigarch_geotools.py" line="550"/>
         <source>Starting simplified export of _FILE_COUNT_ Intrasis GPKG file</source>
         <translation>Starting simplified export of _FILE_COUNT_ Intrasis GPKG file</translation>
     </message>
     <message>
-        <location filename="../swedigarch_geotools.py" line="622"/>
+        <location filename="../swedigarch_geotools.py" line="598"/>
         <source>Successfully converted all _COUNT_ Intrasis GPKG to simplified version.</source>
         <translation>Successfully converted all _COUNT_ Intrasis GPKG to simplified version.</translation>
     </message>
     <message>
-        <location filename="../swedigarch_geotools.py" line="626"/>
+        <location filename="../swedigarch_geotools.py" line="602"/>
         <source>Have tried to convert _COUNT_ALL_ Intrasis GPKG to simplified version, _COUNT_ failed.</source>
         <translation>Have tried to convert _COUNT_ALL_ Intrasis GPKG to simplified version, _COUNT_ failed.</translation>
     </message>
     <message>
-        <location filename="../swedigarch_geotools.py" line="518"/>
+        <location filename="../swedigarch_geotools.py" line="505"/>
         <source>Folder &quot;_EXPORT_FOLDER_&quot; does not contain any Intrasis GPKG files.</source>
         <translation>Folder &quot;_EXPORT_FOLDER_&quot; does not contain any Intrasis GPKG files.</translation>
     </message>
     <message>
-        <location filename="../swedigarch_geotools.py" line="522"/>
+        <location filename="../swedigarch_geotools.py" line="509"/>
         <source>Folder &quot;_EXPORT_FOLDER_&quot; does not contain any GPKG files.</source>
         <translation>Folder &quot;_EXPORT_FOLDER_&quot; does not contain any GPKG files.</translation>
     </message>

@@ -766,6 +766,9 @@ def export_simplified_gpkg(gpkg_path:str) -> tuple[RetCode, str, str]:
         output_file = f'{path}{ext}'
         print(f'export_simplified_gpkg() output_file: {output_file}')
 
+        if QFile(output_file).exists():
+            QFile.remove(output_file)
+
         if not QFile(gpkg_path).exists():
             return RetCode.UNKNOWN_ERROR, f'GeoPackage: "{gpkg_path}" does not exist', None
 

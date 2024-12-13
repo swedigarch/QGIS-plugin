@@ -142,9 +142,9 @@ class GeoPackageExportTask(QgsTask):
                     for database in self.databases:
                         padded_db_name = database.ljust(max_length + 2)
                         gpkg_path = os.path.join(self.export_folder, f"{database.lower()}.gpkg")
-                        ok, error_msg = export_simplified_gpkg(gpkg_path)
-                        if ok:
-                            log_file.write(f'{padded_db_name} Simplified GPKG export OK)\n')
+                        ret_code, error_msg, output_filename = export_simplified_gpkg(gpkg_path)
+                        if ret_code == RetCode.EXPORT_OK:
+                            log_file.write(f'{padded_db_name} Simplified GPKG export OK\n')
                         else:
                             log_file.write(f'{padded_db_name} Error during simplified GPKG export: {error_msg}\n')
                     self.callback(100, "Simplified Export done")

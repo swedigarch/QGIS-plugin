@@ -482,28 +482,15 @@ class SwedigarchGeotools:
             if export_folder == '':
                 return # Canceled
 
-            already_simplified = []
-            existing_simplified = []
-            for gpkg_file in glob.glob(f'{export_folder}/*_simplified.gpkg'):
-                org_gpkg_file = gpkg_file.replace('_simplified.gpkg', '.gpkg')
-                print(f'Found simplified GPKG for: {org_gpkg_file}')
-                already_simplified.append(org_gpkg_file)
-                existing_simplified.append(gpkg_file)
-
             print(f'Selected export_folder: {export_folder}')
-            all_gpkg_files = []
             gpkg_files = []
+            all_gpkg_files = []
+            existing_simplified = []
             for gpkg_file in glob.glob(f'{export_folder}/*.gpkg'):
-                if gpkg_file in already_simplified:
-                    print(f'skipping {gpkg_file}, alread have simplified version')
-                    continue
-
-                if gpkg_file in existing_simplified:
-                    print(f'skipping simplified version: {gpkg_file}')
-                    continue
-
                 all_gpkg_files.append(gpkg_file)
-                if Utils.is_intrasis_gpkg_export(gpkg_file) is True:
+                if gpkg_file.endswith('_simplified.gpkg'):
+                    existing_simplified.append(gpkg_file)
+                elif Utils.is_intrasis_gpkg_export(gpkg_file) is True:
                     gpkg_files.append(gpkg_file)
                 else:
                     QgsMessageLog.logMessage(f'{gpkg_file} is not an Intrasis GPKG, skipping', self.title_export_simplified_gpkg, Qgis.Info)
@@ -522,10 +509,6 @@ class SwedigarchGeotools:
                     msg = self.tr('Folder \"_EXPORT_FOLDER_\" does not contain any GPKG files.')
                     msg = msg.replace('_EXPORT_FOLDER_', f'{export_folder}')
                     msg_box.setText(msg)
-                elif len(already_simplified) == len(existing_simplified):
-                    msg_box.setText(self.tr('All Intrasis GPKG in selected folder have already been exported to simplified version.'))
-                else:
-                    msg_box.setText(self.tr('Selected folder does not contain any Intrasis GPKG'))
                 msg_box.exec()
                 return
 
@@ -544,30 +527,23 @@ class SwedigarchGeotools:
                 self.task_export_simplified_gpkg,
                 on_finished=self.export_simplified_gpkg_done,
                 export_folder = export_folder,
-                gpkg_files = gpkg_files,
-                already_simplified = already_simplified)
+                gpkg_files = gpkg_files)
             QgsApplication.taskManager().addTask(globals()['Task_export_simplified_gpkg'])
             QgsApplication.processEvents()
         except Exception as err:
             print(f'export_simplified_gpkg() Exception: {err}')
 
-    def task_export_simplified_gpkg(self, task:QgsTask, export_folder:str, gpkg_files:list, already_simplified:list) -> tuple[int, int]:
+    def task_export_simplified_gpkg(self, task:QgsTask, export_folder:str, gpkg_files:list) -> tuple[int, int]:
         """Task to run actual calls to export_simplified_gpkg()"""
         try:
             task.setProgress(1)
             with open(export_utils.create_log_file_name(export_folder, "folder_export_simplified_gpkg"), "w", encoding='utf-8') as log_file:
                 failed = 0
                 total_count = 0
-                found_count = len(gpkg_files) + len(already_simplified)
+                found_count = len(gpkg_files)
                 print(f'Found {found_count} Intrasis GPKG files in folder: {export_folder}')
-                all_gpkg = gpkg_files + already_simplified
-                max_length = len(max(all_gpkg, key=len))
-                if len(already_simplified) > 0:
-                    for gpkg_file in already_simplified:
-                        padded_gpkg_file = gpkg_file.ljust(max_length + 2)
-                        log_file.write(f'{padded_gpkg_file} alread have simplified version, skipping\n')
-                    log_file.write('\n')
 
+                max_length = len(max(gpkg_files, key=len))
                 log_file.write(f'Starting simplified export of {len(gpkg_files)} Intrasis GPKG files in folder: {export_folder}\n')
                 log_file.flush()
                 file_count = len(gpkg_files)
