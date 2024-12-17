@@ -349,8 +349,16 @@ def get_database_site(conn:psycopg2.extensions.connection, detailed_print_outs:b
 def get_meta_id(conn:psycopg2.extensions.connection, system_meta_id:int) -> int:
     """Lockup the system defined meta_id to get local version"""
     with conn.cursor() as cursor:
-        cursor.execute(f"SELECT \"MetaId\" FROM \"SysDefs\" WHERE \"SystemId\" = {int(system_meta_id)}")
-        meta_id = cursor.fetchone()[0]
+        try:
+            cursor.execute(f"SELECT \"MetaId\" FROM \"SysDefs\" WHERE \"SystemId\" = {int(system_meta_id)}")
+            result = cursor.fetchone()
+            if result:
+                meta_id = result[0]
+            else:
+                meta_id = system_meta_id
+        except Exception as ex:
+            return system_meta_id
+
     if meta_id is not None:
         return int(meta_id)
     return int(system_meta_id)
