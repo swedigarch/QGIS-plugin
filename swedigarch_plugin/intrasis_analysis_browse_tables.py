@@ -255,7 +255,12 @@ class IntrasisAnalysisBrowseTablesDialog(QtWidgets.QDialog, FORM_CLASS):
         multiple_parents = ''
         multiple_grandparents = ''
         multiple_greatgrandparents = ''
+        multiple_parents_tr = self.tr('flera parents, ')
+        multiple_grandparents_tr = self.tr('flera grand parents, ')
+        multiple_greatgrandparents_tr = self.tr('flera great grand parents')
         text_multiple_relations_info = self.tr('Flera träffar detekterade')
+        multiple_parents_true = False
+        multiple_grandparents_true = False
         if(len(values[0])>0 and len(values[1])==0 and len(values[2])==0):
             chosen_parentid = 'filtrering på parent'
             chosen_parentklass = f"_{values[0]}"
@@ -274,7 +279,8 @@ class IntrasisAnalysisBrowseTablesDialog(QtWidgets.QDialog, FORM_CLASS):
             ##############
             resultat.loc[resultat['parent_count'] == 1, ['ParentIdString']] = pd.NA
             if (resultat['parent_count'] != 1).any():
-                multiple_parents = 'flera parents'
+                #multiple_parents = 'flera parents'
+                multiple_parents = multiple_parents_tr
             #resultat.drop(columns=['parent_id','parent_count'], inplace=True)
         if(len(values[0])>0 and len(values[1])>0 and len(values[2])==0):
             chosen_parentid = 'filtrering på parent och grandparent'
@@ -301,9 +307,14 @@ class IntrasisAnalysisBrowseTablesDialog(QtWidgets.QDialog, FORM_CLASS):
             resultat.loc[resultat['parent_count'] == 1, ['ParentIdString']] = pd.NA
             resultat.loc[resultat['grand_parent_count'] == 1, ['GrandParentIdString']] = pd.NA
             if (resultat['parent_count'] != 1).any():
-                multiple_parents = 'flera parents, '
+                #multiple_parents = 'flera parents, '
+                multiple_parents = multiple_parents_tr
+                multiple_parents_true = True
             if (resultat['grand_parent_count'] != 1).any():
-                multiple_grandparents = 'flera grand parents'
+                #multiple_grandparents = 'flera grand parents'
+                multiple_grandparents = multiple_grandparents_tr
+                if multiple_parents_true is True:
+                    multiple_grandparents = f"/{multiple_grandparents_tr}"
             #resultat.drop(columns=['parent_id','parent_count','grand_parent_id','grand_parent_count'], inplace=True)
 
         if(len(values[0])>0 and len(values[1])>0 and len(values[2])>0):
@@ -338,11 +349,20 @@ class IntrasisAnalysisBrowseTablesDialog(QtWidgets.QDialog, FORM_CLASS):
             resultat.loc[resultat['grand_parent_count'] == 1, ['GrandParentIdString']] = pd.NA
             resultat.loc[resultat['great_grand_parent_count'] == 1, ['GreatGrandParentIdString']] = pd.NA
             if (resultat['parent_count'] != 1).any():
-                multiple_parents = self.tr('flera parents, ')
+                #multiple_parents = self.tr('flera parents, ')
+                multiple_parents = multiple_parents_tr
+                multiple_parents_true = True
             if (resultat['grand_parent_count'] != 1).any():
-                multiple_grandparents = self.tr('flera grand parents, ')
+                #multiple_grandparents = self.tr('flera grand parents, ')
+                multiple_grandparents = multiple_grandparents_tr
+                multiple_grandparents_true = True
+                if multiple_parents_true is True:
+                    multiple_grandparents = f"/{multiple_grandparents_tr}"
             if (resultat['great_grand_parent_count'] != 1).any():
-                multiple_greatgrandparents = self.tr('flera great grand parents')
+                #multiple_greatgrandparents = self.tr('flera great grand parents')
+                multiple_greatgrandparents = multiple_greatgrandparents_tr
+                if multiple_grandparents_true is True:
+                    multiple_greatgrandparents = f"/{multiple_greatgrandparents_tr}"
             #resultat.drop(columns=['parent_id','parent_count','grand_parent_id','grand_parent_count','great_grand_parent_id','great_grand_parent_count'], inplace=True)
         #print(chosen_parentid)
         resultat.drop_duplicates(inplace=True)
@@ -355,7 +375,8 @@ class IntrasisAnalysisBrowseTablesDialog(QtWidgets.QDialog, FORM_CLASS):
             #msg.setText("Observera!")
             text_notice_message = self.tr('Observera! Ett eller flera objekt detekterades med flera')
             text_end_phrase = self.tr('relationships')
-            msg.setText(f"{text_notice_message} {multiple_parents}/{multiple_grandparents}/{multiple_greatgrandparents} {text_end_phrase}.")
+            msg.setText(f"{text_notice_message} {multiple_parents}{multiple_grandparents}{multiple_greatgrandparents} {text_end_phrase}.")
+            #msg.setText(f"{text_notice_message} {multiple_parents}/{multiple_grandparents}/{multiple_greatgrandparents} {text_end_phrase}.")
             #msg.setText(f"Observera! För minst ett objekt detekterades {multiple_parents}\n{multiple_grandparents}\n{multiple_greatgrandparents}")
             #msg.setInformativeText(f"Observera! För minst ett objekt detekterades {multiple_parents}{multiple_grandparents}{multiple_greatgrandparents}")
             msg.setWindowTitle(self.tr("Varning"))
