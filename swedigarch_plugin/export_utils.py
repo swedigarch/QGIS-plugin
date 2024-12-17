@@ -26,6 +26,7 @@
 ***************************************************************************/
 """
 """Export Utils module"""
+from datetime import datetime
 from dataclasses import dataclass
 import os
 import tempfile
@@ -154,7 +155,7 @@ def store_attributes(cur:sqlite3.Cursor, data_frame:pd.DataFrame):
                     value = row.Value
                 else:
                     value = ""
-                if row.LongText:
+                if row.LongText and row.Text is not None:
                     try:
                         value = rtf_to_text(row.Text)
                     except UnicodeEncodeError as ex:
@@ -195,7 +196,7 @@ def fetch_and_save_raster_file(conn:psycopg2.extensions.connection, row) -> Rast
     except Exception as ex:
         traceback.print_exc()
         print(f"Error in fetch_and_save_raster_file() {ex}")
-
+        return None
 
 def insert_gpkg_relation(gpkg_file:str, base_table:str, base_column:str, rel_table:str, rel_column:str, rel_name:str, mapping_name:str):
     """Insert row into table gpkgext_relations"""
@@ -217,3 +218,10 @@ def create_geometry_to_geometry_relations(gpkg_file:str, geometry1:str, geometry
     if detailed_print_outs:
         print(f"{geometry1} to {geometry2} relations table {rel_table_name} created")
     insert_gpkg_relation(gpkg_file, geometry1, "object_id", geometry2, "object_id", "features", rel_table_name)
+
+def create_log_file_name(folder_name:str, pre_name:str) -> str:
+    """Create a log filename based on given parameters and current timestamp"""
+    now = datetime.now()
+    date_tag = now.strftime('%Y-%m-%d_%H-%M-%S')
+    log_filename = os.path.join(folder_name, f'{pre_name}_{date_tag}.log')
+    return log_filename

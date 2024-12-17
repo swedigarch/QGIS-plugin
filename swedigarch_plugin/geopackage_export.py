@@ -31,13 +31,14 @@ import os
 import io
 import gc
 import sqlite3
+from osgeo import ogr
 from contextlib import closing
 from datetime import datetime
 import traceback
 import psycopg2
 import pandas as pd
 from osgeo import gdal
-from PyQt5.QtCore import QDir, QFile
+from PyQt5.QtCore import QFile
 from typing import Callable
 from qgis.core import QgsProject, QgsVectorLayer, QgsRasterLayer, QgsRasterPipe, QgsRectangle, QgsDataSourceUri, QgsWkbTypes, QgsVectorFileWriter, QgsRasterFileWriter, QgsLayerMetadata, QgsCoordinateReferenceSystem, QgsCoordinateTransformContext
 from swedigarch_plugin.symbol_builder import SymbolBuilder
@@ -46,12 +47,12 @@ from .symbol_builder import SymbolBuilder
 from . import utils as Utils
 from .constant import Intrasis, RetCode, WriterError
 
-def export_to_geopackage(host:int, port:int, user_name:str, password:str, databases:[str], export_folder:str, overwrite:bool, csv:bool, callback:Callable = None, detailed_print_outs:bool = True, log_file:io.TextIOWrapper = None):
+def export_to_geopackage(host:int, port:int, user_name:str, password:str, databases:list[str], export_folder:str, overwrite:bool, csv:bool, simplified:bool, callback:Callable = None, detailed_print_outs:bool = True, log_file:io.TextIOWrapper = None, subclasses_to_exclude:list=None) -> tuple[int, int, str]:
     """Main GeoPackage export function, also can run CSV export if csv is True"""
     export_ok_count = 0
     if callback is None:
         print("callback saknas!")
-        return RetCode.ARGUMENT_ERROR, export_ok_count
+        return RetCode.ARGUMENT_ERROR, export_ok_count, None
 
     rights_error = False
     # This controlls if all layers are combined into one features table och exported as separate layers by geom type.
@@ -64,7 +65,7 @@ def export_to_geopackage(host:int, port:int, user_name:str, password:str, databa
 
     except Exception as err:
         callback(None, "Connection error connecting to db: postgres", err)
-        return RetCode.GENERIC_DB_CONNECTION_ERROR, export_ok_count
+        return RetCode.GENERIC_DB_CONNECTION_ERROR, export_ok_count, None
 
     db_ret = False
     try:
@@ -76,7 +77,7 @@ def export_to_geopackage(host:int, port:int, user_name:str, password:str, databa
             ret = callback(progress) # Check if export has been canceled
             if ret is False: # export have been canceled
                 conn.close() # Clean up and exit
-                return RetCode.TERMINATED_BY_QGIS, export_ok_count
+                return RetCode.TERMINATED_BY_QGIS, export_ok_count, None
 
             connection_string = f"dbname={database} host={host} user={user_name} password={password} port={port} application_name=swedigarch_export"
             conn = psycopg2.connect(connection_string)
@@ -92,14 +93,14 @@ def export_to_geopackage(host:int, port:int, user_name:str, password:str, databa
             ret = callback(progress, None)
             if ret is False: # export has been canceled
                 conn.close() # Clean up and exit
-                return RetCode.TERMINATED_BY_QGIS, export_ok_count
+                return RetCode.TERMINATED_BY_QGIS, export_ok_count, None
 
             output_file = os.path.join(export_folder, f"{database.lower()}.gpkg")
             delete_on_faliure = not QFile(output_file).exists()
             if delete_on_faliure is False and overwrite:
                 delete_on_faliure = True
 
-            db_ret, error_msg, rights_error = export_database(conn, host, port, user_name, password, database, len(databases), progress, export_folder, overwrite, combine_layers, callback, detailed_print_outs)
+            db_ret, error_msg, rights_error, log_excluded_subclasses = export_database(conn, host, port, user_name, password, database, len(databases), progress, export_folder, overwrite, combine_layers, callback, detailed_print_outs, subclasses_to_exclude)
             if db_ret:
                 export_ok_count += 1
                 print(f'export_database(db: {database}) db_ret: {db_ret}')
@@ -110,12 +111,14 @@ def export_to_geopackage(host:int, port:int, user_name:str, password:str, databa
 
             if log_file is not None:
                 if db_ret:
+                    if log_excluded_subclasses is not None:
+                        log_file.write(f'{log_excluded_subclasses}\n')
                     log_file.write(f'{padded_db_name} Exported OK\n')
                 elif error_msg is not None:
                     if error_msg == 'Skipped because GeoPackage file already exist':
                         log_message = error_msg
                     else:
-                        log_message = f'Error during export: {error_msg}'                    
+                        log_message = f'Error during export: {error_msg}'
                     log_file.write(f'{padded_db_name} {log_message}\n')
                 else:
                     log_file.write(f'{padded_db_name} Unknown error during export!\n')
@@ -132,49 +135,49 @@ def export_to_geopackage(host:int, port:int, user_name:str, password:str, databa
             ret = callback(progress - 5, message)
             if ret is False: # export has been canceled
                 conn.close() # Clean up and exit
-                return RetCode.TERMINATED_BY_QGIS, export_ok_count
+                return RetCode.TERMINATED_BY_QGIS, export_ok_count, None
 
-        if log_file is not None and len(databases) > 1 and not csv:
+        if log_file is not None and len(databases) > 1 and not csv and not simplified:
             now = datetime.now()
             date_time = now.strftime('%Y-%m-%d %H:%M:%S')
             if export_ok_count == len(databases):
-                log_file.write(f'\nExport done ({date_time}), {len(databases)} Databases Exported {export_ok_count }')
+                log_file.write(f'\nExport done ({date_time}), {len(databases)} Databases Exported {export_ok_count }\n')
             else:
-                log_file.write(f'\nExport done ({date_time}),\nSucceeded with exporting {export_ok_count} of {len(databases)} Databases.')
-            log_file.close()
+                log_file.write(f'\nExport done ({date_time}),\nSucceeded with exporting {export_ok_count} of {len(databases)} Databases.\n')
+            log_file.flush()
         print(f'export_database() db_ret: {db_ret}, rights_error: {rights_error}')
         if db_ret is False and len(databases) == 1:
             if rights_error:
-                return RetCode.DATABASE_ACCESS_ERROR, export_ok_count
-            return current_retcode, export_ok_count
-        return current_retcode, export_ok_count
+                return RetCode.DATABASE_ACCESS_ERROR, export_ok_count, None
+            return current_retcode, export_ok_count, None
+        return current_retcode, export_ok_count, log_excluded_subclasses
     except Exception as err:
         traceback.print_exc()
         callback(None, "Exception in export_to_geopackage()", err)
         log_file.write(f'Fatal error in export script: {err}')
         log_file.close()
-        return RetCode.UNKNOWN_ERROR, export_ok_count
+        return RetCode.UNKNOWN_ERROR, export_ok_count, None
 
-def export_database(conn:psycopg2.extensions.connection, host:str, port:int, user_name:str, password:str, database:str, db_count:int, progress:int, export_folder:str, overwrite:bool, combine_layers:bool, callback:Callable, detailed_print_outs:bool=True) -> tuple[bool,str,bool]:
+def export_database(conn:psycopg2.extensions.connection, host:str, port:int, user_name:str, password:str, database:str, db_count:int, progress:int, export_folder:str, overwrite:bool, combine_layers:bool, callback:Callable, detailed_print_outs:bool=True, subclasses_to_exclude:list=None) -> tuple[bool,str,bool,str]:
     """Function to export from given connection to new GeoPackage in export_folder"""
     # Returns: db_ret, error_msg, rights_error (bool, string, bool)
     db_progress = 0 # Progress of the export of this database
     curr_progress = progress + db_progress / db_count
     ret = callback(curr_progress - 5, f"Starting export of {database}")
     if ret is False: # export have been canceled
-        return False, None, False
+        return False, None, False, None
 
     try:
         output_file = os.path.join(export_folder, f"{database.lower()}.gpkg")
         print(f'export_database() output_file {output_file} exist: {QFile(output_file).exists()} overwrite: {overwrite}\n')
         if QFile(output_file).exists():
             if overwrite is False:
-                return False, 'Skipped because GeoPackage file already exist', False
+                return False, 'Skipped because GeoPackage file already exist', False, False
             print(f'QFile.remove({output_file})')
             QFile.remove(output_file)
             if QFile(output_file).exists():
                 print(f"Remove failed for file: {output_file}")
-                return False, f'Remove failed for file: {output_file}, skipping', False
+                return False, f'Remove failed for file: {output_file}, skipping', False, False
 
         print(f"Exporting db: {database} to: {output_file}")
 
@@ -190,13 +193,13 @@ def export_database(conn:psycopg2.extensions.connection, host:str, port:int, use
             else:
                 callback(None, None, db_error)
             print(f'export_database() get_database_srid() error: {db_error}')
-            return False, db_error, rights_error
+            return False, db_error, rights_error, False
 
         site, db_error, rights_error = Utils.get_database_site(conn, detailed_print_outs)
         if db_error is not None:
             callback(None, f'Error exporting database: {database}', f"Database error: {db_error} in database: {database}")
             print(f'export_database() get_database_site() error: {db_error}')
-            return False, db_error, rights_error
+            return False, db_error, rights_error, False
 
         #if detailed_print_outs:
             #print(f"Site: {site.site_id} {site.name_value}")
@@ -205,12 +208,12 @@ def export_database(conn:psycopg2.extensions.connection, host:str, port:int, use
         if db_error is not None:
             callback(None, f'Error exporting database: {database}', f"Database error: {db_error} in database: {database}")
             print(f'export_database() get_database_site() error: {db_error}')
-            return False, db_error, rights_error
+            return False, db_error, rights_error, False
 
         #print(f'len(wkb_types): {len(wkb_types)}')
         if len(wkb_types) == 0:
             print('returning: Database has no geometries, skipping')
-            return False, 'Database has no geometries, skipping', False
+            return False, 'Database has no geometries, skipping', False, False
 
         layer_names = []
         # One per geometry type + one for non geometries, then double that for all attributes
@@ -243,7 +246,7 @@ def export_database(conn:psycopg2.extensions.connection, host:str, port:int, use
         gc.collect() # To free up QgsVectorLayer and close its connection.
 
         #region "export all objects to objects table"
-        export_objects(conn, output_file, callback)
+        export_objects(conn, output_file, callback, subclasses_to_exclude)
 
         export_utils.if_missing_create_gpkg_extensions(output_file)
 
@@ -256,7 +259,8 @@ def export_database(conn:psycopg2.extensions.connection, host:str, port:int, use
             # update geometry type after layer export, to allow QGIS to se the separate layer types in features.
             # Make table features not be seen as a layer, so QGIS will only add view layers.
 
-            print(f'wkb_types.count: {len(wkb_types)}')
+            if detailed_print_outs:
+                print(f'wkb_types.count: {len(wkb_types)}')
             if len(wkb_types) > 0: # Only if database has geometries
                 # To make symbols auto loaded in QGIS we need to delete features from gpkg_contents
                 Utils.execute_sql_in_gpkg(output_file, "DELETE FROM gpkg_contents WHERE table_name = 'features'")
@@ -267,11 +271,14 @@ def export_database(conn:psycopg2.extensions.connection, host:str, port:int, use
 
                 Utils.execute_sql_in_gpkg(output_file, "DELETE FROM gpkg_geometry_columns WHERE table_name = 'features'")
 
-            qml = sb.build_symbols_for_layer("")
+            qml = sb.build_symbols_for_layer("", [])
             export_utils.save_layer_style(output_file, True, "features", qml, detailed_print_outs)
             for wkb_type in wkb_types:
                 layer_name, filter_string = SymbolBuilder.wkb_type_to_layer(wkb_type)
-                qml = sb.build_symbols_for_layer(filter_string)
+
+                symbol_ids = Utils.get_used_symbol_ids(output_file, layer_name)
+                print(f'Used symbol_ids: {symbol_ids}')
+                qml = sb.build_symbols_for_layer(filter_string, symbol_ids)
                 export_utils.save_layer_style(output_file, False, layer_name, qml, detailed_print_outs)
                 sql = f"INSERT INTO gpkg_extensions VALUES('{layer_name}', 'geom', 'gpkg_rtree_index', 'http://www.geopackage.org/spec120/#extension_rtree', 'write-only')"
                 Utils.execute_sql_in_gpkg(output_file, sql)
@@ -280,7 +287,7 @@ def export_database(conn:psycopg2.extensions.connection, host:str, port:int, use
             first = True
             for wkb_type in wkb_types:
                 layer_name, filter_string = SymbolBuilder.wkb_type_to_layer(wkb_type)
-                qml = sb.build_symbols_for_layer(filter_string)
+                qml = sb.build_symbols_for_layer(filter_string, [])
                 export_utils.save_layer_style(output_file, first, layer_name, qml, detailed_print_outs)
                 sql = f"INSERT INTO gpkg_extensions VALUES('{layer_name}', 'geom', 'gpkg_rtree_index', 'http://www.geopackage.org/spec120/#extension_rtree', 'write-only')"
                 Utils.execute_sql_in_gpkg(output_file, sql)
@@ -314,15 +321,29 @@ def export_database(conn:psycopg2.extensions.connection, host:str, port:int, use
             # Do update inside a transaction to speed up
             cur.execute("BEGIN TRANSACTION;")
 
+            subclasses_to_exclude_tuple_set = set()
+            log_string_excluded_subclasses = ''
+            log_string_excluded_subclasses_header = ''
+            if subclasses_to_exclude is not None:
+                subclasses_to_exclude_tuple_set = set(subclasses_to_exclude)
+                log_string_excluded_subclasses_header = f'Excluded SubClasses for {database}:'
+
             for row in data_frame.itertuples(index=False):
-                export_class_attributes(conn, cur, row.ClassId, row.SubClassId, callback, detailed_print_outs)
+                exclude_subclass_attributes = True
+                if (row.Class, row.SubClass) not in subclasses_to_exclude_tuple_set:
+                    exclude_subclass_attributes = False
+
+                number_excluded = export_class_attributes(conn, cur, row.ClassId, row.SubClassId, callback, detailed_print_outs, exclude_subclass_attributes)
+                if exclude_subclass_attributes and number_excluded > 0:
+                    log_string_excluded_subclasses += '\n"' + row.Class +' \\ '+ row.SubClass + f'", number of excluded objects: {number_excluded}'
+
                 layers_done = layers_done + attr_inc
                 db_progress = (layers_done / layer_export_steps) * 100
                 curr_progress = progress + db_progress / db_count
                 ret = callback(None) # Check if export has been canceled
                 if ret is False: # export have been canceled
                     conn.close() # Clean up and exit
-                    return False, False, False
+                    return False, False, False, False
             cur.execute("COMMIT;")
             cur.close()
             gp_conn.commit()
@@ -332,7 +353,7 @@ def export_database(conn:psycopg2.extensions.connection, host:str, port:int, use
             if db_error is not None:
                 gp_conn.close()
                 callback(None, None, db_error)
-                return False, db_error, rights_error
+                return False, db_error, rights_error, False
 
             # Add attribute_objects index to table attributes to speed up operations
             Utils.execute_sql_in_gpkg(output_file, 'CREATE INDEX attribute_objects ON attributes (object_id);')
@@ -349,9 +370,14 @@ def export_database(conn:psycopg2.extensions.connection, host:str, port:int, use
         traceback.print_exc()
         callback(None, "Error in export_database()", err)
         print('export_database() Exception: {err}')
-        return False, f'{err}', False
+        return False, f'{err}', False, False
     print(f"Export db done: {database} to: {output_file}")
-    return True, False, False
+
+    if len(log_string_excluded_subclasses) > 0:
+        log_string_excluded_subclasses = log_string_excluded_subclasses_header + log_string_excluded_subclasses
+        return True, False, False, log_string_excluded_subclasses
+
+    return True, False, False, None
 
 def export_postgis_layer_to_gpkg(host:str, port:int, user_name:str, password:str, database:str, output_file:str, wkb_type, srid:int, combine_layers:bool, callback:Callable, detailed_print_outs:bool=True) -> tuple[str,str,QgsRectangle]:
     """Export geometry type layer to GeoPackage, """
@@ -472,7 +498,28 @@ def export_raster_layer_to_gpkg(conn:psycopg2.extensions.connection, meta_ids:st
         traceback.print_exc()
         callback(None, "Error in export_raster_layer_to_gpkg()", err)
 
-def export_objects(conn:psycopg2.extensions.connection, output_file:str, callback:Callable) -> None:
+def generate_select_subclass_name_case_statement(subclasses_to_exclude:list) -> str:
+    """Generate a CASE statement to exclude subclass name from the export based on the list of tuples."""
+    return generate_case_statement(subclasses_to_exclude, 'd2."Name"', 'SubClass', 'NULL')
+    
+def generate_select_object_name_case_statement(subclasses_to_exclude:list) -> str:
+    """Generate a CASE statement to exclude object name from the export based on the list of tuples."""
+    return generate_case_statement(subclasses_to_exclude, 'o."Name"', 'Name', "''")
+
+def generate_case_statement(subclasses_to_exclude:list, default_select_column:str, result_column_name:str, excluded_result_value:str) -> str:
+    """Generate a CASE statement based on the list of tuples, default select column and result column name."""
+    if not subclasses_to_exclude:
+        return f"{default_select_column} as \"{result_column_name}\""
+
+    case_lines = ['CASE']
+    for class_name, sub_class_name in subclasses_to_exclude:
+        case_lines.append(f"    WHEN d1.\"Name\" = '{class_name}' AND d2.\"Name\" = '{sub_class_name}' THEN {excluded_result_value}")
+    case_lines.append(f'    ELSE {default_select_column}')
+    case_lines.append(f'END as \"{result_column_name}\"')
+
+    return '\n'.join(case_lines)
+
+def export_objects(conn:psycopg2.extensions.connection, output_file:str, callback:Callable, subclasses_to_exclude:list) -> None:
     """Export all objects to objects table, with Staf and GeoObject filtered out"""
     try:
         sql = Utils.load_resource('sql/create_objects_table.sql')
@@ -481,7 +528,9 @@ def export_objects(conn:psycopg2.extensions.connection, output_file:str, callbac
             sql = Utils.load_resource('sql/select_objects.sql')
             staf_meta_id = Utils.get_meta_id(conn, Intrasis.CLASS_STAFF_META_ID)
             geo_obj_meta_id = Utils.get_meta_id(conn, Intrasis.CLASS_GEOOBJECT_META_ID)
+            sql = sql.replace("__NAME_SELECT__", generate_select_object_name_case_statement(subclasses_to_exclude))
             sql = sql.replace("__EXCLUDE_META_IDS__", f"{staf_meta_id}, {geo_obj_meta_id}")
+            sql = sql.replace("__SUBCLASS_NAME_SELECT__", generate_select_subclass_name_case_statement(subclasses_to_exclude))
             data_frame = pd.read_sql(sql, conn)
             data_frame.to_sql(name='objects', con = gp_conn, if_exists='append', index=False)
             gp_conn.commit()
@@ -525,7 +574,7 @@ def export_none_geometry_objects(host:str, port:int, user_name:str, password:str
         del layer
         layer = None
         del uri
-        uri = None        
+        uri = None
         return staf_meta_id, geo_obj_meta_id
     except Exception as err:
         traceback.print_exc()
@@ -533,7 +582,6 @@ def export_none_geometry_objects(host:str, port:int, user_name:str, password:str
 
 def export_project_information(host:str, port:int, user_name:str, password:str, database:str, site:Site, output_file:str, srid:int, callback:Callable) -> None:
     """Export project_information as point feature in new layer 'project_information'"""
-    print('export_project_information(...)')
     uri = QgsDataSourceUri()
     uri.setConnection(host, port, database, user_name, password)
     uri.disableSelectAtId(True)
@@ -595,7 +643,7 @@ def export_project_information(host:str, port:int, user_name:str, password:str, 
         traceback.print_exc()
         callback(None, "Error in export_project_information()", err)
 
-def export_class_attributes(conn:psycopg2.extensions.connection, cur:sqlite3.Cursor, class_id:int, sub_class_id:int, callback:Callable, detailed_print_outs:bool=True) -> None:
+def export_class_attributes(conn:psycopg2.extensions.connection, cur:sqlite3.Cursor, class_id:int, sub_class_id:int, callback:Callable, detailed_print_outs:bool=True, exclude_subclass_attributes:bool=False) -> None:
     """Export attributes for class (and SubClass if sub_class_id has value) and write them to the GeoPackage"""
     try:
         sql = Utils.load_resource('sql/select_object_attributes.sql')
@@ -603,16 +651,32 @@ def export_class_attributes(conn:psycopg2.extensions.connection, cur:sqlite3.Cur
             sql =  sql.replace("__CLASS__", f" {class_id} AND o.\"SubClassId\" is NULL")
             sql = sql.replace("__CLS_IDS__", f"{class_id}")
             sql = sql.replace("__ORDERING__", "")
+            sql = sql.replace("__ATTRIBUTE_VALUE__","av.\"Value\"")
+            sql = sql.replace("__FREE_TEXT_VALUE__","ft.\"Text\"")
             if detailed_print_outs:
                 print(f"Attribute export for ClassId: {class_id}, SubClassId: NULL")
         else:
-            sql = sql.replace("__CLASS__", f" {class_id} AND o.\"SubClassId\" = {sub_class_id}")
-            sql = sql.replace("__CLS_IDS__", f"{class_id}, {sub_class_id}")
-            sql = sql.replace("__ORDERING__", f", am.\"ObjectDefId\" = {sub_class_id}")
-            if detailed_print_outs:
-                print(f"Attribute export for ClassId: {class_id}, SubClassId: {sub_class_id}")
+            if exclude_subclass_attributes:
+                sql = sql.replace("__CLASS__", f" {class_id} AND o.\"SubClassId\" = {sub_class_id}")
+                sql = sql.replace("__CLS_IDS__", f"{class_id}")
+                sql = sql.replace("__ORDERING__", "")
+                sql = sql.replace("__ATTRIBUTE_VALUE__","NULL as \"Value\"")
+                sql = sql.replace("__FREE_TEXT_VALUE__","NULL as \"Text\"")
+                if detailed_print_outs:
+                    print(f"Attribute export for ClassId: {class_id}, SubClassId: {sub_class_id} (SubClass attributes excluded, Class attribute values removed)")
+            else:
+                sql = sql.replace("__CLASS__", f" {class_id} AND o.\"SubClassId\" = {sub_class_id}")
+                sql = sql.replace("__CLS_IDS__", f"{class_id}, {sub_class_id}")
+                sql = sql.replace("__ORDERING__", f", am.\"ObjectDefId\" = {sub_class_id}")
+                sql = sql.replace("__ATTRIBUTE_VALUE__","av.\"Value\"")
+                sql = sql.replace("__FREE_TEXT_VALUE__","ft.\"Text\"")
+                if detailed_print_outs:
+                    print(f"Attribute export for ClassId: {class_id}, SubClassId: {sub_class_id}")
+
         data_frame = pd.read_sql(sql, conn)
+        count_num_of_affected_objects = data_frame['object_id'].nunique()
         export_utils.store_attributes(cur, data_frame)
+        return count_num_of_affected_objects
     except Exception as err:
         traceback.print_exc()
         callback(None, "Error in export_postgis_layer_to_gpkg()", err)
@@ -693,3 +757,93 @@ def list_geom_types_to_export(conn, callback:Callable) -> tuple[list[QgsWkbTypes
         traceback.print_exc()
         callback(None, "Error in list_geom_types_to_export()", err)
         return [], f'{str(err).rstrip()}', False
+
+def export_simplified_gpkg(gpkg_path:str) -> tuple[RetCode, str, str]:
+    """Export given GPKG to simplified format"""
+    try:
+        path, ext = os.path.splitext(gpkg_path)
+        path += '_simplified'
+        output_file = f'{path}{ext}'
+        print(f'export_simplified_gpkg() output_file: {output_file}')
+
+        if QFile(output_file).exists():
+            QFile.remove(output_file)
+
+        if not QFile(gpkg_path).exists():
+            return RetCode.UNKNOWN_ERROR, f'GeoPackage: "{gpkg_path}" does not exist', None
+
+        layer_names = []
+        gpkg_ds = ogr.Open(gpkg_path)
+        gpkg_layers = [l.GetName() for l in gpkg_ds]
+        for name in gpkg_layers:
+            layer = gpkg_ds.GetLayerByName(name)
+            layer_defn = layer.GetLayerDefn()
+            geom_type = layer_defn.GetGeomType()
+            if geom_type == 100:
+                continue # Is not layer
+            print(f'Layer: {name} geom_type: {geom_type}')
+            layer_names.append(name)
+        gpkg_ds = None
+
+        metadata = QgsLayerMetadata()
+        metadata.setTitle('Intrasis GeoPackage export')
+        metadata.setAbstract('Intrasis database export')
+        metadata.setLicenses(['l1', 'l2'])
+        metadata.setKeywords({'Intrasis Export': ['GeoPackage export'],
+                              'gmd:topicCategory': ['Intrasis']})
+
+        # Copy layers
+        for layer_name in layer_names:
+            layer_src = gpkg_path + f'|layername={layer_name}'
+            #print(f'layer_src: {layer_src}')
+            layer = QgsVectorLayer(layer_src, layer_name, "ogr")
+            if layer.isValid():
+                print(f'Layer: {layer_name} is valid')
+            else:
+                print(f'Layer: {layer_name} is NOT valid')
+
+            options = QgsVectorFileWriter.SaveVectorOptions()
+            options.driverName = 'GPKG'
+            options.fileEncoding = "UTF-8"
+            options.includeZ = True
+            options.layerName = layer_name
+            options.saveMetadata = True
+            options.layerMetadata = metadata
+            if QFile(output_file).exists(): # If exist set to create layer or merge in existing gpkg file.
+                options.actionOnExistingFile = QgsVectorFileWriter.CreateOrOverwriteLayer
+            #write_result, error_message, new_file, new_layer = 
+            QgsVectorFileWriter.writeAsVectorFormatV3(layer, output_file, QgsProject.instance().transformContext(), options)
+            #print(f'write_result: {write_result}  error_message: {error_message}')
+
+        # Copy tables objects and layer_styles
+        with closing(sqlite3.connect(gpkg_path)) as srcGp_conn:
+            with closing(sqlite3.connect(output_file)) as gp_conn:
+                # objects table
+                data_frame = pd.read_sql('SELECT * FROM objects', srcGp_conn)
+                #Utils.get_data_frame_from_gpkg()
+                data_frame.to_sql(name='objects', con = gp_conn, if_exists='append', index=False)
+                gp_conn.commit()
+                print('objects table copied')
+
+        # Fix field names with space in them, ESRI can't handle them
+        columns_to_fix = []
+        with closing(sqlite3.connect(output_file)) as gp_conn:
+            sql = "pragma table_info('project_information')"
+            data_frame = pd.read_sql(sql, gp_conn)
+            for row in data_frame.values:
+                name = row[1]
+                if ' ' in name:
+                    #print(f'name: {name}')
+                    columns_to_fix.append(name)
+            data_frame = None
+
+            for column in columns_to_fix:
+                fixed_name = column.replace(' ', '_')
+                sql = f'ALTER TABLE project_information RENAME "{column}" TO "{fixed_name}"'
+                gp_conn.execute(sql)
+                gp_conn.commit()
+        return RetCode.EXPORT_OK, None, output_file
+    except Exception as ex:
+        traceback.print_exc()
+        print(f"Error in export_simplified_gpkg() {ex}")
+        return RetCode.UNKNOWN_ERROR, f"Error in export_simplified_gpkg() {ex}", None

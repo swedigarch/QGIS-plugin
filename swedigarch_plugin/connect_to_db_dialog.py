@@ -34,8 +34,7 @@ import pandas as pd
 from . import utils as Utils
 from .help_dialog import HelpDialog
 from qgis.PyQt import (uic, QtWidgets)
-from qgis.core import QgsDataSourceUri
-from PyQt5.QtCore import (QCoreApplication, QObject, QRunnable, QThread, QThreadPool, pyqtSignal, Qt, pyqtSlot)
+from PyQt5.QtCore import (QObject, QRunnable, QThreadPool, pyqtSignal, Qt, pyqtSlot)
 
 # This loads your .ui file so that PyQt can populate your plugin with the elements from Qt Designer
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
@@ -74,7 +73,7 @@ class ConnectToDbWorker(QRunnable):
             print(f"run() {exctype}  {value}")
             self.signals.error.emit(value)
         except Exception:
-            traceback.print_exc()
+            #traceback.print_exc()
             exctype, value = sys.exc_info()[:2]
             self.signals.error.emit((exctype, value, traceback.format_exc()))
         finally:
@@ -148,6 +147,10 @@ class ConnectToDbDialog(QtWidgets.QDialog, FORM_CLASS):
 
     def connection_error(self, error:str) -> None:
         """Connection error, called from background thread"""
+        if isinstance(error, tuple):
+            if 'UnicodeDecodeError' in str(error[0]):
+                error = self.tr("Unknown Login error has occurred")
+
         print(f"connection_error() {error}")
         self.is_running = False
         self.button_box.button(QtWidgets.QDialogButtonBox.Ok).setEnabled(True)

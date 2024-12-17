@@ -216,6 +216,18 @@ def wkb_type_to_layer(wkb_type:QgsWkbTypes) -> tuple[str,str]:
         raise SymbolException(f"Unknown wkb_type: {wkb_type}")
     return layer_name, filter_string
 
+def get_used_symbol_ids(gpkg_file:str, layer_name:str) -> list:
+    """List all used SymbolId"""
+    symbol_ids = []
+    with closing(sqlite3.connect(gpkg_file)) as conn:
+        cur = conn.cursor()
+        sql = f'SELECT DISTINCT SymbolId FROM {layer_name} ORDER BY SymbolId;'
+        cur.execute(sql)
+        data = cur.fetchall()
+        symbol_ids = [rows[0] for rows in data]
+    print(f'get_used_symbol_ids() symbol_ids: {symbol_ids}')
+    return symbol_ids
+
 def load_resource(file_name:str) -> str:
     """Load local resource file"""
     __location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
@@ -337,8 +349,16 @@ def get_database_site(conn:psycopg2.extensions.connection, detailed_print_outs:b
 def get_meta_id(conn:psycopg2.extensions.connection, system_meta_id:int) -> int:
     """Lockup the system defined meta_id to get local version"""
     with conn.cursor() as cursor:
-        cursor.execute(f"SELECT \"MetaId\" FROM \"SysDefs\" WHERE \"SystemId\" = {int(system_meta_id)}")
-        meta_id = cursor.fetchone()[0]
+        try:
+            cursor.execute(f"SELECT \"MetaId\" FROM \"SysDefs\" WHERE \"SystemId\" = {int(system_meta_id)}")
+            result = cursor.fetchone()
+            if result:
+                meta_id = result[0]
+            else:
+                meta_id = system_meta_id
+        except Exception as ex:
+            return system_meta_id
+
     if meta_id is not None:
         return int(meta_id)
     return int(system_meta_id)
@@ -411,9 +431,8 @@ def is_intrasis_gpkg_export(gpkg_file:str) -> bool:
             if not table_count == 10:
                 print(f'is_intrasis_gpkg_export() Did not fing the required 10 tables, only found {table_count}')
         return metadata == 1 and table_count == 10
-    except Exception as ex:
-        traceback.print_exc()
-        print(f'is_intrasis_gpkg_export() Exception: {ex}')
+    except Exception:
+        # Any error/Exception means it's not an Intrasis GeoPackage
         return False
 
 def layer_is_in_gpkg(layer:QgsMapLayer) -> tuple[bool,str]:

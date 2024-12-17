@@ -935,7 +935,6 @@ class TemporaryDirectory:
     def _cleanup(cls, name, warn_message, ignore_errors=False, delete=True):
         if delete:
             cls._rmtree(name, ignore_errors=ignore_errors)
-            _warnings.warn(warn_message, ResourceWarning)
 
     def __repr__(self):
         return "<{} {!r}>".format(self.__class__.__name__, self.name)
